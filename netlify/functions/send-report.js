@@ -179,7 +179,7 @@ RedTAP · supratim@redtap.co
 
   try {
     const result = await resend.emails.send({
-      from: "GrowFitt <onboarding@resend.dev>",
+      from: "GrowFitt <noreply@growfitt.ai>",
       to: [to],
       subject: `GrowFitt Growth Audit — ${companyName} | GFS ${s.GFS.toFixed(2)}/5.00`,
       html: htmlBody,
