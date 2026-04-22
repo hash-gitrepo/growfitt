@@ -55,14 +55,6 @@
   input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--green);border:3px solid var(--surface);box-shadow:0 1px 4px rgba(0,0,0,0.2);cursor:pointer;}
   .slider-confirm-btn{width:100%;padding:11px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:opacity 0.15s;}
   .slider-confirm-btn:hover{opacity:0.88;}
-  .input-wrap{background:var(--surface);border:1px solid var(--border-strong);border-radius:var(--radius);display:flex;align-items:flex-end;gap:8px;padding:8px 8px 8px 14px;transition:border-color 0.15s;}
-  .input-wrap:focus-within{border-color:var(--green);}
-  .input-wrap textarea{flex:1;border:none;background:transparent;resize:none;font-size:14.5px;font-family:inherit;color:var(--text);line-height:1.5;min-height:26px;max-height:100px;overflow-y:auto;outline:none;}
-  .input-wrap textarea::placeholder{color:var(--text-hint);}
-  .send-btn{width:36px;height:36px;border-radius:50%;background:var(--green);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity 0.15s;}
-  .send-btn:hover{opacity:0.85;}
-  .send-btn:disabled{opacity:0.3;cursor:not-allowed;}
-  .send-btn svg{width:15px;height:15px;fill:#fff;}
   .typing{display:flex;gap:5px;align-items:center;padding:4px 0;}
   .dot{width:7px;height:7px;border-radius:50%;background:var(--text-hint);animation:blink 1.2s infinite;}
   .dot:nth-child(2){animation-delay:0.2s;}
@@ -183,14 +175,7 @@
   </div>
   <div class="chat-area" id="chat"></div>
   <div id="quick-reply-area"></div>
-  <div id="input-area">
-    <div class="input-wrap">
-      <textarea id="user-input" placeholder="Type your answer..." rows="1"></textarea>
-      <button class="send-btn" id="send-btn" onclick="handleSend()">
-        <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
-      </button>
-    </div>
-  </div>
+
 </div>
 <script>
 const state={step:0,answers:{},scores:{},companyName:'',lastRecs:[]};
@@ -225,8 +210,8 @@ function getStageHint(arrM){for(const s of STAGE_HINTS){if(arrM<s.max)return s;}
 let STEPS=[];
 function buildSteps(isEarly){
   const base=[
-    {key:'company',ask:"Hi! I'm your GrowFitt growth advisor. Let's assess your growth fitness score — takes about 3–4 minutes.\n\nWhat's the name of your company?",type:'text'},
-    {key:'arr_revenue',ask:(a)=>`Great, ${a.company}! What is your current ARR or annual revenue?`,type:'arr',hint:'This determines your growth stage and benchmark.'},
+    
+    {key:'arr_revenue',ask:()=>`Hi, ${state.companyName}! What is ${state.companyName}'s current ARR or annual revenue?`,type:'arr',hint:'This determines your growth stage and benchmark.'},
     {key:'growth_rate',ask:(a)=>{const h=getStageHint(parseFloat(a.arr_revenue||10));return `What was your revenue growth rate over the last 12 months?<br><span style="font-size:13px;color:var(--text-muted)">You're in the <strong>${h.key}</strong> stage — benchmark growth rate: ${h.bgr}%+.</span>`;},type:'slider'},
     {key:'nrr',ask:()=>`What is your Net Revenue Retention (NRR)?<br><span style="font-size:13px;color:var(--text-muted)">Includes upsells and expansions from existing customers.</span>`,type:'slider'},
     {key:'grr',ask:()=>`What is your Gross Revenue Retention (GRR)?<br><span style="font-size:13px;color:var(--text-muted)">Base revenue retained, excluding upsells — must be 100% or below.</span>`,type:'slider'},
@@ -249,7 +234,7 @@ buildSteps(false);
 
 function updateProgress(){
   const pct=Math.round((state.step/STEPS.length)*100);
-  const labels=['Getting started','Company name','Revenue / ARR','Growth rate','Net retention','Gross retention','Gross margin','Cash flow','Sales efficiency','CAC payback','Burn multiple','Inbound mix','Deal quality','Retention trend'];
+  const labels=['Getting started','Revenue / ARR','Growth rate','Net retention','Gross retention','Gross margin','Cash flow','Sales efficiency','CAC payback','Burn multiple','Inbound mix','Deal quality','Retention trend'];
   document.getElementById('progress-fill').style.width=pct+'%';
   document.getElementById('progress-pct').textContent=pct+'%';
   document.getElementById('progress-text').textContent=labels[Math.min(state.step,labels.length-1)]||'Completing...';
@@ -263,7 +248,7 @@ function setQR(choices){const area=document.getElementById('quick-reply-area');a
 
 function showArrPicker(){
   const area=document.getElementById('quick-reply-area');area.innerHTML='';
-  document.getElementById('user-input').disabled=true;document.getElementById('send-btn').disabled=true;
+  
   const defaultIdx=3;const card=document.createElement('div');card.className='slider-card';
   card.innerHTML=`<div class="slider-top"><div><span class="slider-val-display" id="arr-display">${ARR_STEPS[defaultIdx].label}</span></div><span class="slider-range-label" id="arr-step-lbl">Step ${defaultIdx+1} of ${ARR_STEPS.length}</span></div><input type="range" id="arr-slider" min="0" max="${ARR_STEPS.length-1}" step="1" value="${defaultIdx}"><button class="slider-confirm-btn" id="confirm-arr" onclick="confirmArrSlider()">Confirm ${ARR_STEPS[defaultIdx].label} →</button>`;
   area.appendChild(card);
@@ -285,8 +270,7 @@ function confirmArrSlider(){
 function showSlider(key){
   const cfg=SLIDERS[key];if(!cfg)return;
   const area=document.getElementById('quick-reply-area');area.innerHTML='';
-  document.getElementById('user-input').disabled=true;document.getElementById('send-btn').disabled=true;
-  const card=document.createElement('div');card.className='slider-card';
+    const card=document.createElement('div');card.className='slider-card';
   const sid='slider-'+key,did='sliderval-'+key;
   card.innerHTML=`<div class="slider-top"><div><span class="slider-val-display" id="${did}">${cfg.default}</span><span class="slider-val-unit">${cfg.unit}</span></div><span class="slider-range-label">${cfg.min}${cfg.unit} – ${cfg.max}${cfg.unit}</span></div><input type="range" id="${sid}" min="${cfg.min}" max="${cfg.max}" step="${cfg.step}" value="${cfg.default}"><button class="slider-confirm-btn" id="confirm-${key}" onclick="confirmSlider('${key}')">Confirm ${cfg.default}${cfg.unit} →</button>`;
   area.appendChild(card);
@@ -311,20 +295,19 @@ function askStep(idx){
     if(step.type==='arr'){addHint(step.hint||'Select your ARR bracket.');showArrPicker();}
     else if(step.type==='slider'){if(SLIDERS[step.key]&&SLIDERS[step.key].hint)addHint(SLIDERS[step.key].hint);showSlider(step.key);}
     else if(step.type==='choice'){if(step.hint)addHint(step.hint);setQR(step.choices);document.getElementById('user-input').disabled=true;document.getElementById('send-btn').disabled=true;}
-    else{setQR([]);document.getElementById('user-input').disabled=false;document.getElementById('send-btn').disabled=false;setTimeout(()=>document.getElementById('user-input').focus(),50);}
+
   },650);
 }
 function submitAnswer(val){
   const step=STEPS[state.step];if(!step)return;
-  document.getElementById('quick-reply-area').innerHTML='';document.getElementById('user-input').value='';
-  addMsg(val,'user');state.answers[step.key]=val;if(step.key==='company')state.companyName=val;
+  document.getElementById('quick-reply-area').innerHTML='';
+  addMsg(val,'user');state.answers[step.key]=val;
   state.step++;updateProgress();setTimeout(()=>askStep(state.step),380);
 }
-function handleSend(){const v=document.getElementById('user-input').value.trim();if(v)submitAnswer(v);}
 
 async function computeAndShow(){
   setQR([]);document.getElementById('user-input').disabled=true;document.getElementById('send-btn').disabled=true;
-  document.getElementById('input-area').style.display='none';document.getElementById('progress-text').textContent='Calculating...';
+  document.getElementById('progress-text').textContent='Calculating...';
   showTyping();
   let result;
   try{
@@ -333,7 +316,7 @@ async function computeAndShow(){
     if(!res.ok||!result.success)throw new Error(result.error||'Scoring failed');
   }catch(err){
     removeTyping();addMsg('Something went wrong calculating your score. Please try again or contact <a href="mailto:hello@growfitt.ai">hello@growfitt.ai</a>.','bot');
-    document.getElementById('input-area').style.display='block';document.getElementById('user-input').disabled=false;document.getElementById('send-btn').disabled=false;
+    
     document.getElementById('progress-text').textContent='Error — please retry';return;
   }
   const s=result.scores;state.scores=s;state.lastRecs=result.recommendations;
@@ -444,6 +427,10 @@ async function verifyOTP() {
     const data = await res.json();
     if (res.ok && data.success) {
       document.getElementById('gate-overlay').style.display = 'none';
+      // Derive company name from email domain
+      const domain = verifiedEmail.split('@')[1] || '';
+      const domainRoot = domain.split('.')[0];
+      state.companyName = domainRoot.charAt(0).toUpperCase() + domainRoot.slice(1);
     } else {
       errEl.textContent = data.error || 'Incorrect code. Please try again.';
       document.getElementById('gate-otp').classList.add('error');
@@ -483,7 +470,7 @@ function backToEmail() {
   document.getElementById('gate-otp-err').textContent = '';
 }
 
-document.getElementById('user-input').addEventListener('keydown',function(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();handleSend();}});
+
 updateProgress();askStep(0);
 </script>
 </body>
