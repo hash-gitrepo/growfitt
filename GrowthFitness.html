@@ -211,7 +211,7 @@ const state = { step:0, answers:{}, scores:{}, companyName:'', esSubScores:{} };
 
 // ── SLIDER CONFIGS ────────────────────────────────────────────────────────────
 const SLIDERS = {
-  arr_revenue:      { min:0,   max:5000, step:1,   default:10,  unit:'M', hint:'Enter your current ARR or annual revenue in USD millions. E.g. 25 = $25M.' },
+  arr_revenue:      { min:0, max:29, step:1, default:3, unit:'', hint:'Select your current ARR or annual revenue bracket.' },
   growth_rate:      { min:0,   max:150,  step:1,   default:30,  unit:'%', hint:'Drag to set your LTM revenue growth rate.' },
   nrr:              { min:50,  max:200,  step:1,   default:110, unit:'%', hint:'100% = flat retention. Above 100% means expansion from existing customers.' },
   grr:              { min:50,  max:100,  step:1,   default:90,  unit:'%', hint:'Must be 100% or below — excludes any upsells or expansions.' },
@@ -245,7 +245,88 @@ function getGrowthFlag(growthPct, bgr) {
   return null;
 }
 
-// ── DYNAMIC STEPS ─────────────────────────────────────────────────────────────
+// ── ARR STEPS — logarithmic-style brackets for easy low-end selection ─────────
+const ARR_STEPS = [
+  { label:'Pre-revenue', value:0 },
+  { label:'< $100K',     value:0.1 },
+  { label:'$100K – $250K', value:0.25 },
+  { label:'$250K – $500K', value:0.5 },
+  { label:'$500K – $1M',   value:0.75 },
+  { label:'$1M – $2M',     value:1.5 },
+  { label:'$2M – $3M',     value:2.5 },
+  { label:'$3M – $5M',     value:4 },
+  { label:'$5M – $7M',     value:6 },
+  { label:'$7M – $10M',    value:8.5 },
+  { label:'$10M – $15M',   value:12.5 },
+  { label:'$15M – $20M',   value:17.5 },
+  { label:'$20M – $30M',   value:25 },
+  { label:'$30M – $50M',   value:40 },
+  { label:'$50M – $75M',   value:62.5 },
+  { label:'$75M – $100M',  value:87.5 },
+  { label:'$100M – $150M', value:125 },
+  { label:'$150M – $200M', value:175 },
+  { label:'$200M – $300M', value:250 },
+  { label:'$300M – $500M', value:400 },
+  { label:'$500M – $750M', value:625 },
+  { label:'$750M – $1B',   value:875 },
+  { label:'> $1B',         value:1500 },
+];
+
+function showArrPicker() {
+  const area = document.getElementById('quick-reply-area'); area.innerHTML = '';
+  document.getElementById('user-input').disabled = true;
+  document.getElementById('send-btn').disabled = true;
+
+  const card = document.createElement('div');
+  card.className = 'slider-card';
+  const defaultIdx = 3; // $250K–$500K as sensible default start
+
+  card.innerHTML = `
+    <div class="slider-top">
+      <div>
+        <span class="slider-val-display" id="arr-display">${ARR_STEPS[defaultIdx].label}</span>
+      </div>
+      <span class="slider-range-label">Step ${defaultIdx+1} of ${ARR_STEPS.length}</span>
+    </div>
+    <input type="range" id="arr-slider" min="0" max="${ARR_STEPS.length-1}" step="1" value="${defaultIdx}">
+    <button class="slider-confirm-btn" id="confirm-arr" onclick="confirmArrSlider()">Confirm ${ARR_STEPS[defaultIdx].label} →</button>
+  `;
+  area.appendChild(card);
+
+  const slider = document.getElementById('arr-slider');
+  const display = document.getElementById('arr-display');
+  const btn = document.getElementById('confirm-arr');
+  const rangeLabel = card.querySelector('.slider-range-label');
+
+  function update() {
+    const idx = parseInt(slider.value);
+    const step = ARR_STEPS[idx];
+    display.textContent = step.label;
+    btn.textContent = `Confirm ${step.label} →`;
+    rangeLabel.textContent = `Step ${idx+1} of ${ARR_STEPS.length}`;
+    const pct = (idx / (ARR_STEPS.length - 1) * 100).toFixed(1) + '%';
+    slider.style.setProperty('--pct', pct);
+  }
+  slider.addEventListener('input', update); update();
+  card.scrollIntoView({ behavior:'smooth', block:'nearest' });
+}
+
+function confirmArrSlider() {
+  const idx = parseInt(document.getElementById('arr-slider').value);
+  const step = ARR_STEPS[idx];
+  document.getElementById('quick-reply-area').innerHTML = '';
+  addMsg(step.label, 'user');
+  state.answers['arr_revenue'] = step.value;
+  state.answers['arr_label'] = step.label;
+
+  const stage = classifyStage(step.value);
+  const nextStep = state.step + 1;
+  buildSteps(stage.key); state.step = nextStep; updateProgress();
+  const isEarly = stage.key === 'Early' || stage.key === 'Growth';
+  if (isEarly) setTimeout(()=>addHint(`Based on your revenue, you're classified as <strong>${stage.key} stage</strong>. We'll include burn multiple, sales efficiency, and CAC payback for a more accurate efficiency score.`,'info'),200);
+  else setTimeout(()=>addHint(`Based on your revenue, you're classified as <strong>${stage.key} stage</strong> (benchmark growth rate: ${Math.round(stage.bgr*100)}%+).`,'info'),200);
+  setTimeout(()=>askStep(state.step), 480);
+}
 let STEPS = [];
 
 function buildSteps(stageKey) {
@@ -522,18 +603,6 @@ function confirmSlider(key){
   addMsg(disp+cfg.unit,'user');
   state.answers[key]=val;
 
-  // After ARR is confirmed, derive stage and rebuild steps
-  if (key==='arr_revenue') {
-    const arrM = parseFloat(val);
-    const stage = classifyStage(arrM);
-    const next = state.step+1;
-    buildSteps(stage.key); state.step=next; updateProgress();
-    const isEarly = stage.key==='Early'||stage.key==='Growth';
-    if (isEarly) setTimeout(()=>addHint(`Based on your revenue, you're classified as <strong>${stage.key} stage</strong>. We'll include burn multiple, sales efficiency, and CAC payback for a more accurate efficiency score.`,'info'),200);
-    else setTimeout(()=>addHint(`Based on your revenue, you're classified as <strong>${stage.key} stage</strong> (benchmark growth rate: ${Math.round(stage.bgr*100)}%+).`,'info'),200);
-    setTimeout(()=>askStep(state.step),480); return;
-  }
-
   state.step++; updateProgress();
   setTimeout(()=>askStep(state.step),380);
 }
@@ -546,8 +615,13 @@ function askStep(idx){
   setTimeout(()=>{
     removeTyping(); addMsg(q.replace(/\n/g,'<br>'),'bot');
     if(step.type==='slider'){
-      if(SLIDERS[step.key]&&SLIDERS[step.key].hint) addHint(SLIDERS[step.key].hint);
-      showSlider(step.key);
+      if(step.key==='arr_revenue'){
+        addHint(SLIDERS.arr_revenue.hint);
+        showArrPicker();
+      } else {
+        if(SLIDERS[step.key]&&SLIDERS[step.key].hint) addHint(SLIDERS[step.key].hint);
+        showSlider(step.key);
+      }
     } else if(step.type==='choice'){
       if(step.hint) addHint(step.hint);
       setQR(step.choices);
@@ -691,7 +765,7 @@ function showResults(){
     card.innerHTML=`
       <div class="result-header">
         <h2>GrowFitt Growth Advisor — ${state.companyName}</h2>
-        <p>Generated ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})} · Model v3.1 · ${s.stageKey} stage · $${s.arrM}M ARR</p>
+        <p>Generated ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})} · Model v3.1 · ${s.stageKey} stage · ${state.answers.arr_label||'$'+s.arrM+'M'} ARR</p>
       </div>
       <div class="result-body">
         <div class="gauge-section">
