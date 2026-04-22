@@ -211,7 +211,7 @@ let STEPS=[];
 function buildSteps(isEarly){
   const base=[
     
-    {key:'arr_revenue',ask:()=>`Hi, ${state.companyName}! What is ${state.companyName}'s current ARR or annual revenue?`,type:'arr',hint:'This determines your growth stage and benchmark.'},
+    {key:'arr_revenue',ask:()=>`Hello there! What is the current ARR or annual revenue for <strong>${verifiedEmail.split('@')[1]}</strong>?`,type:'arr',hint:'This determines your growth stage and benchmark.'},
     {key:'growth_rate',ask:(a)=>{const h=getStageHint(parseFloat(a.arr_revenue||10));return `What was your revenue growth rate over the last 12 months?<br><span style="font-size:13px;color:var(--text-muted)">You're in the <strong>${h.key}</strong> stage — benchmark growth rate: ${h.bgr}%+.</span>`;},type:'slider'},
     {key:'nrr',ask:()=>`What is your Net Revenue Retention (NRR)?<br><span style="font-size:13px;color:var(--text-muted)">Includes upsells and expansions from existing customers.</span>`,type:'slider'},
     {key:'grr',ask:()=>`What is your Gross Revenue Retention (GRR)?<br><span style="font-size:13px;color:var(--text-muted)">Base revenue retained, excluding upsells — must be 100% or below.</span>`,type:'slider'},
