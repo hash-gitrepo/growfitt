@@ -1,8 +1,0 @@
-{
-  "name": "growfitt",
-  "version": "1.0.0",
-  "description": "GrowFitt Growth Audit Tool",
-  "dependencies": {
-    "resend": "^3.2.0"
-  }
-}
