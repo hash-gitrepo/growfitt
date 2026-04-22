@@ -294,7 +294,7 @@ function askStep(idx){
     removeTyping();addMsg(q.replace(/\n/g,'<br>'),'bot');
     if(step.type==='arr'){addHint(step.hint||'Select your ARR bracket.');showArrPicker();}
     else if(step.type==='slider'){if(SLIDERS[step.key]&&SLIDERS[step.key].hint)addHint(SLIDERS[step.key].hint);showSlider(step.key);}
-    else if(step.type==='choice'){if(step.hint)addHint(step.hint);setQR(step.choices);document.getElementById('user-input').disabled=true;document.getElementById('send-btn').disabled=true;}
+    else if(step.type==='choice'){if(step.hint)addHint(step.hint);setQR(step.choices);}
 
   },650);
 }
@@ -306,7 +306,7 @@ function submitAnswer(val){
 }
 
 async function computeAndShow(){
-  setQR([]);document.getElementById('user-input').disabled=true;document.getElementById('send-btn').disabled=true;
+  setQR([]);
   document.getElementById('progress-text').textContent='Calculating...';
   showTyping();
   let result;
@@ -317,7 +317,7 @@ async function computeAndShow(){
   }catch(err){
     removeTyping();addMsg('Something went wrong calculating your score. Please try again or contact <a href="mailto:hello@growfitt.ai">hello@growfitt.ai</a>.','bot');
     
-    document.getElementById('progress-text').textContent='Error — please retry';return;
+    document.getElementById('progress-text').textContent='Error — please retry. Please refresh the page.';return;
   }
   const s=result.scores;state.scores=s;state.lastRecs=result.recommendations;
   document.getElementById('progress-fill').style.width='100%';document.getElementById('progress-pct').textContent='100%';document.getElementById('progress-text').textContent='Assessment complete';
@@ -364,7 +364,6 @@ async function autoSendReport(s,recs){
 function restart(){
   state.step=0;state.answers={};state.scores={};state.companyName='';state.lastRecs=[];buildSteps(false);
   document.getElementById('chat').innerHTML='';document.getElementById('quick-reply-area').innerHTML='';
-  document.getElementById('input-area').style.display='block';document.getElementById('user-input').disabled=false;document.getElementById('send-btn').disabled=false;
   updateProgress();askStep(0);
 }
 // ── EMAIL GATE ────────────────────────────────────────────────────────────────
