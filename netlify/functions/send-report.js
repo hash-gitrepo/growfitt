@@ -26,17 +26,23 @@ exports.handler = async (event) => {
   const zoneColor = s.zone === "Fit" ? "#1a6632" : s.zone === "Over" ? "#c0392b" : "#b35c00";
   const zoneBg   = s.zone === "Fit" ? "#e7f4ea"  : s.zone === "Over" ? "#fdf0ef"  : "#fef6ec";
 
+  const THRESHOLD = 3.0;
   const barHtml = (label, val) => {
     const pct = Math.round((val / 5) * 100);
+    const below = val < THRESHOLD;
+    const barColour = below ? '#c0392b' : '#1a6632';
+    const valColour = below ? '#c0392b' : '#1a1a18';
+    const flag = below ? `<span style="font-size:10px;font-weight:600;color:#c0392b;background:#fdf0ef;padding:2px 7px;border-radius:4px;margin-left:6px;">Below threshold</span>` : '';
     return `
       <tr>
         <td style="font-size:13px;color:#5a5c57;padding:6px 0;width:160px">${label}</td>
         <td style="padding:6px 8px">
           <div style="background:#f2f4f1;border-radius:4px;height:8px;overflow:hidden">
-            <div style="background:#1a6632;width:${pct}%;height:8px;border-radius:4px"></div>
+            <div style="background:${barColour};width:${pct}%;height:8px;border-radius:4px"></div>
           </div>
         </td>
-        <td style="font-size:13px;font-weight:600;color:#1a1a18;padding:6px 0;width:36px;text-align:right">${val.toFixed(1)}</td>
+        <td style="font-size:13px;font-weight:600;color:${valColour};padding:6px 0;width:36px;text-align:right">${val.toFixed(1)}</td>
+        <td style="padding:6px 0 6px 4px;">${flag}</td>
       </tr>`;
   };
 
@@ -163,9 +169,9 @@ Optimal Growth Range: ${(s.OGR_Low*100).toFixed(0)}–${(s.OGR_High*100).toFixed
 Current Growth Rate: ${(s.growth*100).toFixed(0)}%
 
 COMPONENT SCORES
-  Growth Quality (GQS): ${s.GQS.toFixed(2)}
-  Retention Score (RS):  ${s.RS.toFixed(2)}
-  Efficiency Score (ES): ${s.ES.toFixed(2)}
+  Growth Quality (GQS): ${s.GQS.toFixed(2)}${s.GQS < 3.0 ? ' ⚠ Below threshold' : ''}
+  Retention Score (RS):  ${s.RS.toFixed(2)}${s.RS < 3.0 ? ' ⚠ Below threshold' : ''}
+  Efficiency Score (ES): ${s.ES.toFixed(2)}${s.ES < 3.0 ? ' ⚠ Below threshold' : ''}
 
 KEY METRICS
   NRR: ${(s.nrr*100).toFixed(0)}% | GRR: ${(s.grr*100).toFixed(0)}% | Gross Margin: ${(s.gm*100).toFixed(0)}% | FCF: ${(s.fcf*100).toFixed(0)}%
