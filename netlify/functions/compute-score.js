@@ -85,7 +85,7 @@ function computeScores(a) {
     const salesEff     = parseFloat(a.sales_efficiency || 1.0);
     const cacPayback   = parseFloat(a.cac_payback || 18);
     const BurnScore    = lookup(burnMultiple, [[0,5],[1.0,5],[1.5,4],[2.0,3],[2.5,2],[3.0,1]]);
-    const SEScore      = lookup(salesEff,     [[0,1],[0.5,1],[0.9,2],[1.5,3],[3.0,4],[5.0,5]]);
+    const SEScore      = lookup(salesEff,     [[0,1],[0.5,1],[0.9,2],[1.0,3],[1.5,3],[3.0,4],[5.0,5]]);
     const CACScore     = lookup(cacPayback,   [[0,5],[6,5],[12,4],[18,3],[24,2],[36,1]]);
     const EBITDAScore  = lookup(fcf,          [[-0.5,1],[0.05,2],[0.15,3],[0.40,4],[0.60,5]]);
     ES = 0.30 * BurnScore + 0.25 * SEScore + 0.20 * CACScore + 0.25 * EBITDAScore;
@@ -161,7 +161,7 @@ function getRecommendations(s) {
   if (s.isEarly) {
     if ((sub.BurnScore || 3) < 3)
       r.push('Burn multiple is high for your stage. Every dollar burned should generate proportional ARR. Review sales efficiency, headcount productivity, and discretionary spend.');
-    if ((sub.SEScore || 3) < 3)
+    if (salesEff < 1.0)
       r.push("Sales efficiency is below 1.0x — you're spending more to acquire revenue than you're generating. Review sales motion, territory design, ICP tightness, and conversion rates.");
     if ((sub.CACScore || 3) < 3)
       r.push('CAC payback is too long. Shortening it extends runway and improves investor confidence. Consider pricing architecture, sales cycle length, and higher-efficiency acquisition channels.');
