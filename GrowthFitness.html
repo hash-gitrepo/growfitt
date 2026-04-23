@@ -139,7 +139,90 @@
   .pdf-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;background:transparent;color:var(--text-muted);border:1px solid var(--border-strong);border-radius:var(--radius-sm);font-size:13.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:all 0.15s;margin-bottom:10px;}
   .pdf-btn:hover{background:var(--surface2);color:var(--text);border-color:var(--green);}
   .pdf-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-  @media print{.topbar,.progress-wrap,.gate-overlay,.restart-btn,.pdf-btn,.report-sent-strip,.init-msg,.quick-replies,#quick-reply-area{display:none!important;}body{background:#fff;}.result-card{box-shadow:none;border:1px solid #ddd;}.chat-area .msg{display:none!important;}}
+  /* ── PROFESSIONAL PDF REPORT STYLES ── */
+  @media print {
+    @page { margin: 0; size: A4; }
+
+    /* Hide everything except the print report */
+    body > *:not(#pdf-report){ display:none!important; }
+    #pdf-report{ display:block!important; }
+
+    /* Reset body */
+    body{ background:#fff; margin:0; padding:0; font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; }
+
+    /* Report layout */
+    .pr-page{ width:210mm; min-height:297mm; background:#fff; position:relative; box-sizing:border-box; }
+    .pr-header{ background:#1a6632; padding:32px 40px 28px; display:flex; justify-content:space-between; align-items:flex-end; }
+    .pr-header-left{}
+    .pr-logo-text{ font-size:22px; font-weight:700; color:#fff; letter-spacing:-0.5px; }
+    .pr-logo-text span{ color:#5aac5e; }
+    .pr-tagline{ font-size:10px; color:rgba(255,255,255,0.6); text-transform:uppercase; letter-spacing:1.5px; margin-top:3px; }
+    .pr-header-right{ text-align:right; }
+    .pr-company{ font-size:18px; font-weight:600; color:#fff; }
+    .pr-meta{ font-size:10px; color:rgba(255,255,255,0.6); margin-top:3px; }
+
+    .pr-body{ padding:32px 40px; }
+
+    /* Score hero */
+    .pr-score-hero{ display:flex; gap:32px; align-items:flex-start; padding-bottom:28px; margin-bottom:28px; border-bottom:2px solid #f0f0f0; }
+    .pr-score-left{ flex:1; }
+    .pr-score-num{ font-size:64px; font-weight:800; color:#1a6632; line-height:1; letter-spacing:-3px; }
+    .pr-score-denom{ font-size:20px; color:#aaa; font-weight:400; }
+    .pr-score-label{ font-size:11px; color:#888; text-transform:uppercase; letter-spacing:1px; margin-top:6px; }
+    .pr-zone{ display:inline-block; margin-top:10px; padding:5px 14px; border-radius:20px; font-size:12px; font-weight:600; }
+    .pr-zone-fit{ background:#e8f4e9; color:#1a6632; }
+    .pr-zone-over{ background:#fdf0ef; color:#c0392b; }
+    .pr-zone-under{ background:#fef6ec; color:#b35c00; }
+    .pr-flag{ margin-top:8px; font-size:11.5px; font-weight:600; }
+    .pr-flag.outlier{ color:#7b3fbf; }
+    .pr-flag.laggard{ color:#b35c00; }
+
+    .pr-adj-box{ background:#fdf0ef; border:1px solid #f5c6c2; border-radius:8px; padding:10px 14px; margin-top:10px; }
+    .pr-adj-box.improved{ background:#e8f4e9; border-color:#b7dfb9; }
+    .pr-adj-label{ font-size:10px; color:#888; }
+    .pr-adj-vals{ font-size:15px; font-weight:700; color:#c0392b; margin-top:2px; }
+    .pr-adj-vals.improved{ color:#1a6632; }
+    .pr-adj-note{ font-size:10px; color:#888; margin-top:2px; }
+
+    .pr-score-right{ width:200px; }
+
+    /* Section titles */
+    .pr-section{ margin-bottom:24px; }
+    .pr-section-title{ font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:#1a6632; border-bottom:1px solid #e8f4e9; padding-bottom:5px; margin-bottom:14px; }
+
+    /* Metrics grid */
+    .pr-metrics{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:0; }
+    .pr-metric{ background:#f8f9f7; border-radius:8px; padding:12px 14px; border:1px solid #eee; }
+    .pr-metric-label{ font-size:9.5px; color:#888; text-transform:uppercase; letter-spacing:0.6px; margin-bottom:5px; }
+    .pr-metric-value{ font-size:22px; font-weight:700; color:#111; letter-spacing:-0.5px; line-height:1; }
+    .pr-metric-sub{ font-size:9.5px; color:#aaa; margin-top:3px; }
+
+    /* Component bars */
+    .pr-bar-row{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
+    .pr-bar-label{ font-size:11.5px; color:#555; width:160px; flex-shrink:0; }
+    .pr-bar-track{ flex:1; height:8px; background:#f0f0f0; border-radius:4px; overflow:hidden; }
+    .pr-bar-fill{ height:8px; border-radius:4px; }
+    .pr-bar-fill.ok{ background:#1a6632; }
+    .pr-bar-fill.low{ background:#c0392b; }
+    .pr-bar-val{ font-size:12px; font-weight:700; width:30px; text-align:right; }
+    .pr-bar-val.ok{ color:#1a6632; }
+    .pr-bar-val.low{ color:#c0392b; }
+    .pr-below-tag{ font-size:9px; font-weight:700; color:#c0392b; background:#fdf0ef; padding:2px 7px; border-radius:4px; margin-left:4px; }
+
+    /* Recommendations */
+    .pr-rec{ display:flex; gap:10px; margin-bottom:10px; align-items:flex-start; padding-bottom:10px; border-bottom:1px solid #f5f5f5; }
+    .pr-rec:last-child{ border-bottom:none; margin-bottom:0; }
+    .pr-rec-arrow{ color:#1a6632; font-weight:700; flex-shrink:0; font-size:13px; margin-top:1px; }
+    .pr-rec-text{ font-size:11.5px; color:#444; line-height:1.6; }
+
+    /* Footer */
+    .pr-footer{ position:absolute; bottom:0; left:0; right:0; padding:16px 40px; background:#f8f9f7; border-top:1px solid #eee; display:flex; justify-content:space-between; align-items:center; }
+    .pr-footer-left{ font-size:9.5px; color:#aaa; }
+    .pr-footer-right{ font-size:9.5px; color:#1a6632; }
+
+    /* Two column layout for body */
+    .pr-two-col{ display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  }
 </style>
 </head>
 <body>
@@ -379,16 +462,139 @@ let verifiedEmail = '';
 
 
 function downloadPDF(){
-  var toHide=document.querySelectorAll('.topbar,.progress-wrap,.init-msg,#quick-reply-area,.report-sent-strip,.pdf-btn,.restart-btn');
-  toHide.forEach(function(el){el._pd=el.style.display;el.style.display='none';});
-  var msgs=document.querySelectorAll('.chat-area .msg');
-  msgs.forEach(function(el){el._pd2=el.style.display;el.style.display='none';});
+  var s=state.scores, recs=state.lastRecs||[];
+  var date=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+
+  // Zone class
+  var zoneClass=s.zone==='Fit'?'pr-zone-fit':s.zone==='Over'?'pr-zone-over':'pr-zone-under';
+  var zoneTxt=s.interpretation+' \u00b7 '+s.zone+' zone';
+
+  // Flag
+  var flagHtml='';
+  if(s.growthFlag==='outlier') flagHtml='<div class="pr-flag outlier">\u26a1 Outlier \u2014 growth significantly above benchmark</div>';
+  else if(s.growthFlag==='laggard') flagHtml='<div class="pr-flag laggard">\u26a0 Laggard \u2014 growth significantly below benchmark</div>';
+
+  // Adjusted GFS
+  var adjDiff=s.adjGFS-s.GFS;
+  var adjHtml='';
+  if(s.hasAdjustment){
+    var adjCls=adjDiff<0?'':'improved';
+    adjHtml='<div class="pr-adj-box '+adjCls+'"><div class="pr-adj-label">Raw GFS vs Adjusted GFS</div>'
+      +'<div class="pr-adj-vals '+adjCls+'">'+s.GFS.toFixed(2)+' '+(adjDiff<0?'\u2193':'\u2191')+' '+s.adjGFS.toFixed(2)+'</div>'
+      +'<div class="pr-adj-note">Adjusted for: '+s.belowComponents.join(', ')+'</div></div>';
+  }
+
+  // Key metrics
+  var metricsHtml='<div class="pr-metrics">'
+    +'<div class="pr-metric"><div class="pr-metric-label">Optimal growth range</div><div class="pr-metric-value">'+(s.OGR_Low*100).toFixed(0)+'\u2013'+(s.OGR_High*100).toFixed(0)+'%</div><div class="pr-metric-sub">System can sustain</div></div>'
+    +'<div class="pr-metric"><div class="pr-metric-label">Current growth rate</div><div class="pr-metric-value">'+(s.growth*100).toFixed(0)+'%</div><div class="pr-metric-sub">'+(s.zone==='Fit'?'Within fit range':s.zone==='Over'?'Above fit range':'Below fit range')+'</div></div>'
+    +'<div class="pr-metric"><div class="pr-metric-label">NRR</div><div class="pr-metric-value">'+(s.nrr*100).toFixed(0)+'%</div><div class="pr-metric-sub">Net revenue retention</div></div>'
+    +'</div>';
+
+  // Efficiency metrics
+  var effHtml='<div class="pr-metrics">';
+  if(s.isEarly){
+    effHtml+='<div class="pr-metric"><div class="pr-metric-label">Sales efficiency</div><div class="pr-metric-value">'+parseFloat(state.answers.sales_efficiency||1).toFixed(1)+'x</div><div class="pr-metric-sub">Magic number</div></div>';
+    effHtml+='<div class="pr-metric"><div class="pr-metric-label">CAC payback</div><div class="pr-metric-value">'+(state.answers.cac_payback||18)+'mo</div><div class="pr-metric-sub">Months to recover</div></div>';
+    effHtml+='<div class="pr-metric"><div class="pr-metric-label">Burn multiple</div><div class="pr-metric-value">'+parseFloat(state.answers.burn_multiple||2).toFixed(1)+'x</div><div class="pr-metric-sub">Burn \u00f7 net new ARR</div></div>';
+  } else {
+    effHtml+='<div class="pr-metric"><div class="pr-metric-label">Gross margin</div><div class="pr-metric-value">'+(s.gm*100).toFixed(0)+'%</div><div class="pr-metric-sub">Unit economics</div></div>';
+    effHtml+='<div class="pr-metric"><div class="pr-metric-label">FCF margin</div><div class="pr-metric-value">'+(s.fcf*100).toFixed(0)+'%</div><div class="pr-metric-sub">Cash efficiency</div></div>';
+    effHtml+='<div class="pr-metric"><div class="pr-metric-label">Expansion ratio</div><div class="pr-metric-value">'+(s.expansion*100).toFixed(0)+'pp</div><div class="pr-metric-sub">NRR \u2212 GRR spread</div></div>';
+  }
+  effHtml+='</div>';
+
+  // Component bars
+  function bar(label,val){
+    var pct=(val/5*100).toFixed(0);
+    var low=val<3.0;
+    return '<div class="pr-bar-row">'
+      +'<span class="pr-bar-label">'+label+'</span>'
+      +'<div class="pr-bar-track"><div class="pr-bar-fill '+(low?'low':'ok')+'" style="width:'+pct+'%"></div></div>'
+      +'<span class="pr-bar-val '+(low?'low':'ok')+'">'+val.toFixed(1)+'</span>'
+      +(low?'<span class="pr-below-tag">Below threshold</span>':'')
+      +'</div>';
+  }
+  var barsHtml=bar('Growth quality (GQS)',s.GQS)+bar('Retention score (RS)',s.RS)+bar('Efficiency score (ES)',s.ES);
+
+  // Recommendations
+  var recsHtml=recs.map(function(r){
+    return '<div class="pr-rec"><span class="pr-rec-arrow">\u2192</span><span class="pr-rec-text">'+r+'</span></div>';
+  }).join('');
+
+  // Build full report HTML
+  var report='<div class="pr-page">'
+    // Header
+    +'<div class="pr-header">'
+      +'<div class="pr-header-left">'
+        +'<div class="pr-logo-text">Grow<span>Fitt</span></div>'
+        +'<div class="pr-tagline">Growth Fitness Assessment</div>'
+      +'</div>'
+      +'<div class="pr-header-right">'
+        +'<div class="pr-company">'+state.companyName+'</div>'
+        +'<div class="pr-meta">'+date+' \u00b7 Model v3.1 \u00b7 '+s.stageKey+' stage \u00b7 '+(state.answers.arr_label||'')+'</div>'
+      +'</div>'
+    +'</div>'
+    // Body
+    +'<div class="pr-body">'
+      // Score hero
+      +'<div class="pr-score-hero">'
+        +'<div class="pr-score-left">'
+          +'<div><span class="pr-score-num">'+s.adjGFS.toFixed(2)+'</span><span class="pr-score-denom">/5.00</span></div>'
+          +'<div class="pr-score-label">Growth Fitness Score'+(s.hasAdjustment?' (adjusted)':'')+'</div>'
+          +'<div class="pr-zone '+zoneClass+'">'+zoneTxt+'</div>'
+          +flagHtml
+          +adjHtml
+        +'</div>'
+        +'<div class="pr-score-right">'
+          // Mini OGR display
+          +'<div style="background:#f8f9f7;border:1px solid #eee;border-radius:10px;padding:16px;text-align:center;">'
+            +'<div style="font-size:9.5px;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Optimal Growth Range</div>'
+            +'<div style="font-size:28px;font-weight:800;color:#1a6632;letter-spacing:-1px;">'+(s.OGR_Low*100).toFixed(0)+'\u2013'+(s.OGR_High*100).toFixed(0)+'%</div>'
+            +'<div style="font-size:9.5px;color:#aaa;margin-top:4px;">Current: '+(s.growth*100).toFixed(0)+'% \u00b7 '+s.zone+'</div>'
+          +'</div>'
+        +'</div>'
+      +'</div>'
+      // Two column: metrics + components
+      +'<div class="pr-two-col">'
+        +'<div>'
+          +'<div class="pr-section">'
+            +'<div class="pr-section-title">Key metrics</div>'
+            +metricsHtml
+          +'</div>'
+          +'<div class="pr-section" style="margin-top:16px;">'
+            +'<div class="pr-section-title">Efficiency inputs \u00b7 <span style="color:#185fa5;font-size:9px;">'+s.esFormula+'</span></div>'
+            +effHtml
+          +'</div>'
+        +'</div>'
+        +'<div>'
+          +'<div class="pr-section">'
+            +'<div class="pr-section-title">Component scores</div>'
+            +barsHtml
+          +'</div>'
+        +'</div>'
+      +'</div>'
+      // Recommendations full width
+      +'<div class="pr-section" style="margin-top:20px;">'
+        +'<div class="pr-section-title">Recommendations</div>'
+        +recsHtml
+      +'</div>'
+    +'</div>'
+    // Footer
+    +'<div class="pr-footer">'
+      +'<div class="pr-footer-left">Confidential \u00b7 Generated by GrowFitt \u00b7 '+date+'</div>'
+      +'<div class="pr-footer-right">hello@growfitt.ai \u00b7 growfitt.ai</div>'
+    +'</div>'
+  +'</div>';
+
+  // Inject into placeholder and print
+  var el=document.getElementById('pdf-report');
+  el.innerHTML=report;
   var prevTitle=document.title;
-  document.title='GrowFitt Growth Audit — '+state.companyName+' — GFS '+(state.scores.adjGFS||0).toFixed(2);
+  document.title='GrowFitt Growth Audit \u2014 '+state.companyName+' \u2014 GFS '+s.adjGFS.toFixed(2);
   window.print();
   document.title=prevTitle;
-  toHide.forEach(function(el){el.style.display=el._pd||'';});
-  msgs.forEach(function(el){el.style.display=el._pd2||'';});
+  el.innerHTML='';
 }
 
 async function requestOTP() {
@@ -504,5 +710,7 @@ function backToEmail() {
 
 updateProgress();askStep(0);
 </script>
+
+<div id="pdf-report" style="display:none;"></div>
 </body>
 </html>
