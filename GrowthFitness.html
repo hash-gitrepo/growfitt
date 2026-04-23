@@ -659,7 +659,8 @@ async function verifyOTP() {
       state.emailDomain = domain;
       const domainRoot = domain.split('.')[0];
       state.companyName = domainRoot.charAt(0).toUpperCase() + domainRoot.slice(1);
-      // Personalised initiation message
+      // Personalised initiation message — fires first, then question follows
+      updateProgress();
       setTimeout(function(){
         var chat=document.getElementById('chat');
         var d=document.createElement('div');
@@ -667,6 +668,8 @@ async function verifyOTP() {
         d.innerHTML='⚡ Initiating growth fitness assessment for <strong>'+domain+'</strong>';
         chat.appendChild(d);
         d.scrollIntoView({behavior:'smooth',block:'nearest'});
+        // First question fires after message is visible
+        setTimeout(function(){ askStep(0); }, 800);
       },300);
     } else {
       errEl.textContent = data.error || 'Incorrect code. Please try again.';
@@ -708,7 +711,7 @@ function backToEmail() {
 }
 
 
-updateProgress();askStep(0);
+updateProgress();
 </script>
 
 <div id="pdf-report" style="display:none;"></div>
