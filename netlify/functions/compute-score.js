@@ -90,7 +90,7 @@ function computeScores(a) {
     const EBITDAScore  = lookup(fcf,          [[-0.5,1],[0.05,2],[0.15,3],[0.40,4],[0.60,5]]);
     ES = 0.30 * BurnScore + 0.25 * SEScore + 0.20 * CACScore + 0.25 * EBITDAScore;
     esFormula  = 'Early/Growth formula';
-    esSubScores = { BurnScore, SEScore, CACScore, EBITDAScore };
+    esSubScores = { BurnScore, SEScore, CACScore, EBITDAScore, salesEff };
   } else {
     const GM_Score  = lookup(gm,  [[0,1],[0.50,2],[0.60,3],[0.70,4],[0.80,5]]);
     const FCF_Score = lookup(fcf, [[-1,1],[0,2],[0.10,3],[0.20,4],[0.30,5]]);
@@ -161,7 +161,7 @@ function getRecommendations(s) {
   if (s.isEarly) {
     if ((sub.BurnScore || 3) < 3)
       r.push('Burn multiple is high for your stage. Every dollar burned should generate proportional ARR. Review sales efficiency, headcount productivity, and discretionary spend.');
-    if (salesEff < 1.0)
+    if ((sub.salesEff !== undefined ? sub.salesEff : 1.0) < 1.0)
       r.push("Sales efficiency is below 1.0x — you're spending more to acquire revenue than you're generating. Review sales motion, territory design, ICP tightness, and conversion rates.");
     if ((sub.CACScore || 3) < 3)
       r.push('CAC payback is too long. Shortening it extends runway and improves investor confidence. Consider pricing architecture, sales cycle length, and higher-efficiency acquisition channels.');
