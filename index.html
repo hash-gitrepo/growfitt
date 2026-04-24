@@ -213,6 +213,8 @@ footer{padding:48px;border-top:1px solid var(--border);display:flex;justify-cont
 
 /* ── RESPONSIVE ── */
 @media(max-width:900px){
+  .trust-grid{grid-template-columns:1fr;gap:40px;}
+  .trust-section{padding:70px 24px;}
   nav{padding:0 24px;}
   .nav-links{display:none;}
   .hero{padding:100px 24px 60px;}
@@ -233,6 +235,23 @@ footer{padding:48px;border-top:1px solid var(--border);display:flex;justify-cont
   .signals-grid{border-radius:12px;overflow:hidden;}
   .data-types{grid-template-columns:1fr;}
 }
+
+/* ── TRUST & PRIVACY SECTION ── */
+.trust-section{padding:100px 48px;background:var(--dark);border-top:1px solid var(--border);}
+.trust-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:start;margin-top:64px;}
+.trust-statement{padding:32px;background:var(--dark2);border:1px solid var(--border-green);border-radius:16px;position:relative;overflow:hidden;}
+.trust-statement::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--green-light),transparent);}
+.trust-statement-icon{width:44px;height:44px;border-radius:10px;background:rgba(26,102,50,0.15);border:1px solid var(--border-green);display:flex;align-items:center;justify-content:center;margin-bottom:18px;}
+.trust-statement-icon svg{width:20px;height:20px;stroke:var(--green-light);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
+.trust-statement h3{font-family:var(--serif);font-size:20px;color:var(--text);letter-spacing:-0.3px;margin-bottom:10px;}
+.trust-statement p{font-size:14px;color:var(--text-muted);line-height:1.75;}
+.trust-pillars{display:flex;flex-direction:column;gap:16px;}
+.trust-pillar{display:flex;gap:16px;align-items:flex-start;padding:18px 20px;background:var(--dark2);border:1px solid var(--border);border-radius:10px;transition:border-color 0.2s;}
+.trust-pillar:hover{border-color:var(--border-green);}
+.trust-pillar-icon{width:36px;height:36px;border-radius:8px;background:rgba(26,102,50,0.1);border:1px solid var(--border-green);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.trust-pillar-icon svg{width:16px;height:16px;stroke:var(--green-light);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;}
+.trust-pillar-text strong{display:block;font-size:13.5px;font-weight:500;color:var(--text);margin-bottom:4px;}
+.trust-pillar-text span{font-size:13px;color:var(--text-muted);line-height:1.55;}
 </style>
 </head>
 <body>
@@ -246,6 +265,7 @@ footer{padding:48px;border-top:1px solid var(--border);display:flex;justify-cont
     <a href="#how">How it works</a>
     <a href="#scoring">The model</a>
     <a href="#products">Products</a>
+    <a href="#trust">Privacy & Security</a>
     <a href="/contact.html">Contact</a>
   </div>
   <a href="/GrowthFitness.html" class="nav-cta">Get your Growth Fitness Score</a>
@@ -466,31 +486,31 @@ footer{padding:48px;border-top:1px solid var(--border);display:flex;justify-cont
     <div class="tier">
       <div class="tier-name">Broken</div>
       <div class="tier-score">&lt;2.5</div>
-      <div class="tier-range">OGR: 0.5–0.7×</div>
+      <div class="tier-range">Growth potential: 35–55% of benchmark</div>
       <div class="tier-bar" style="background:rgba(192,57,43,0.5)"></div>
     </div>
     <div class="tier">
       <div class="tier-name">Fragile</div>
       <div class="tier-score">2.5–3.0</div>
-      <div class="tier-range">OGR: 0.7–0.9×</div>
+      <div class="tier-range">Growth potential: 55–75% of benchmark</div>
       <div class="tier-bar" style="background:rgba(224,123,0,0.5)"></div>
     </div>
     <div class="tier">
       <div class="tier-name">Average</div>
       <div class="tier-score">3.0–3.8</div>
-      <div class="tier-range">OGR: 0.9–1.1×</div>
+      <div class="tier-range">Growth potential: at benchmark</div>
       <div class="tier-bar" style="background:rgba(99,153,34,0.5)"></div>
     </div>
     <div class="tier highlight">
       <div class="tier-name">Strong</div>
       <div class="tier-score">3.8–4.5</div>
-      <div class="tier-range">OGR: 1.1–1.35×</div>
+      <div class="tier-range">Growth potential: 10–35% above benchmark</div>
       <div class="tier-bar" style="background:rgba(26,102,50,0.8)"></div>
     </div>
     <div class="tier">
       <div class="tier-name">Elite</div>
       <div class="tier-score">4.5+</div>
-      <div class="tier-range">OGR: 1.4–1.75×</div>
+      <div class="tier-range">Growth potential: 40–75% above benchmark</div>
       <div class="tier-bar" style="background:rgba(58,175,102,0.6)"></div>
     </div>
   </div>
@@ -526,6 +546,83 @@ footer{padding:48px;border-top:1px solid var(--border);display:flex;justify-cont
         <div class="product-feat">Targeted recommendations · up to 4 weeks</div>
       </div>
     </div>
+  </div>
+</section>
+
+<!-- TRUST & PRIVACY -->
+<section class="trust-section reveal" id="trust">
+  <p class="section-label">Data security & privacy</p>
+  <h2 class="section-title">Your data is<br><em>yours alone</em></h2>
+
+  <div class="trust-grid">
+
+    <!-- Left: core commitment statement -->
+    <div>
+      <p style="font-size:17px;color:var(--text-muted);font-weight:300;line-height:1.75;margin-bottom:28px;">
+        When you share your growth metrics with GrowFitt, you're sharing some of the most sensitive operating data your business holds. We take that seriously — and we've built our systems to reflect it.
+      </p>
+      <div class="trust-statement">
+        <div class="trust-statement-icon">
+          <svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        </div>
+        <h3>Your data is never shared. Ever.</h3>
+        <p>The financial and operating metrics you submit through GrowFitt are used solely to generate your Growth Fitness Score. We do not share, sell, licence, or expose your data to any third party — under any circumstances. No advertising platforms, no data brokers, no aggregated benchmarking without your explicit consent.</p>
+      </div>
+    </div>
+
+    <!-- Right: security pillars -->
+    <div class="trust-pillars">
+      <div class="trust-pillar">
+        <div class="trust-pillar-icon">
+          <svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        </div>
+        <div class="trust-pillar-text">
+          <strong>Encrypted in transit and at rest</strong>
+          <span>All data transmitted to and from GrowFitt is encrypted using TLS 1.3. Assessment inputs are processed in memory and never written to persistent storage.</span>
+        </div>
+      </div>
+
+      <div class="trust-pillar">
+        <div class="trust-pillar-icon">
+          <svg viewBox="0 0 24 24"><path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/></svg>
+        </div>
+        <div class="trust-pillar-text">
+          <strong>Private, dedicated infrastructure</strong>
+          <span>GrowFitt does not run on shared public cloud infrastructure. Your assessment data is processed in an isolated serverless environment — not co-mingled with other companies' data.</span>
+        </div>
+      </div>
+
+      <div class="trust-pillar">
+        <div class="trust-pillar-icon">
+          <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+        <div class="trust-pillar-text">
+          <strong>Work email verification required</strong>
+          <span>Access to the Growth Advisor is gated behind verified work email authentication. We never accept personal email accounts — ensuring only authorised professionals access the platform.</span>
+        </div>
+      </div>
+
+      <div class="trust-pillar">
+        <div class="trust-pillar-icon">
+          <svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>
+        </div>
+        <div class="trust-pillar-text">
+          <strong>No data retained after assessment</strong>
+          <span>Your inputs are used to compute your score and generate your report. They are not stored, logged, or retained once the assessment is complete. You can request deletion of any associated record at any time.</span>
+        </div>
+      </div>
+
+      <div class="trust-pillar">
+        <div class="trust-pillar-icon">
+          <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+        </div>
+        <div class="trust-pillar-text">
+          <strong>Report delivered only to you</strong>
+          <span>Your Growth Fitness Report is sent exclusively to your verified work email. No one else — including GrowFitt's team — receives your individual report unless you choose to share it.</span>
+        </div>
+      </div>
+    </div>
+
   </div>
 </section>
 
