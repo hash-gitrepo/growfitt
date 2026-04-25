@@ -1,6 +1,7 @@
 // ─────────────────────────────────────────────────────────────────────────────
 // GrowFitt Scoring Engine — server-side only
 // This file never reaches the browser. All model logic lives here.
+// v3.2 — CBGR: Category-adjusted Benchmark Growth Rate
 // ─────────────────────────────────────────────────────────────────────────────
 
 // ── STAGE CLASSIFICATION ──────────────────────────────────────────────────────
@@ -16,6 +17,21 @@ function classifyStage(arrM) {
     if (arrM >= s.min && arrM < s.max) return s;
   }
   return ARR_STAGE_MAP[3];
+}
+
+// ── CATEGORY MULTIPLIER TABLE ─────────────────────────────────────────────────
+// CBGR = Legacy BGR × Category Multiplier
+// GFS itself remains category-agnostic — category only adjusts the growth benchmark
+const CATEGORY_MULTIPLIERS = {
+  'Infra / Dev / AI':  1.30,
+  'Security':          1.10,
+  'Horizontal SaaS':   0.80,
+  'Vertical SaaS':     0.90,
+};
+const DEFAULT_CATEGORY_MULTIPLIER = 1.0; // neutral if not provided
+
+function getCategoryMultiplier(category) {
+  return CATEGORY_MULTIPLIERS[category] || DEFAULT_CATEGORY_MULTIPLIER;
 }
 
 // ── LOOKUP ────────────────────────────────────────────────────────────────────
@@ -40,13 +56,18 @@ function computeScores(a) {
   const arrM   = parseFloat(a.arr_revenue || 10);
 
   const stage   = classifyStage(arrM);
-  const bgr     = stage.bgr;
+  const bgr     = stage.bgr;   // Legacy BGR — retained for reference
   const isEarly = stage.key === 'Early' || stage.key === 'Growth';
 
-  // Growth outlier / laggard secondary check
+  // CBGR = Legacy BGR × Category Multiplier
+  // OGR uses CBGR; GFS scoring remains category-agnostic
+  const categoryMultiplier = getCategoryMultiplier(a.category);
+  const cbgr = bgr * categoryMultiplier;
+
+  // Growth outlier / laggard secondary check — uses CBGR
   let growthFlag = null;
-  if (growth > 1.5 * bgr) growthFlag = 'outlier';
-  else if (growth < 0.5 * bgr) growthFlag = 'laggard';
+  if (growth > 1.5 * cbgr) growthFlag = 'outlier';
+  else if (growth < 0.5 * cbgr) growthFlag = 'laggard';
 
   // GRS
   const GRS = lookup(growth, [[0,1],[0.1,2],[0.2,3],[0.3,4],[0.4,5]]);
@@ -119,15 +140,17 @@ function computeScores(a) {
   else if (adjGFS < 4.5) { mfitLow=1.1;  mfitHigh=1.35;  interpretation='Strong';  }
   else                   { mfitLow=1.4;  mfitHigh=1.75;  interpretation='Elite';   }
 
-  const OGR_Low  = bgr * mfitLow;
-  const OGR_High = bgr * mfitHigh;
+  const OGR_Low  = cbgr * mfitLow;
+  const OGR_High = cbgr * mfitHigh;
   const zone = growth < OGR_Low ? 'Under' : (growth <= OGR_High ? 'Fit' : 'Over');
 
   return {
     GFS, adjGFS, hasAdjustment, belowComponents,
     GQS, RS, ES, OGR_Low, OGR_High, zone, interpretation,
     NRS, GRRS, CSS, CQS, GRS, SQS, expansionScore, dealScore,
-    growth, nrr, grr, gm, fcf, bgr, expansion,
+    growth, nrr, grr, gm, fcf,
+    bgr, cbgr, categoryMultiplier, category: a.category || '',
+    expansion,
     isEarly, esFormula, esSubScores,
     stageKey: stage.key, arrM, growthFlag
   };
@@ -139,9 +162,9 @@ function getRecommendations(s) {
   const sub = s.esSubScores || {};
 
   if (s.growthFlag === 'outlier')
-    r.push(`Your growth rate of ${(s.growth*100).toFixed(0)}% is significantly above the ${Math.round(s.bgr*100)}% benchmark for your stage — flagged as an outlier. Validate the sustainability of this growth rate before committing further resources. Fast growth without system fitness leads to costly corrections.`);
+    r.push(`Your growth rate of ${(s.growth*100).toFixed(0)}% is significantly above the ${Math.round(s.cbgr*100)}% category-adjusted benchmark for your stage — flagged as an outlier. Validate the sustainability of this growth rate before committing further resources. Fast growth without system fitness leads to costly corrections.`);
   if (s.growthFlag === 'laggard')
-    r.push(`Your growth rate of ${(s.growth*100).toFixed(0)}% is well below the ${Math.round(s.bgr*100)}% benchmark for your stage — flagged as a laggard. Identify the primary constraint: pipeline, conversion, capacity, or market positioning.`);
+    r.push(`Your growth rate of ${(s.growth*100).toFixed(0)}% is well below the ${Math.round(s.cbgr*100)}% category-adjusted benchmark for your stage — flagged as a laggard. Identify the primary constraint: pipeline, conversion, capacity, or market positioning.`);
   if (s.SQS < 3)
     r.push('Inbound pull is weak. Growth is too dependent on outbound spend. Invest in content, community, and referral programmes to improve source quality and structurally reduce CAC.');
   else if (s.SQS < 4)
@@ -233,6 +256,10 @@ exports.handler = async (event) => {
           stageKey:        scores.stageKey,
           arrM:            scores.arrM,
           growthFlag:      scores.growthFlag,
+          bgr:             scores.bgr,
+          cbgr:            scores.cbgr,
+          categoryMultiplier: scores.categoryMultiplier,
+          category:        scores.category,
           GQSBelow:        scores.GQS < 3.0,
           RSBelow:         scores.RS  < 3.0,
           ESBelow:         scores.ES  < 3.0,
