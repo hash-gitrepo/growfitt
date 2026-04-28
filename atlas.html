@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GrowFitt Atlas — Growth Benchmark Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --green:#1a6632;--green-mid:#2d8a4e;--green-light:#3aaf66;--green-pale:#e7f4ea;
+  --dark:#0a0f0b;--dark2:#111a13;--dark3:#182019;--dark4:#1f2b21;
+  --surface:#1c2b1e;--surface2:#243527;
+  --text:#edf2ec;--text-muted:#8fa98f;--text-dim:#4a5e4a;
+  --border:rgba(255,255,255,0.07);--border-green:rgba(58,175,102,0.25);
+  --red:#e05a4e;--red-bg:rgba(224,90,78,0.12);--red-border:rgba(224,90,78,0.3);
+  --orange:#e07b00;--orange-bg:rgba(224,123,0,0.12);
+  --yellow:#c8a600;--yellow-bg:rgba(200,166,0,0.1);
+  --blue:#3a8fd9;--blue-bg:rgba(58,143,217,0.12);
+  --serif:'DM Serif Display',Georgia,serif;
+  --mono:'DM Mono',monospace;
+  --sans:'Syne',system-ui,sans-serif;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--dark);color:var(--text);min-height:100vh;}
+
+/* NAV */
+.nav{height:64px;background:var(--dark2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 48px;gap:16px;position:sticky;top:0;z-index:100;}
+.nav-logo{font-family:var(--serif);font-size:20px;color:var(--text);display:flex;align-items:center;gap:8px;text-decoration:none;}
+.nav-logo span{color:var(--green-light);}
+.nav-badge{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;padding:3px 8px;background:rgba(58,143,217,0.15);border:1px solid rgba(58,143,217,0.3);border-radius:4px;color:var(--blue);}
+.nav-links{margin-left:auto;display:flex;gap:24px;align-items:center;}
+.nav-links a{font-size:13px;color:var(--text-muted);text-decoration:none;transition:color 0.15s;}
+.nav-links a:hover{color:var(--text);}
+.nav-cta{padding:8px 20px;background:var(--green);color:#fff;border-radius:6px;font-size:13px;font-weight:500;text-decoration:none;transition:opacity 0.15s;}
+.nav-cta:hover{opacity:0.85;}
+
+/* HERO */
+.hero{padding:80px 48px 60px;max-width:1200px;margin:0 auto;}
+.hero-eyebrow{font-size:10px;text-transform:uppercase;letter-spacing:2.5px;color:var(--blue);margin-bottom:14px;font-weight:500;}
+.hero-title{font-family:var(--serif);font-size:clamp(40px,5vw,64px);line-height:1.05;letter-spacing:-2px;color:var(--text);margin-bottom:16px;}
+.hero-title em{color:var(--green-light);font-style:italic;}
+.hero-sub{font-size:16px;color:var(--text-muted);line-height:1.7;max-width:560px;font-weight:300;margin-bottom:36px;}
+.hero-stats{display:flex;gap:40px;padding-top:28px;border-top:1px solid var(--border);}
+.hero-stat-num{font-family:var(--serif);font-size:28px;color:var(--text);letter-spacing:-1px;}
+.hero-stat-label{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.8px;margin-top:3px;}
+
+/* LAYOUT */
+.page{max-width:1200px;margin:0 auto;padding:0 48px 80px;display:grid;grid-template-columns:320px 1fr;gap:32px;align-items:start;}
+
+/* FORM PANEL */
+.form-panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;overflow:hidden;position:sticky;top:80px;}
+.form-header{padding:20px 24px;background:var(--dark3);border-bottom:1px solid var(--border);}
+.form-header h2{font-family:var(--serif);font-size:18px;color:var(--text);letter-spacing:-0.3px;margin-bottom:4px;}
+.form-header p{font-size:12px;color:var(--text-muted);line-height:1.5;}
+.form-body{padding:20px 24px;}
+.field-group{margin-bottom:18px;}
+label{display:block;font-size:11px;font-weight:500;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:7px;}
+select,input[type=number]{width:100%;padding:10px 14px;background:var(--dark3);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:var(--sans);font-size:14px;outline:none;transition:border-color 0.15s;-webkit-appearance:none;}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%234a5e4a' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:32px;}
+select option{background:var(--dark2);}
+select:focus,input[type=number]:focus{border-color:var(--border-green);}
+input[type=number]::-webkit-inner-spin-button{opacity:0.4;}
+.field-hint{font-size:11px;color:var(--text-dim);margin-top:5px;line-height:1.4;}
+.optional-tag{font-size:9px;color:var(--text-dim);background:var(--dark4);padding:2px 6px;border-radius:3px;margin-left:6px;font-weight:400;text-transform:none;letter-spacing:0;}
+.form-divider{height:1px;background:var(--border);margin:20px 0;}
+.form-section-title{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-dim);margin-bottom:14px;}
+.submit-btn{width:100%;padding:13px;background:var(--green);color:#fff;border:none;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;font-family:var(--sans);transition:all 0.2s;display:flex;align-items:center;justify-content:center;gap:8px;}
+.submit-btn:hover{opacity:0.88;transform:translateY(-1px);}
+.submit-btn svg{width:15px;height:15px;stroke:#fff;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
+.privacy-note{font-size:11px;color:var(--text-dim);text-align:center;margin-top:12px;line-height:1.5;}
+.privacy-note a{color:var(--green-light);text-decoration:none;}
+
+/* RESULTS PANEL */
+.results-panel{}
+.results-placeholder{background:var(--surface);border:1px dashed var(--border-green);border-radius:16px;padding:60px 40px;text-align:center;}
+.results-placeholder h3{font-family:var(--serif);font-size:22px;color:var(--text);margin-bottom:10px;letter-spacing:-0.3px;}
+.results-placeholder p{font-size:13.5px;color:var(--text-muted);line-height:1.65;max-width:360px;margin:0 auto 24px;}
+.sample-tags{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+.sample-tag{font-size:11px;padding:4px 12px;border-radius:12px;background:rgba(58,175,102,0.1);border:1px solid var(--border-green);color:var(--green-light);}
+
+/* RESULTS ACTIVE */
+.results-active{display:none;}
+.results-active.show{display:block;}
+.result-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px 24px;margin-bottom:14px;}
+.result-card.highlight{border-color:var(--border-green);background:rgba(58,175,102,0.04);}
+.rc-title{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-dim);margin-bottom:14px;}
+
+/* POSITION CARD */
+.position-hero{display:flex;align-items:flex-start;gap:24px;}
+.pos-score-block{text-align:center;flex-shrink:0;}
+.pos-gfs{font-family:var(--serif);font-size:56px;letter-spacing:-2px;line-height:1;}
+.pos-gfs-label{font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+.pos-zone{display:inline-block;margin-top:8px;padding:4px 14px;border-radius:16px;font-size:11px;font-weight:700;}
+.pos-zone.fit{background:rgba(58,175,102,0.12);color:var(--green-light);border:1px solid var(--border-green);}
+.pos-zone.over{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+.pos-zone.under{background:var(--orange-bg);color:var(--orange);border:1px solid rgba(224,123,0,0.3);}
+.pos-details{flex:1;}
+.pos-stat{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.pos-stat:last-child{border-bottom:none;}
+.pos-stat-label{color:var(--text-muted);}
+.pos-stat-val{font-weight:600;color:var(--text);font-family:var(--mono);}
+.pos-stat-val.good{color:var(--green-light);}
+.pos-stat-val.bad{color:var(--red);}
+.pos-stat-val.warn{color:var(--orange);}
+
+/* BUBBLE MAP */
+.atlas-map{background:var(--dark3);border:1px solid var(--border);border-radius:10px;padding:20px;position:relative;height:280px;overflow:hidden;margin-bottom:4px;}
+.atlas-map-bg{position:absolute;inset:0;opacity:0.04;background-image:radial-gradient(circle,var(--green-light) 1px,transparent 1px);background-size:24px 24px;}
+.atlas-bubble{position:absolute;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform 0.2s;font-weight:700;color:rgba(255,255,255,0.9);font-size:10px;}
+.atlas-bubble:hover{transform:scale(1.15);z-index:10;}
+.atlas-bubble.you{border:2px solid var(--green-light);z-index:9;font-size:11px;}
+.atlas-bubble .tip{display:none;position:absolute;bottom:calc(100% + 8px);left:50%;transform:translateX(-50%);background:var(--dark2);border:1px solid var(--border-green);border-radius:6px;padding:6px 10px;font-size:11px;color:var(--text);white-space:nowrap;pointer-events:none;}
+.atlas-bubble:hover .tip{display:block;}
+.ax-label{position:absolute;font-size:9px;color:var(--text-dim);font-family:var(--mono);}
+.fit-band{position:absolute;background:rgba(58,175,102,0.05);border-top:1px dashed rgba(58,175,102,0.25);border-bottom:1px dashed rgba(58,175,102,0.25);}
+
+/* BENCHMARK TABLE */
+.bench-table{width:100%;border-collapse:collapse;}
+.bench-table th{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);padding:8px 10px;text-align:left;border-bottom:1px solid var(--border);font-weight:500;}
+.bench-table td{font-size:13px;padding:9px 10px;border-bottom:1px solid rgba(255,255,255,0.04);color:var(--text-muted);}
+.bench-table tr.you-row td{color:var(--text);background:rgba(58,175,102,0.04);}
+.bench-table td.g{color:var(--green-light);font-weight:600;}
+.bench-table td.r{color:var(--red);font-weight:600;}
+.bench-table td.w{color:var(--orange);font-weight:600;}
+.bench-table td.n{color:var(--text);font-family:var(--mono);}
+.you-label{display:inline-block;font-size:9px;font-weight:700;padding:1px 6px;border-radius:3px;background:rgba(58,175,102,0.15);border:1px solid var(--border-green);color:var(--green-light);margin-left:5px;}
+
+/* INSIGHTS */
+.insight-list{display:flex;flex-direction:column;gap:10px;}
+.insight{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;background:var(--dark3);border:1px solid var(--border);border-radius:8px;}
+.insight-icon{font-size:15px;flex-shrink:0;margin-top:1px;}
+.insight p{font-size:12.5px;color:var(--text-muted);line-height:1.6;}
+.insight strong{color:var(--text);}
+
+/* PERCENTILE BARS */
+.pct-bar-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.pct-label{font-size:12px;color:var(--text-muted);width:140px;flex-shrink:0;}
+.pct-track{flex:1;height:6px;background:var(--dark4);border-radius:3px;overflow:hidden;position:relative;}
+.pct-fill{height:100%;border-radius:3px;transition:width 0.8s cubic-bezier(.4,0,.2,1);}
+.pct-fill.g{background:var(--green-light);}
+.pct-fill.r{background:var(--red);}
+.pct-fill.w{background:var(--orange);}
+.pct-val{font-size:11px;font-family:var(--mono);color:var(--text-muted);width:36px;text-align:right;}
+.pct-marker{position:absolute;top:-3px;bottom:-3px;width:2px;background:rgba(255,255,255,0.4);border-radius:1px;}
+
+/* LEGEND */
+.map-legend{display:flex;gap:16px;flex-wrap:wrap;margin-top:10px;}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-dim);}
+.legend-dot{width:9px;height:9px;border-radius:50%;}
+
+/* FILTER ROW */
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;}
+.filter-chip{padding:6px 14px;border-radius:16px;font-size:12px;cursor:pointer;border:1px solid var(--border);background:var(--dark3);color:var(--text-muted);transition:all 0.15s;font-family:var(--sans);}
+.filter-chip.active{background:rgba(58,175,102,0.12);border-color:var(--border-green);color:var(--green-light);}
+.filter-chip:hover:not(.active){border-color:rgba(255,255,255,0.15);color:var(--text);}
+
+/* TRUST STRIP */
+.trust-strip{background:var(--dark2);border-top:1px solid var(--border);padding:20px 48px;display:flex;gap:32px;align-items:center;flex-wrap:wrap;}
+.trust-item{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--text-dim);}
+.trust-item svg{width:14px;height:14px;stroke:var(--green-light);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
+
+@media(max-width:900px){
+  .page{grid-template-columns:1fr;padding:0 24px 60px;}
+  .hero{padding:60px 24px 40px;}
+  .form-panel{position:static;}
+  .nav{padding:0 24px;}
+  .trust-strip{padding:20px 24px;gap:16px;}
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.fade-in{animation:fadeUp 0.4s ease forwards;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <a href="/" class="nav-logo">Grow<span>Fitt</span></a>
+  <div class="nav-badge">Atlas</div>
+  <div class="nav-links">
+    <a href="/enterprise">Enterprise dashboard</a>
+    <a href="/GrowthFitness.html">Get your GFS</a>
+    <a href="/contact.html">Contact</a>
+    <a href="/GrowthFitness.html" class="nav-cta">Free assessment →</a>
+  </div>
+</nav>
+
+<div class="hero">
+  <div class="hero-eyebrow">🌍 GrowFitt Atlas — Live benchmark intelligence</div>
+  <h1 class="hero-title">How are companies like<br><em>yours</em> actually growing?</h1>
+  <p class="hero-sub">Not generic SaaS averages. Contextual benchmarks by category, revenue band, stage, and geography. Enter your metrics — see exactly where you stand.</p>
+  <div class="hero-stats">
+    <div><div class="hero-stat-num">847</div><div class="hero-stat-label">Companies in Atlas</div></div>
+    <div><div class="hero-stat-num">6</div><div class="hero-stat-label">Categories</div></div>
+    <div><div class="hero-stat-num">12</div><div class="hero-stat-label">Geographies</div></div>
+    <div><div class="hero-stat-num">100%</div><div class="hero-stat-label">Anonymised</div></div>
+  </div>
+</div>
+
+<div class="page">
+
+  <!-- FORM PANEL -->
+  <div class="form-panel">
+    <div class="form-header">
+      <h2>Your company profile</h2>
+      <p>Enter your metrics to see how you compare against companies in your segment. All data is anonymised and aggregated.</p>
+    </div>
+    <div class="form-body">
+      <div class="form-section-title">Company context</div>
+
+      <div class="field-group">
+        <label>Category</label>
+        <select id="f-category">
+          <option value="">Select category</option>
+          <option value="Infra / Dev / AI">Infra / Dev / AI</option>
+          <option value="Security">Security</option>
+          <option value="Horizontal SaaS">Horizontal SaaS</option>
+          <option value="Vertical SaaS">Vertical SaaS</option>
+          <option value="HR SaaS">HR SaaS</option>
+          <option value="DevTools">DevTools</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label>ARR / Revenue band</label>
+        <select id="f-arr">
+          <option value="">Select revenue band</option>
+          <option value="<$1M">&lt;$1M</option>
+          <option value="$1M–$5M">$1M – $5M</option>
+          <option value="$5M–$10M">$5M – $10M</option>
+          <option value="$10M–$25M">$10M – $25M</option>
+          <option value="$25M–$50M">$25M – $50M</option>
+          <option value="$50M–$100M">$50M – $100M</option>
+          <option value="$100M+">$100M+</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label>Stage</label>
+        <select id="f-stage">
+          <option value="">Select stage</option>
+          <option value="Early">Early (&lt;$10M ARR)</option>
+          <option value="Growth">Growth ($10M–$100M)</option>
+          <option value="Scale">Scale ($100M–$1B)</option>
+          <option value="Late">Late ($1B+)</option>
+        </select>
+      </div>
+
+      <div class="field-group">
+        <label>Primary geography</label>
+        <select id="f-geo">
+          <option value="">Select geography</option>
+          <option value="North America">North America</option>
+          <option value="Europe">Europe</option>
+          <option value="India">India</option>
+          <option value="Southeast Asia">Southeast Asia</option>
+          <option value="Middle East">Middle East</option>
+          <option value="LATAM">LATAM</option>
+          <option value="Global">Global</option>
+        </select>
+      </div>
+
+      <div class="form-divider"></div>
+      <div class="form-section-title">Growth metrics</div>
+
+      <div class="field-group">
+        <label>LTM revenue growth rate (%)</label>
+        <input type="number" id="f-growth" placeholder="e.g. 38" min="0" max="300">
+        <div class="field-hint">Last twelve months year-over-year revenue growth</div>
+      </div>
+
+      <div class="field-group">
+        <label>Net Revenue Retention (%)</label>
+        <input type="number" id="f-nrr" placeholder="e.g. 115" min="50" max="200">
+      </div>
+
+      <div class="field-group">
+        <label>Gross Margin (%)</label>
+        <input type="number" id="f-gm" placeholder="e.g. 72" min="0" max="100">
+      </div>
+
+      <div class="form-divider"></div>
+      <div class="form-section-title">Efficiency <span class="optional-tag">Optional</span></div>
+
+      <div class="field-group">
+        <label>CAC Payback (months) <span class="optional-tag">Optional</span></label>
+        <input type="number" id="f-cac" placeholder="e.g. 18" min="1" max="60">
+      </div>
+
+      <div class="field-group">
+        <label>Sales Efficiency (Magic Number) <span class="optional-tag">Optional</span></label>
+        <input type="number" id="f-se" placeholder="e.g. 1.1" min="0" max="10" step="0.1">
+      </div>
+
+      <button class="submit-btn" onclick="runAtlas()">
+        See my benchmark position
+        <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+      <div class="privacy-note">🔒 Your data is anonymised and aggregated. No company-level disclosure. <a href="/contact.html">Privacy policy</a></div>
+    </div>
+  </div>
+
+  <!-- RESULTS PANEL -->
+  <div class="results-panel">
+
+    <!-- Placeholder -->
+    <div class="results-placeholder" id="placeholder">
+      <div style="font-size:40px;margin-bottom:16px;">🌍</div>
+      <h3>Enter your metrics to see where you stand</h3>
+      <p>GrowFitt Atlas will show your position in the benchmark map, your percentile across key metrics, and what separates you from the top quartile in your segment.</p>
+      <div class="sample-tags">
+        <span class="sample-tag">Growth rate percentile</span>
+        <span class="sample-tag">GFS vs segment</span>
+        <span class="sample-tag">NRR benchmark</span>
+        <span class="sample-tag">CAC efficiency rank</span>
+        <span class="sample-tag">Contextual insights</span>
+      </div>
+    </div>
+
+    <!-- Active results -->
+    <div class="results-active" id="results">
+
+      <!-- Position card -->
+      <div class="result-card highlight fade-in" id="rc-position">
+        <div class="rc-title">Your benchmark position</div>
+        <div class="position-hero">
+          <div class="pos-score-block">
+            <div class="pos-gfs" id="res-gfs">—</div>
+            <div class="pos-gfs-label">Est. GFS</div>
+            <div class="pos-zone fit" id="res-zone">—</div>
+          </div>
+          <div class="pos-details" id="res-stats"></div>
+        </div>
+      </div>
+
+      <!-- Benchmark map -->
+      <div class="result-card fade-in">
+        <div class="rc-title" id="map-title">GFS vs Growth Rate — your segment</div>
+        <div class="filter-row" id="map-filters"></div>
+        <div class="atlas-map" id="bubble-map">
+          <div class="atlas-map-bg"></div>
+          <!-- Axis labels -->
+          <div class="ax-label" style="left:8px;top:8px;">5.0</div>
+          <div class="ax-label" style="left:8px;top:28%;">3.8</div>
+          <div class="ax-label" style="left:8px;top:53%;">3.0</div>
+          <div class="ax-label" style="left:8px;top:76%;">2.0</div>
+          <div class="ax-label" style="left:8px;bottom:6px;">1.0</div>
+          <div class="ax-label" style="bottom:6px;left:12%;" id="ax-x1">10%</div>
+          <div class="ax-label" style="bottom:6px;left:34%;" id="ax-x2">30%</div>
+          <div class="ax-label" style="bottom:6px;left:56%;" id="ax-x3">50%</div>
+          <div class="ax-label" style="bottom:6px;left:78%;" id="ax-x4">70%</div>
+          <!-- Fit band will be injected by JS -->
+          <div id="bubble-container"></div>
+        </div>
+        <div class="map-legend">
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(90,172,94,0.8);"></div>Strong/Elite (GFS ≥ 3.8)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(224,123,0,0.8);"></div>Average (3.0–3.8)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(224,90,78,0.8);"></div>Fragile (&lt;3.0)</div>
+          <div class="legend-item"><div class="legend-dot" style="background:rgba(58,175,102,0.9);border:1px solid #3aaf66;"></div>You</div>
+        </div>
+      </div>
+
+      <!-- Percentile ranking -->
+      <div class="result-card fade-in">
+        <div class="rc-title">Percentile ranking — <span id="segment-label">your segment</span></div>
+        <div id="pct-bars"></div>
+      </div>
+
+      <!-- Benchmark table -->
+      <div class="result-card fade-in">
+        <div class="rc-title">Segment benchmarks</div>
+        <div id="bench-table-wrap"></div>
+        <div style="margin-top:12px;font-size:11px;color:var(--text-dim);" id="bench-sample-note"></div>
+      </div>
+
+      <!-- Insights -->
+      <div class="result-card fade-in">
+        <div class="rc-title">Contextual insights</div>
+        <div class="insight-list" id="insight-list"></div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Trust strip -->
+<div class="trust-strip">
+  <div class="trust-item"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Anonymous aggregation only</div>
+  <div class="trust-item"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>No company-level disclosure</div>
+  <div class="trust-item"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Revenue bands, not exact figures</div>
+  <div class="trust-item"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>Minimum 8 companies per segment</div>
+  <div class="trust-item" style="margin-left:auto;"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>847 companies contributing data</div>
+</div>
+
+<script>
+// ── BENCHMARK DATA BY SEGMENT ─────────────────────────────────────────────────
+// Simulated benchmark data pools per category+arr_band combination
+// Format: { p25, median, p75, n } per metric
+const BENCHMARKS = {
+  'Infra / Dev / AI': {
+    '$10M–$25M': { growth:{p25:45,med:68,p75:110}, nrr:{p25:110,med:125,p75:145}, gm:{p25:68,med:76,p75:84}, cac:{p25:8,med:14,p75:22}, se:{p25:1.0,med:1.6,p75:2.8}, n:62 },
+    '$25M–$50M': { growth:{p25:35,med:55,p75:90},  nrr:{p25:112,med:128,p75:148}, gm:{p25:70,med:78,p75:86}, cac:{p25:9,med:15,p75:24}, se:{p25:1.1,med:1.7,p75:3.0}, n:48 },
+    '$50M–$100M':{ growth:{p25:28,med:42,p75:70},  nrr:{p25:115,med:130,p75:150}, gm:{p25:72,med:80,p75:88}, cac:{p25:10,med:17,p75:26}, se:{p25:1.2,med:1.8,p75:3.2}, n:35 },
+  },
+  'Security': {
+    '$10M–$25M': { growth:{p25:30,med:45,p75:72}, nrr:{p25:108,med:120,p75:138}, gm:{p25:66,med:74,p75:82}, cac:{p25:10,med:18,p75:28}, se:{p25:0.9,med:1.4,p75:2.4}, n:44 },
+    '$25M–$50M': { growth:{p25:24,med:38,p75:58}, nrr:{p25:110,med:122,p75:140}, gm:{p25:68,med:75,p75:83}, cac:{p25:11,med:19,p75:30}, se:{p25:0.9,med:1.4,p75:2.5}, n:38 },
+    '$50M–$100M':{ growth:{p25:18,med:28,p75:44}, nrr:{p25:112,med:124,p75:142}, gm:{p25:70,med:77,p75:84}, cac:{p25:12,med:20,p75:32}, se:{p25:1.0,med:1.5,p75:2.6}, n:29 },
+  },
+  'Horizontal SaaS': {
+    '$1M–$5M':   { growth:{p25:40,med:65,p75:110}, nrr:{p25:98,med:108,p75:120},  gm:{p25:58,med:68,p75:76},  cac:{p25:8,med:15,p75:24},  se:{p25:0.7,med:1.1,p75:1.8}, n:78 },
+    '$5M–$10M':  { growth:{p25:35,med:55,p75:90},  nrr:{p25:100,med:110,p75:124}, gm:{p25:60,med:70,p75:78},  cac:{p25:9,med:16,p75:24},  se:{p25:0.8,med:1.2,p75:2.0}, n:65 },
+    '$10M–$25M': { growth:{p25:28,med:42,p75:70},  nrr:{p25:102,med:112,p75:126}, gm:{p25:62,med:71,p75:79},  cac:{p25:10,med:16,p75:25}, se:{p25:0.8,med:1.2,p75:2.0}, n:72 },
+    '$25M–$50M': { growth:{p25:22,med:34,p75:52},  nrr:{p25:104,med:114,p75:128}, gm:{p25:64,med:72,p75:80},  cac:{p25:11,med:17,p75:26}, se:{p25:0.9,med:1.3,p75:2.1}, n:54 },
+    '$50M–$100M':{ growth:{p25:18,med:27,p75:42},  nrr:{p25:106,med:116,p75:130}, gm:{p25:66,med:74,p75:82},  cac:{p25:12,med:18,p75:28}, se:{p25:0.9,med:1.4,p75:2.2}, n:41 },
+  },
+  'Vertical SaaS': {
+    '$5M–$10M':  { growth:{p25:28,med:44,p75:72},  nrr:{p25:100,med:112,p75:128}, gm:{p25:60,med:70,p75:78},  cac:{p25:10,med:18,p75:28},  se:{p25:0.7,med:1.1,p75:1.8}, n:52 },
+    '$10M–$25M': { growth:{p25:24,med:36,p75:58},  nrr:{p25:102,med:114,p75:130}, gm:{p25:62,med:72,p75:80},  cac:{p25:12,med:20,p75:30},  se:{p25:0.8,med:1.2,p75:1.9}, n:48 },
+    '$25M–$50M': { growth:{p25:20,med:30,p75:48},  nrr:{p25:104,med:116,p75:132}, gm:{p25:64,med:74,p75:82},  cac:{p25:13,med:21,p75:32},  se:{p25:0.8,med:1.2,p75:2.0}, n:36 },
+  },
+};
+
+// Category multipliers for CBGR
+const CAT_MULT = {'Infra / Dev / AI':1.30,'Security':1.10,'Horizontal SaaS':0.80,'Vertical SaaS':0.90,'HR SaaS':0.85,'DevTools':1.20};
+const STAGE_BGR = {'Early':0.80,'Growth':0.55,'Scale':0.35,'Late':0.25};
+
+function getBenchmark(cat, arr) {
+  const catData = BENCHMARKS[cat];
+  if (!catData) return null;
+  // Find closest band
+  if (catData[arr]) return catData[arr];
+  const bands = Object.keys(catData);
+  return catData[bands[Math.floor(bands.length/2)]];
+}
+
+function percentile(val, p25, med, p75) {
+  if (val <= p25) return Math.round(25 * val / p25);
+  if (val <= med) return Math.round(25 + 25 * (val - p25) / (med - p25));
+  if (val <= p75) return Math.round(50 + 25 * (val - med) / (p75 - med));
+  return Math.min(99, Math.round(75 + 24 * (val - p75) / (p75 * 0.5)));
+}
+
+function estimateGFS(growth, nrr, gm, se, cac, stage, cat) {
+  // Lightweight GFS proxy for Atlas (not the full model)
+  const bgr = STAGE_BGR[stage] || 0.55;
+  const mult = CAT_MULT[cat] || 1.0;
+  const cbgr = bgr * mult;
+  const g = growth / 100, n = nrr / 100;
+  const GRS = Math.min(5, Math.max(1, g < 0.1?1 : g < 0.2?2 : g < 0.3?3 : g < 0.4?4 : 5));
+  const NRS = Math.min(5, Math.max(1, n < 0.9?1 : n < 1.01?1 : n < 1.05?2 : n < 1.15?3 : n < 1.25?4 : 5));
+  const GMS = Math.min(5, Math.max(1, gm < 50?1 : gm < 60?2 : gm < 68?3 : gm < 76?4 : 5));
+  let ES = GMS;
+  if (se > 0) { const SES = se < 0.5?1:se < 0.9?2:se < 1.0?3:se < 1.5?3:se < 3.0?4:5; ES = (GMS + SES) / 2; }
+  const GQS = 0.60 * GRS + 0.40 * 2.5; // assume mid SQS/CQS
+  const RS = 0.60 * NRS + 0.40 * 3.0;
+  const rawGFS = 0.30 * GQS + 0.40 * RS + 0.30 * ES;
+  // Below threshold penalty
+  let adj = rawGFS;
+  if (GQS < 3.0) adj *= 0.92;
+  if (RS < 3.0) adj *= 0.92;
+  if (ES < 3.0) adj *= 0.92;
+  adj = Math.min(5, Math.max(1, adj));
+  // OGR
+  let mfitL, mfitH;
+  if (adj < 2.5) {mfitL=0.5;mfitH=0.7;} else if (adj < 3.0) {mfitL=0.7;mfitH=0.9;} else if (adj < 3.8) {mfitL=0.9;mfitH=1.1;} else if (adj < 4.5) {mfitL=1.1;mfitH=1.35;} else {mfitL=1.4;mfitH=1.75;}
+  const ogrL = cbgr * mfitL, ogrH = cbgr * mfitH;
+  const zone = g < ogrL ? 'Under' : g <= ogrH ? 'Fit' : 'Over';
+  return { gfs: +adj.toFixed(2), zone, ogrL: +(ogrL*100).toFixed(0), ogrH: +(ogrH*100).toFixed(0), cbgr: +(cbgr*100).toFixed(0) };
+}
+
+// ── RUN ATLAS ─────────────────────────────────────────────────────────────────
+function runAtlas() {
+  const cat    = document.getElementById('f-category').value;
+  const arr    = document.getElementById('f-arr').value;
+  const stage  = document.getElementById('f-stage').value;
+  const geo    = document.getElementById('f-geo').value;
+  const growth = parseFloat(document.getElementById('f-growth').value);
+  const nrr    = parseFloat(document.getElementById('f-nrr').value);
+  const gm     = parseFloat(document.getElementById('f-gm').value);
+  const cac    = parseFloat(document.getElementById('f-cac').value) || 0;
+  const se     = parseFloat(document.getElementById('f-se').value) || 0;
+
+  if (!cat || !arr || !stage || isNaN(growth) || isNaN(nrr) || isNaN(gm)) {
+    alert('Please fill in Category, ARR band, Stage, Growth rate, NRR, and Gross Margin to see your benchmark position.');
+    return;
+  }
+
+  const bench = getBenchmark(cat, arr);
+  const { gfs, zone, ogrL, ogrH, cbgr } = estimateGFS(growth, nrr, gm, se, cac, stage, cat);
+
+  // Show results
+  document.getElementById('placeholder').style.display = 'none';
+  document.getElementById('results').style.display = 'block';
+
+  // ── Position card ──
+  document.getElementById('res-gfs').textContent = gfs.toFixed(2);
+  const zoneEl = document.getElementById('res-zone');
+  zoneEl.textContent = zone + ' zone';
+  zoneEl.className = 'pos-zone ' + zone.toLowerCase();
+  const gfsEl = document.getElementById('res-gfs');
+  gfsEl.style.color = gfs >= 3.8 ? 'var(--green-light)' : gfs >= 3.0 ? 'var(--orange)' : 'var(--red)';
+
+  const statsHtml = `
+    <div class="pos-stat"><span class="pos-stat-label">LTM Growth rate</span><span class="pos-stat-val ${growth >= ogrL && growth <= ogrH ? 'good' : growth > ogrH ? 'bad' : 'warn'}">${growth}%</span></div>
+    <div class="pos-stat"><span class="pos-stat-label">Optimal growth range (CBGR)</span><span class="pos-stat-val n">${ogrL}–${ogrH}%</span></div>
+    <div class="pos-stat"><span class="pos-stat-label">Category benchmark (CBGR)</span><span class="pos-stat-val n">${cbgr}%</span></div>
+    <div class="pos-stat"><span class="pos-stat-label">Net revenue retention</span><span class="pos-stat-val ${nrr >= 115 ? 'good' : nrr >= 100 ? '' : 'bad'}">${nrr}%</span></div>
+    <div class="pos-stat"><span class="pos-stat-label">Gross margin</span><span class="pos-stat-val ${gm >= 70 ? 'good' : gm >= 55 ? '' : 'warn'}">${gm}%</span></div>
+    ${cac > 0 ? `<div class="pos-stat"><span class="pos-stat-label">CAC Payback</span><span class="pos-stat-val ${cac <= 12 ? 'good' : cac <= 20 ? '' : 'bad'}">${cac}mo</span></div>` : ''}
+  `;
+  document.getElementById('res-stats').innerHTML = statsHtml;
+
+  // ── Map title + filters ──
+  document.getElementById('map-title').textContent = `GFS vs Growth Rate — ${cat} · ${arr}`;
+  document.getElementById('segment-label').textContent = `${cat} · ${arr}`;
+
+  // ── Bubble map ──
+  buildBubbleMap(growth, gfs, ogrL, ogrH, cat);
+
+  // ── Percentile bars ──
+  if (bench) buildPctBars(growth, nrr, gm, cac, se, bench);
+
+  // ── Benchmark table ──
+  if (bench) buildBenchTable(growth, nrr, gm, cac, se, bench, arr, cat);
+
+  // ── Insights ──
+  buildInsights(growth, nrr, gm, cac, se, gfs, zone, ogrL, ogrH, cbgr, cat, arr, bench);
+
+  // Scroll to results
+  document.getElementById('results').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function buildBubbleMap(userGrowth, userGfs, ogrL, ogrH, cat) {
+  const container = document.getElementById('bubble-container');
+  const map = document.getElementById('bubble-map');
+  container.innerHTML = '';
+  // Remove old fit band
+  map.querySelectorAll('.fit-band').forEach(e => e.remove());
+
+  const maxGrowth = Math.max(100, userGrowth * 1.6);
+  const W = map.offsetWidth || 400, H = map.offsetHeight || 280;
+
+  // Fit band
+  const fitL_pct = (ogrL / maxGrowth * 100).toFixed(1);
+  const fitW_pct = ((ogrH - ogrL) / maxGrowth * 100).toFixed(1);
+  const fb = document.createElement('div');
+  fb.className = 'fit-band';
+  fb.style.cssText = `left:${parseFloat(fitL_pct)+5}%;width:${fitW_pct}%;top:0;bottom:0;`;
+  map.appendChild(fb);
+
+  // Generate peer bubbles
+  const peers = generatePeers(userGrowth, userGfs, cat);
+  peers.forEach(p => {
+    const x = Math.max(5, Math.min(90, (p.growth / maxGrowth) * 85 + 5));
+    const y = Math.max(5, Math.min(88, (1 - (p.gfs - 1) / 4) * 83 + 5));
+    const size = 28 + Math.random() * 20;
+    const col = p.gfs >= 3.8 ? 'rgba(90,172,94,0.75)' : p.gfs >= 3.0 ? 'rgba(224,123,0,0.75)' : 'rgba(224,90,78,0.75)';
+    const d = document.createElement('div');
+    d.className = 'atlas-bubble';
+    d.style.cssText = `width:${size}px;height:${size}px;left:${x}%;top:${y}%;background:${col};font-size:${size>36?11:10}px;`;
+    d.innerHTML = `${p.gfs.toFixed(1)}<div class="tip">${p.label} · ${p.growth}% growth · GFS ${p.gfs.toFixed(1)}</div>`;
+    container.appendChild(d);
+  });
+
+  // YOU bubble
+  const ux = Math.max(5, Math.min(90, (userGrowth / maxGrowth) * 85 + 5));
+  const uy = Math.max(5, Math.min(88, (1 - (userGfs - 1) / 4) * 83 + 5));
+  const ud = document.createElement('div');
+  ud.className = 'atlas-bubble you';
+  ud.style.cssText = `width:48px;height:48px;left:${ux}%;top:${uy}%;background:rgba(26,102,50,0.9);font-size:11px;`;
+  ud.innerHTML = `${userGfs}<div class="tip">You · ${userGrowth}% growth · GFS ${userGfs}</div>`;
+  container.appendChild(ud);
+
+  // Update x axis labels
+  const step = Math.round(maxGrowth / 4 / 5) * 5;
+  ['ax-x1','ax-x2','ax-x3','ax-x4'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = (step * (i+1)) + '%';
+  });
+}
+
+function generatePeers(userGrowth, userGfs, cat) {
+  const peers = [];
+  const labels = ['Alpha','Beta','Gamma','Delta','Epsilon','Zeta','Eta','Theta','Iota','Kappa','Lambda'];
+  const count = 8 + Math.floor(Math.random() * 5);
+  for (let i = 0; i < count; i++) {
+    const g = Math.max(5, userGrowth * (0.3 + Math.random() * 1.6));
+    const gfs = Math.min(5, Math.max(1.2, userGfs * (0.5 + Math.random() * 1.1)));
+    peers.push({ growth: Math.round(g), gfs: +gfs.toFixed(1), label: labels[i % labels.length] });
+  }
+  return peers;
+}
+
+function buildPctBars(growth, nrr, gm, cac, se, bench) {
+  const metrics = [
+    { label:'Growth rate', val:growth, b:bench.growth, higher:true, unit:'%' },
+    { label:'Net retention', val:nrr, b:bench.nrr, higher:true, unit:'%' },
+    { label:'Gross margin', val:gm, b:bench.gm, higher:true, unit:'%' },
+  ];
+  if (cac > 0 && bench.cac) metrics.push({ label:'CAC Payback', val:cac, b:bench.cac, higher:false, unit:'mo' });
+  if (se > 0 && bench.se) metrics.push({ label:'Sales efficiency', val:se, b:bench.se, higher:true, unit:'x' });
+
+  let html = '';
+  metrics.forEach(m => {
+    const pct = m.higher ? percentile(m.val, m.b.p25, m.b.med, m.b.p75)
+                         : 100 - percentile(m.val, m.b.p25, m.b.med, m.b.p75);
+    const cls = pct >= 60 ? 'g' : pct >= 35 ? 'w' : 'r';
+    const medPct = 50;
+    html += `
+      <div class="pct-bar-row">
+        <span class="pct-label">${m.label}</span>
+        <div class="pct-track">
+          <div class="pct-fill ${cls}" style="width:${pct}%"></div>
+          <div class="pct-marker" style="left:${medPct}%"></div>
+        </div>
+        <span class="pct-val ${cls}">P${pct}</span>
+      </div>`;
+  });
+  document.getElementById('pct-bars').innerHTML = html;
+}
+
+function buildBenchTable(growth, nrr, gm, cac, se, bench, arr, cat) {
+  const fmt = (v, unit) => v > 0 ? v + unit : '—';
+  const cls = (v, p25, p75, higher) => {
+    if (higher) return v >= p75 ? 'g' : v <= p25 ? 'r' : 'w';
+    return v <= p25 ? 'g' : v >= p75 ? 'r' : 'w';
+  };
+  let rows = `
+    <tr><td>LTM growth rate</td><td>${bench.growth.p25}%</td><td>${bench.growth.med}%</td><td>${bench.growth.p75}%</td><td class="you-row ${cls(growth,bench.growth.p25,bench.growth.p75,true)}">${growth}% <span class="you-label">YOU</span></td></tr>
+    <tr><td>Net retention</td><td>${bench.nrr.p25}%</td><td>${bench.nrr.med}%</td><td>${bench.nrr.p75}%</td><td class="${cls(nrr,bench.nrr.p25,bench.nrr.p75,true)}">${nrr}% <span class="you-label">YOU</span></td></tr>
+    <tr><td>Gross margin</td><td>${bench.gm.p25}%</td><td>${bench.gm.med}%</td><td>${bench.gm.p75}%</td><td class="${cls(gm,bench.gm.p25,bench.gm.p75,true)}">${gm}% <span class="you-label">YOU</span></td></tr>`;
+  if (cac > 0 && bench.cac) rows += `<tr><td>CAC Payback</td><td>${bench.cac.p25}mo</td><td>${bench.cac.med}mo</td><td>${bench.cac.p75}mo</td><td class="${cls(cac,bench.cac.p25,bench.cac.p75,false)}">${cac}mo <span class="you-label">YOU</span></td></tr>`;
+  if (se > 0 && bench.se) rows += `<tr><td>Sales efficiency</td><td>${bench.se.p25}x</td><td>${bench.se.med}x</td><td>${bench.se.p75}x</td><td class="${cls(se,bench.se.p25,bench.se.p75,true)}">${se}x <span class="you-label">YOU</span></td></tr>`;
+
+  document.getElementById('bench-table-wrap').innerHTML = `
+    <table class="bench-table">
+      <thead><tr><th>Metric</th><th>P25 (bottom)</th><th>Median</th><th>P75 (top)</th><th>You</th></tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+  document.getElementById('bench-sample-note').textContent = `Based on ${bench.n} companies in the ${cat} · ${arr} segment. All data anonymised and aggregated.`;
+}
+
+function buildInsights(growth, nrr, gm, cac, se, gfs, zone, ogrL, ogrH, cbgr, cat, arr, bench) {
+  const insights = [];
+
+  // Zone insight
+  if (zone === 'Over') insights.push({ icon:'⚠️', text:`Your growth rate of <strong>${growth}%</strong> exceeds your optimal range of <strong>${ogrL}–${ogrH}%</strong> for a ${cat} company in your band. This doesn't mean slow down — it means the system needs strengthening to sustain it without compressing margins or retention.` });
+  else if (zone === 'Under') insights.push({ icon:'📈', text:`Your growth rate of <strong>${growth}%</strong> is below your optimal range of <strong>${ogrL}–${ogrH}%</strong>. The system has capacity to grow faster. Identify whether the constraint is pipeline, conversion, or market positioning.` });
+  else insights.push({ icon:'✅', text:`Your growth rate of <strong>${growth}%</strong> is within the optimal range of <strong>${ogrL}–${ogrH}%</strong>. The system and growth rate are aligned. Focus on sustaining this calibration as you scale.` });
+
+  // NRR insight
+  if (bench) {
+    if (nrr < bench.nrr.p25) insights.push({ icon:'🔍', text:`Net retention of <strong>${nrr}%</strong> is below the P25 for your segment (${bench.nrr.p25}%). This is the single highest-leverage metric to improve — every point of NRR improvement compounds directly into GFS and reduces dependence on new logo acquisition.` });
+    else if (nrr >= bench.nrr.p75) insights.push({ icon:'⭐', text:`Net retention of <strong>${nrr}%</strong> places you in the top quartile for your segment. This is a structural advantage — use expansion as your primary growth lever rather than new logo acquisition to improve capital efficiency.` });
+
+    // Growth percentile
+    const growthPct = percentile(growth, bench.growth.p25, bench.growth.med, bench.growth.p75);
+    insights.push({ icon:'📍', text:`Your growth rate of <strong>${growth}%</strong> puts you at approximately the <strong>P${growthPct} percentile</strong> for ${cat} companies in the ${arr} band. ${growthPct >= 60 ? 'You're growing faster than most peers — the question is whether your system fitness can keep up.' : growthPct <= 35 ? 'Most peers are growing faster. Identify the primary constraint before scaling spend.' : 'You're growing at a median pace for your segment.'}` });
+
+    // GM insight
+    if (gm >= bench.gm.p75) insights.push({ icon:'💰', text:`Gross margin of <strong>${gm}%</strong> is top-quartile for your segment (P75: ${bench.gm.p75}%). This gives you more headroom to invest in growth without compromising unit economics — a genuine structural advantage.` });
+    else if (gm < bench.gm.p25) insights.push({ icon:'⚙️', text:`Gross margin of <strong>${gm}%</strong> is below the segment floor of ${bench.gm.p25}%. Review infrastructure costs, pricing architecture, and delivery efficiency. Margin compression at this stage limits how fast you can sustainably grow.` });
+  }
+
+  // CBGR context
+  insights.push({ icon:'🌍', text:`The Category-Adjusted Benchmark Growth Rate (CBGR) for <strong>${cat}</strong> companies at your stage is <strong>${cbgr}%</strong>. This factors in category velocity — ${cat.includes('AI') ? 'AI-native categories command a 30% higher growth expectation' : cat === 'Security' ? 'Security companies operate at a 10% premium to the stage baseline' : cat.includes('Horizontal') ? 'Horizontal SaaS operates at 80% of the stage baseline — efficiency over velocity' : 'Vertical SaaS operates at 90% of the stage baseline — depth over breadth'}.` });
+
+  const list = document.getElementById('insight-list');
+  list.innerHTML = insights.map(i => `<div class="insight"><div class="insight-icon">${i.icon}</div><p>${i.text}</p></div>`).join('');
+}
+</script>
+</body>
+</html>

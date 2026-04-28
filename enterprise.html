@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GrowFitt Enterprise — Control Dashboard</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --green:#1a6632;--green-mid:#2d8a4e;--green-light:#3aaf66;--green-pale:#e7f4ea;
+  --dark:#0a0f0b;--dark2:#111a13;--dark3:#182019;--dark4:#1f2b21;
+  --surface:#1c2b1e;--surface2:#243527;
+  --text:#edf2ec;--text-muted:#8fa98f;--text-dim:#4a5e4a;
+  --border:rgba(255,255,255,0.07);--border-green:rgba(58,175,102,0.25);
+  --red:#e05a4e;--red-bg:rgba(224,90,78,0.12);--red-border:rgba(224,90,78,0.3);
+  --orange:#e07b00;--orange-bg:rgba(224,123,0,0.12);
+  --yellow:#c8a600;--yellow-bg:rgba(200,166,0,0.1);
+  --blue:#3a8fd9;--blue-bg:rgba(58,143,217,0.12);
+  --serif:'DM Serif Display',Georgia,serif;
+  --mono:'DM Mono',monospace;
+  --sans:'Syne',system-ui,sans-serif;
+  --nav-h:64px;
+  --sidebar-w:220px;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--dark);color:var(--text);min-height:100vh;overflow-x:hidden;}
+
+/* ── LAYOUT ── */
+.layout{display:grid;grid-template-columns:var(--sidebar-w) 1fr;grid-template-rows:var(--nav-h) 1fr;min-height:100vh;}
+
+/* ── TOPNAV ── */
+.topnav{grid-column:1/-1;background:var(--dark2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:16px;position:sticky;top:0;z-index:100;}
+.topnav-logo{font-family:var(--serif);font-size:20px;color:var(--text);letter-spacing:-0.3px;display:flex;align-items:center;gap:8px;}
+.topnav-logo span{color:var(--green-light);}
+.topnav-badge{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;padding:3px 8px;background:rgba(58,175,102,0.15);border:1px solid var(--border-green);border-radius:4px;color:var(--green-light);}
+.topnav-company{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.company-pill{display:flex;align-items:center;gap:8px;padding:6px 14px;background:var(--surface);border:1px solid var(--border);border-radius:20px;font-size:13px;}
+.company-dot{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0;}
+.company-dot.fit{background:var(--green-light);}
+.company-dot.over{background:var(--red);}
+.company-name{font-weight:600;color:var(--text);}
+.company-zone{font-size:11px;color:var(--red);font-weight:700;}
+.period-select{padding:6px 12px;background:var(--surface);border:1px solid var(--border);border-radius:6px;color:var(--text-muted);font-size:12px;font-family:var(--sans);cursor:pointer;outline:none;}
+.topnav-avatar{width:32px;height:32px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;}
+
+/* ── SIDEBAR ── */
+.sidebar{background:var(--dark2);border-right:1px solid var(--border);padding:20px 12px;display:flex;flex-direction:column;gap:4px;overflow-y:auto;}
+.sidebar-section{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-dim);padding:8px 12px 4px;margin-top:8px;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--text-muted);transition:all 0.15s;border:1px solid transparent;user-select:none;}
+.nav-item:hover{background:var(--surface);color:var(--text);}
+.nav-item.active{background:rgba(58,175,102,0.12);border-color:var(--border-green);color:var(--green-light);}
+.nav-item svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
+.nav-item .nav-badge{margin-left:auto;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+
+/* ── MAIN CONTENT ── */
+.main{overflow-y:auto;padding:32px;background:var(--dark);}
+.screen{display:none;animation:fadeIn 0.3s ease;}
+.screen.active{display:block;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── SCREEN HEADER ── */
+.screen-header{margin-bottom:28px;}
+.screen-num{font-size:10px;text-transform:uppercase;letter-spacing:2px;color:var(--text-dim);margin-bottom:6px;font-family:var(--mono);}
+.screen-title{font-family:var(--serif);font-size:30px;color:var(--text);letter-spacing:-0.5px;margin-bottom:6px;}
+.screen-sub{font-size:14px;color:var(--text-muted);line-height:1.6;max-width:600px;}
+.screen-narration{display:inline-flex;align-items:center;gap:8px;margin-top:12px;padding:8px 14px;background:rgba(58,175,102,0.07);border:1px solid var(--border-green);border-radius:8px;font-size:12.5px;color:var(--green-light);font-style:italic;}
+.screen-narration::before{content:'💬';font-style:normal;}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;}
+.card-title{font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-dim);margin-bottom:16px;font-weight:500;}
+.card.alert{border-color:var(--red-border);background:var(--red-bg);}
+.card.warning{border-color:rgba(224,123,0,0.3);background:var(--orange-bg);}
+.card.success{border-color:var(--border-green);background:rgba(58,175,102,0.06);}
+
+/* ── GRID LAYOUTS ── */
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.grid-2-1{display:grid;grid-template-columns:2fr 1fr;gap:16px;}
+.grid-1-2{display:grid;grid-template-columns:1fr 2fr;gap:16px;}
+
+/* ── SPEEDOMETER ── */
+.speedo-wrap{display:flex;flex-direction:column;align-items:center;padding:8px 0 0;}
+.speedo-canvas{width:280px;height:160px;}
+.speedo-score{text-align:center;margin-top:8px;}
+.speedo-num{font-family:var(--serif);font-size:52px;color:var(--red);letter-spacing:-2px;line-height:1;}
+.speedo-label{font-size:11px;color:var(--text-dim);text-transform:uppercase;letter-spacing:1px;margin-top:4px;}
+.speedo-zone{display:inline-block;margin-top:8px;padding:4px 16px;border-radius:20px;font-size:12px;font-weight:700;background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+.speedo-zone.fit{background:rgba(58,175,102,0.12);color:var(--green-light);border-color:var(--border-green);}
+.speedo-zone.under{background:var(--orange-bg);color:var(--orange);border-color:rgba(224,123,0,0.3);}
+
+/* ── OGR RANGE BAR ── */
+.ogr-bar-wrap{margin-top:20px;}
+.ogr-bar-label{display:flex;justify-content:space-between;font-size:11px;color:var(--text-dim);margin-bottom:6px;}
+.ogr-track{position:relative;height:12px;background:var(--dark4);border-radius:6px;overflow:visible;margin-bottom:8px;}
+.ogr-fit-range{position:absolute;top:0;bottom:0;background:rgba(58,175,102,0.25);border:1px solid var(--border-green);border-radius:6px;}
+.ogr-needle{position:absolute;top:-5px;bottom:-5px;width:3px;background:var(--red);border-radius:2px;transform:translateX(-50%);}
+.ogr-needle::after{content:'▲';position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);font-size:8px;color:var(--red);}
+.ogr-legend{display:flex;gap:16px;font-size:11px;color:var(--text-dim);}
+.ogr-legend-item{display:flex;align-items:center;gap:5px;}
+.ogr-legend-dot{width:8px;height:8px;border-radius:2px;}
+
+/* ── METRIC TILES ── */
+.metric-tile{background:var(--dark3);border:1px solid var(--border);border-radius:10px;padding:16px 18px;}
+.metric-tile .m-label{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-bottom:8px;}
+.metric-tile .m-val{font-family:var(--serif);font-size:30px;color:var(--text);letter-spacing:-1px;line-height:1;}
+.metric-tile .m-val.red{color:var(--red);}
+.metric-tile .m-val.orange{color:var(--orange);}
+.metric-tile .m-val.green{color:var(--green-light);}
+.metric-tile .m-sub{font-size:11px;color:var(--text-dim);margin-top:4px;}
+.metric-tile .m-delta{font-size:11px;font-weight:600;margin-top:6px;}
+.metric-tile .m-delta.up{color:var(--green-light);}
+.metric-tile .m-delta.down{color:var(--red);}
+.metric-tile .m-delta.warn{color:var(--orange);}
+
+/* ── SUBSYSTEM BARS ── */
+.subsystem-bar-wrap{display:flex;flex-direction:column;gap:18px;}
+.sub-bar-row{position:relative;}
+.sub-bar-header{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;}
+.sub-bar-name{font-size:13.5px;font-weight:500;color:var(--text);}
+.sub-bar-score{font-family:var(--mono);font-size:15px;font-weight:500;}
+.sub-bar-score.ok{color:var(--green-light);}
+.sub-bar-score.warn{color:var(--orange);}
+.sub-bar-score.bad{color:var(--red);}
+.sub-bar-track{height:10px;background:var(--dark4);border-radius:5px;overflow:hidden;position:relative;}
+.sub-bar-fill{height:100%;border-radius:5px;transition:width 1s cubic-bezier(.4,0,.2,1);}
+.sub-bar-fill.ok{background:linear-gradient(90deg,var(--green),var(--green-light));}
+.sub-bar-fill.warn{background:linear-gradient(90deg,#b35c00,var(--orange));}
+.sub-bar-fill.bad{background:linear-gradient(90deg,#a03030,var(--red));}
+.sub-bar-threshold{position:absolute;top:-2px;bottom:-2px;width:2px;background:rgba(255,255,255,0.3);transform:translateX(-50%);}
+.sub-bar-desc{font-size:12px;color:var(--text-muted);margin-top:6px;line-height:1.5;}
+.constraint-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:4px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;margin-left:8px;}
+.constraint-badge.critical{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+.constraint-badge.warning{background:var(--orange-bg);color:var(--orange);border:1px solid rgba(224,123,0,0.3);}
+
+/* ── CAUSAL TREE ── */
+.causal-root{background:var(--red-bg);border:1px solid var(--red-border);border-radius:10px;padding:14px 18px;margin-bottom:16px;}
+.causal-root-label{font-size:11px;text-transform:uppercase;letter-spacing:1px;color:var(--red);margin-bottom:4px;}
+.causal-root-name{font-size:16px;font-weight:600;color:var(--text);}
+.causal-children{display:flex;flex-direction:column;gap:10px;padding-left:20px;border-left:2px solid var(--border);}
+.causal-child{background:var(--dark3);border:1px solid var(--border);border-radius:8px;padding:12px 16px;position:relative;}
+.causal-child::before{content:'';position:absolute;left:-21px;top:50%;width:20px;height:1px;background:var(--border);}
+.causal-child-label{font-size:10px;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-dim);margin-bottom:3px;}
+.causal-child-name{font-size:13.5px;font-weight:500;color:var(--text);margin-bottom:4px;}
+.causal-child-metric{font-size:12px;color:var(--red);font-family:var(--mono);}
+.causal-grandchildren{display:flex;flex-direction:column;gap:8px;padding-left:20px;border-left:1px dashed var(--border);}
+.causal-gc{background:var(--dark4);border-radius:6px;padding:10px 14px;position:relative;font-size:12.5px;color:var(--text-muted);border:1px solid var(--border);}
+.causal-gc::before{content:'';position:absolute;left:-20px;top:50%;width:19px;height:1px;background:var(--border);}
+.causal-gc strong{color:var(--text);display:block;margin-bottom:2px;}
+
+/* ── TREND LINE (sparkline) ── */
+.trend-wrap{display:flex;align-items:flex-end;gap:3px;height:32px;}
+.trend-bar{flex:1;border-radius:2px 2px 0 0;min-height:4px;transition:height 0.5s ease;}
+.trend-bar.ok{background:var(--green-light);}
+.trend-bar.warn{background:var(--orange);}
+.trend-bar.bad{background:var(--red);}
+
+/* ── LEVER CARDS ── */
+.lever-list{display:flex;flex-direction:column;gap:12px;}
+.lever-card{background:var(--dark3);border:1px solid var(--border);border-radius:10px;padding:18px 20px;display:grid;grid-template-columns:1fr auto;gap:12px;align-items:start;cursor:pointer;transition:all 0.15s;}
+.lever-card:hover{border-color:var(--border-green);background:rgba(58,175,102,0.04);}
+.lever-card.top-pick{border-color:var(--border-green);background:rgba(58,175,102,0.06);}
+.lever-rank{font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--text-dim);margin-bottom:5px;display:flex;align-items:center;gap:6px;}
+.lever-rank .pick-label{color:var(--green-light);font-weight:700;}
+.lever-name{font-size:15px;font-weight:600;color:var(--text);margin-bottom:5px;}
+.lever-desc{font-size:12.5px;color:var(--text-muted);line-height:1.5;margin-bottom:10px;}
+.lever-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.lever-tag{font-size:11px;padding:3px 10px;border-radius:4px;font-weight:500;}
+.lever-tag.impact{background:rgba(58,175,102,0.15);color:var(--green-light);border:1px solid var(--border-green);}
+.lever-tag.time{background:var(--blue-bg);color:var(--blue);border:1px solid rgba(58,143,217,0.3);}
+.lever-tag.conf{background:var(--yellow-bg);color:var(--yellow);border:1px solid rgba(200,166,0,0.3);}
+.lever-impact-bar{display:flex;flex-direction:column;align-items:flex-end;gap:4px;}
+.lever-gfs-delta{font-family:var(--serif);font-size:22px;color:var(--green-light);letter-spacing:-0.5px;}
+.lever-gfs-label{font-size:10px;color:var(--text-dim);}
+
+/* ── SIMULATION ── */
+.sim-row{display:flex;align-items:center;gap:16px;margin-bottom:16px;}
+.sim-label{font-size:13px;color:var(--text-muted);width:180px;flex-shrink:0;}
+.sim-slider-wrap{flex:1;display:flex;align-items:center;gap:12px;}
+.sim-slider{-webkit-appearance:none;appearance:none;flex:1;height:6px;border-radius:3px;outline:none;cursor:pointer;background:linear-gradient(to right,var(--green-light) 0%,var(--green-light) var(--pct,50%),var(--dark4) var(--pct,50%),var(--dark4) 100%);}
+.sim-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--green-light);border:2px solid var(--dark);box-shadow:0 0 0 2px var(--border-green);cursor:pointer;}
+.sim-val{font-family:var(--mono);font-size:13px;color:var(--text);width:44px;text-align:right;}
+.sim-results{background:var(--dark3);border:1px solid var(--border-green);border-radius:12px;padding:24px;margin-top:8px;}
+.sim-headline{font-family:var(--serif);font-size:26px;color:var(--green-light);letter-spacing:-0.5px;margin-bottom:6px;}
+.sim-detail{font-size:13px;color:var(--text-muted);line-height:1.6;}
+.sim-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px;}
+.sim-metric{background:var(--surface);border-radius:8px;padding:12px 14px;border:1px solid var(--border);}
+.sim-metric .label{font-size:10px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.8px;margin-bottom:5px;}
+.sim-metric .before{font-size:12px;color:var(--text-muted);text-decoration:line-through;margin-bottom:2px;font-family:var(--mono);}
+.sim-metric .after{font-size:18px;font-weight:600;color:var(--green-light);font-family:var(--serif);}
+.sim-zone{display:inline-flex;align-items:center;gap:6px;padding:5px 14px;border-radius:20px;font-size:12px;font-weight:700;margin-top:12px;}
+.sim-zone.over{background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
+.sim-zone.fit{background:rgba(58,175,102,0.12);color:var(--green-light);border:1px solid var(--border-green);}
+.sim-zone.under{background:var(--orange-bg);color:var(--orange);border:1px solid rgba(224,123,0,0.3);}
+.sim-arrow{font-size:16px;}
+
+/* ── OUTCOME MONITORING ── */
+.monitor-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px;}
+.monitor-item{background:var(--dark3);border:1px solid var(--border);border-radius:8px;padding:14px;}
+.monitor-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;margin-bottom:10px;font-size:16px;}
+.monitor-name{font-size:12.5px;font-weight:500;color:var(--text);margin-bottom:4px;}
+.monitor-desc{font-size:11px;color:var(--text-dim);line-height:1.5;}
+.monitor-status{display:flex;align-items:center;gap:4px;font-size:10px;margin-top:8px;font-weight:600;}
+.monitor-dot{width:6px;height:6px;border-radius:50%;}
+
+/* ── DIVIDERS ── */
+.section-divider{height:1px;background:var(--border);margin:24px 0;}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:6px;height:6px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+
+/* ── ROOT CAUSE BOX ── */
+.root-cause-box{display:flex;gap:8px;align-items:flex-start;padding:14px 16px;background:var(--red-bg);border:1px solid var(--red-border);border-radius:8px;margin-bottom:20px;}
+.root-cause-box .icon{font-size:18px;margin-top:2px;}
+.root-cause-box p{font-size:13.5px;color:var(--text);line-height:1.6;}
+.root-cause-box strong{color:var(--red);}
+
+</style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- TOP NAV -->
+  <nav class="topnav">
+    <div class="topnav-logo">Grow<span>Fitt</span></div>
+    <div class="topnav-badge">Enterprise</div>
+    <div style="height:20px;width:1px;background:var(--border);margin:0 8px;"></div>
+    <div style="font-size:13px;color:var(--text-dim);">Control System</div>
+    <div class="topnav-company">
+      <div class="company-pill">
+        <div class="company-dot over"></div>
+        <span class="company-name">Elevation Software Ltd</span>
+        <span style="color:var(--text-dim);font-size:11px;">·</span>
+        <span class="company-zone">OVER ZONE</span>
+      </div>
+      <select class="period-select">
+        <option>Q1 2026</option>
+        <option>Q4 2025</option>
+        <option>Q3 2025</option>
+      </select>
+      <div class="topnav-avatar">ES</div>
+    </div>
+  </nav>
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">Diagnosis</div>
+    <div class="nav-item active" onclick="showScreen('s1',this)">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+      System State
+    </div>
+    <div class="nav-item" onclick="showScreen('s2',this)">
+      <svg viewBox="0 0 24 24"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      Constraint Detection
+      <span class="nav-badge">1</span>
+    </div>
+    <div class="nav-item" onclick="showScreen('s3',this)">
+      <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+      Causal Diagnosis
+    </div>
+    <div class="nav-item" onclick="showScreen('s4',this)">
+      <svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+      Execution Levers
+    </div>
+
+    <div class="sidebar-section">Planning</div>
+    <div class="nav-item" onclick="showScreen('s5',this)">
+      <svg viewBox="0 0 24 24"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+      Simulation
+    </div>
+
+    <div style="margin:4px 12px 0;padding:12px;background:var(--dark3);border:1px solid var(--border);border-radius:8px;font-size:12px;">
+      <div style="color:var(--text-dim);margin-bottom:4px;">Stage</div>
+      <div style="color:var(--text);font-weight:500;margin-bottom:8px;">Growth · Horizontal SaaS</div>
+      <div style="color:var(--text-dim);margin-bottom:4px;">ARR</div>
+      <div style="color:var(--text);font-weight:500;margin-bottom:8px;">$38M</div>
+      <div style="color:var(--text-dim);margin-bottom:4px;">Category</div>
+      <div style="color:var(--text);font-weight:500;">Horizontal SaaS · 0.8×</div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ────────────────────────────────────────────────── -->
+    <!-- SCREEN 1: SYSTEM STATE                            -->
+    <!-- ────────────────────────────────────────────────── -->
+    <div class="screen active" id="s1">
+      <div class="screen-header">
+        <div class="screen-num">Screen 01 / System State</div>
+        <h1 class="screen-title">Are you inside your optimal growth range?</h1>
+        <p class="screen-sub">Your Growth Fitness Score measures whether the system can sustain the pace you're growing at — not just whether you're growing.</p>
+        <div class="screen-narration">Most teams track growth. Very few know if their system can sustain it.</div>
+      </div>
+
+      <div class="grid-2-1" style="margin-bottom:16px;">
+        <!-- Speedometer card -->
+        <div class="card">
+          <div class="card-title">Growth Fitness Score</div>
+          <div class="speedo-wrap">
+            <canvas class="speedo-canvas" id="speedo" width="280" height="160"></canvas>
+            <div class="speedo-score">
+              <div class="speedo-num">2.9</div>
+              <div class="speedo-label">/ 5.00 · Fragile</div>
+              <div class="speedo-zone">OVER ZONE — System under strain</div>
+            </div>
+          </div>
+
+          <div class="ogr-bar-wrap" style="margin-top:24px;">
+            <div class="ogr-bar-label">
+              <span>Optimal Growth Range (CBGR-adjusted)</span>
+              <span style="color:var(--text-muted);">32% — 38%</span>
+            </div>
+            <div class="ogr-track">
+              <!-- Fit zone: 32–38% on a 0–60% scale -->
+              <div class="ogr-fit-range" style="left:53.3%;width:10%;"></div>
+              <!-- Needle at 45% -->
+              <div class="ogr-needle" style="left:75%;"></div>
+            </div>
+            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-dim);font-family:var(--mono);margin-bottom:10px;">
+              <span>0%</span><span>15%</span><span>30%</span><span>45%</span><span>60%</span>
+            </div>
+            <div class="ogr-legend">
+              <div class="ogr-legend-item"><div class="ogr-legend-dot" style="background:rgba(58,175,102,0.4);"></div>Fit zone (32–38%)</div>
+              <div class="ogr-legend-item"><div class="ogr-legend-dot" style="background:var(--red);"></div>Actual (45%)</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right column: quick stats -->
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div class="metric-tile">
+            <div class="m-label">Actual Growth</div>
+            <div class="m-val red">45%</div>
+            <div class="m-sub">LTM revenue growth</div>
+            <div class="m-delta down">↑ 7pp above OGR ceiling</div>
+          </div>
+          <div class="metric-tile">
+            <div class="m-label">OGR Range</div>
+            <div class="m-val" style="font-size:22px;color:var(--text);">32–38%</div>
+            <div class="m-sub">CBGR-adjusted · Horizontal SaaS</div>
+          </div>
+          <div class="metric-tile">
+            <div class="m-label">GFS Trend</div>
+            <div class="m-val warn" style="font-size:22px;">2.9 ↓</div>
+            <div class="m-sub">Was 3.2 last quarter</div>
+            <div class="quarter-row" style="margin-top:8px;">
+              <div class="q-bar-wrap"><div class="q-bar ok" style="height:70%;background:var(--green-light);"></div><div class="q-label">Q2</div></div>
+              <div class="q-bar-wrap"><div class="q-bar ok" style="height:80%;background:var(--green-light);"></div><div class="q-label">Q3</div></div>
+              <div class="q-bar-wrap"><div class="q-bar warn" style="height:65%;background:var(--orange);"></div><div class="q-label">Q4</div></div>
+              <div class="q-bar-wrap"><div class="q-bar bad" style="height:55%;background:var(--red);"></div><div class="q-label">Q1</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Inference banner -->
+      <div class="card" style="background:rgba(224,90,78,0.06);border-color:var(--red-border);">
+        <div style="display:flex;align-items:flex-start;gap:14px;">
+          <div style="font-size:24px;">⚠️</div>
+          <div>
+            <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px;">System Inference</div>
+            <p style="font-size:13.5px;color:var(--text-muted);line-height:1.65;max-width:700px;">Elevation Software is growing at <strong style="color:var(--red);">45%</strong>, but the system fitness score of <strong style="color:var(--red);">2.9</strong> means the system can only sustainably support <strong style="color:var(--text);">32–38%</strong> growth. The gap is being bridged by burning efficiency and compressing retention — both of which will degrade further unless addressed in the next 1–2 quarters.</p>
+            <div style="margin-top:12px;font-size:13px;color:var(--text-dim);font-style:italic;">"Growth is not the problem. The way they are achieving it is."</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- KPI row -->
+      <div class="grid-3" style="margin-top:16px;">
+        <div class="metric-tile">
+          <div class="m-label">Net Revenue Retention</div>
+          <div class="m-val warn">108%</div>
+          <div class="m-sub">Was 115% · Declining</div>
+          <div class="m-delta down">↓ 7pp QoQ</div>
+        </div>
+        <div class="metric-tile">
+          <div class="m-label">CAC Payback</div>
+          <div class="m-val warn">22mo</div>
+          <div class="m-sub">Was 16mo · Rising</div>
+          <div class="m-delta down">↑ 6 months QoQ</div>
+        </div>
+        <div class="metric-tile">
+          <div class="m-label">Sales Efficiency</div>
+          <div class="m-val warn">0.7x</div>
+          <div class="m-sub">Magic Number · Below 1.0x</div>
+          <div class="m-delta down">↓ 0.3x QoQ</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ────────────────────────────────────────────────── -->
+    <!-- SCREEN 2: CONSTRAINT DETECTION                    -->
+    <!-- ────────────────────────────────────────────────── -->
+    <div class="screen" id="s2">
+      <div class="screen-header">
+        <div class="screen-num">Screen 02 / Constraint Detection</div>
+        <h1 class="screen-title">What's the first thing that will break?</h1>
+        <p class="screen-sub">The system doesn't fail everywhere at once. It degrades at the weakest constraint first. Identify it before it cascades.</p>
+        <div class="screen-narration">At your current growth rate, efficiency is the first subsystem that will degrade.</div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:16px;">
+        <div class="card">
+          <div class="card-title">Subsystem Health</div>
+          <div class="subsystem-bar-wrap">
+            <div class="sub-bar-row">
+              <div class="sub-bar-header">
+                <span class="sub-bar-name">Growth Quality (GQS)</span>
+                <span class="sub-bar-score ok">3.4 / 5.0</span>
+              </div>
+              <div class="sub-bar-track">
+                <div class="sub-bar-fill ok" style="width:68%;"></div>
+                <div class="sub-bar-threshold" style="left:60%;"></div>
+              </div>
+              <div class="sub-bar-desc">Inbound mix improving, deal quality stable. Pipeline is holding.</div>
+            </div>
+
+            <div class="sub-bar-row">
+              <div class="sub-bar-header">
+                <span class="sub-bar-name">Retention Score (RS)</span>
+                <span class="sub-bar-score warn">3.1 / 5.0</span>
+              </div>
+              <div class="sub-bar-track">
+                <div class="sub-bar-fill warn" style="width:62%;"></div>
+                <div class="sub-bar-threshold" style="left:60%;"></div>
+              </div>
+              <div class="sub-bar-desc">NRR declining 7pp QoQ. Expansion velocity has slowed materially.</div>
+            </div>
+
+            <div class="sub-bar-row">
+              <div class="sub-bar-header">
+                <span class="sub-bar-name">Efficiency Score (ES)
+                  <span class="constraint-badge critical">⚡ Constraint</span>
+                </span>
+                <span class="sub-bar-score bad">2.4 / 5.0</span>
+              </div>
+              <div class="sub-bar-track">
+                <div class="sub-bar-fill bad" style="width:48%;"></div>
+                <div class="sub-bar-threshold" style="left:60%;"></div>
+              </div>
+              <div class="sub-bar-desc">Below threshold. CAC rising, sales efficiency at 0.7x. Burn multiple climbing.</div>
+            </div>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);font-size:11px;color:var(--text-dim);">
+            <div style="width:8px;height:8px;background:rgba(255,255,255,0.2);border-radius:1px;flex-shrink:0;"></div>
+            Threshold at 3.0 — components below trigger adjusted GFS penalty
+          </div>
+        </div>
+
+        <!-- Trend chart panel -->
+        <div class="card">
+          <div class="card-title">Quarterly Trend — All Subsystems</div>
+          <div style="display:flex;flex-direction:column;gap:20px;">
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;"><span style="color:var(--text-muted);">Growth Quality (GQS)</span><span style="color:var(--green-light);font-family:var(--mono);">Stable</span></div>
+              <div class="quarter-row" style="height:40px;">
+                <div class="q-bar-wrap"><div class="q-bar" style="height:65%;background:var(--green-light);border-radius:3px 3px 0 0;"></div><div class="q-label">Q2</div></div>
+                <div class="q-bar-wrap"><div class="q-bar" style="height:70%;background:var(--green-light);border-radius:3px 3px 0 0;"></div><div class="q-label">Q3</div></div>
+                <div class="q-bar-wrap"><div class="q-bar" style="height:68%;background:var(--green-light);border-radius:3px 3px 0 0;"></div><div class="q-label">Q4</div></div>
+                <div class="q-bar-wrap"><div class="q-bar" style="height:68%;background:var(--green-light);border-radius:3px 3px 0 0;"></div><div class="q-label">Q1</div></div>
+              </div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;"><span style="color:var(--text-muted);">Retention Score (RS)</span><span style="color:var(--orange);font-family:var(--mono);">Declining ↓</span></div>
+              <div class="quarter-row" style="height:40px;">
+                <div class="q-bar-wrap"><div class="q-bar" style="height:80%;background:var(--green-light);border-radius:3px 3px 0 0;"></div><div class="q-label">Q2</div></div>
+                <div class="q-bar-wrap"><div class="q-bar" style="height:72%;background:var(--green-light);border-radius:3px 3px 0 0;"></div><div class="q-label">Q3</div></div>
+                <div class="q-bar-wrap"><div class="q-bar" style="height:60%;background:var(--orange);border-radius:3px 3px 0 0;"></div><div class="q-label">Q4</div></div>
+                <div class="q-bar-wrap"><div class="q-bar" style="height:52%;background:var(--orange);border-radius:3px 3px 0 0;"></div><div class="q-label">Q1</div></div>
+              </div>
+            </div>
+            <div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;"><span style="color:var(--text-muted);">Efficiency Score (ES)</span><span style="color:var(--red);font-family:var(--mono);">Breaking ↓↓</span></div>
+              <div class="quarter-row" style="height:40px;">
+                <div class="q-bar-wrap"><div class="q-bar" style="height:70%;background:var(--green-light);border-radius:3px 3px 0 0;"></div><div class="q-label">Q2</div></div>
+                <div class="q-bar-wrap"><div class="q-bar" style="height:58%;background:var(--orange);border-radius:3px 3px 0 0;"></div><div class="q-label">Q3</div></div>
+                <div class="q-bar-wrap"><div class="q-bar" style="height:42%;background:var(--red);border-radius:3px 3px 0 0;"></div><div class="q-label">Q4</div></div>
+                <div class="q-bar-wrap"><div class="q-bar" style="height:30%;background:var(--red);border-radius:3px 3px 0 0;"></div><div class="q-label">Q1</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="section-divider"></div>
+          <div style="font-size:13px;color:var(--text-muted);line-height:1.6;">
+            <strong style="color:var(--text);">Projection:</strong> If current trajectory continues, ES will fall below 2.0 by Q2 2026 — triggering a second penalty tier on the adjusted GFS.
+          </div>
+        </div>
+      </div>
+
+      <!-- Constraint breakdown -->
+      <div class="card">
+        <div class="card-title">Efficiency Breakdown — Constraint Components</div>
+        <div class="grid-3">
+          <div class="metric-tile" style="border-color:var(--red-border);">
+            <div class="m-label">CAC Payback</div>
+            <div class="m-val red">22mo</div>
+            <div class="m-sub">Benchmark: ≤14mo for Growth stage</div>
+            <div class="m-delta down">↑ 57% above benchmark</div>
+          </div>
+          <div class="metric-tile" style="border-color:var(--red-border);">
+            <div class="m-label">Sales Efficiency</div>
+            <div class="m-val red">0.7x</div>
+            <div class="m-sub">Benchmark: ≥1.0x</div>
+            <div class="m-delta down">↓ Spending $1.43 to generate $1</div>
+          </div>
+          <div class="metric-tile" style="border-color:rgba(224,123,0,0.3);">
+            <div class="m-label">Burn Multiple</div>
+            <div class="m-val warn">2.4x</div>
+            <div class="m-sub">Benchmark: ≤1.5x for Growth stage</div>
+            <div class="m-delta warn">↑ 60% above efficient range</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ────────────────────────────────────────────────── -->
+    <!-- SCREEN 3: CAUSAL DIAGNOSIS                        -->
+    <!-- ────────────────────────────────────────────────── -->
+    <div class="screen" id="s3">
+      <div class="screen-header">
+        <div class="screen-num">Screen 03 / Causal Diagnosis</div>
+        <h1 class="screen-title">Why is efficiency breaking?</h1>
+        <p class="screen-sub">The most important screen in the product. Converts symptoms into causal explanations — connecting metrics to behaviour to root cause.</p>
+        <div class="screen-narration">Your efficiency drop is driven by longer sales cycles and declining win rates — not just higher spend.</div>
+      </div>
+
+      <div class="root-cause-box">
+        <div class="icon">🔗</div>
+        <p>The efficiency constraint is <strong>not a headcount problem</strong>. The causal chain traces through <strong>ICP drift → longer sales cycles → declining win rates → rising CAC</strong>. Hiring more AEs will worsen the problem, not fix it.</p>
+      </div>
+
+      <div class="grid-2">
+        <!-- Causal Tree -->
+        <div>
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-dim);margin-bottom:14px;">Root cause tree — Efficiency (ES ↓)</div>
+          <div class="causal-root">
+            <div class="causal-root-label">⚡ Primary constraint</div>
+            <div class="causal-root-name">Efficiency Score degrading (2.4 → 2.1 projection)</div>
+          </div>
+          <div class="causal-children">
+            <div class="causal-child">
+              <div class="causal-child-label">Driver 1</div>
+              <div class="causal-child-name">CAC Payback increasing</div>
+              <div class="causal-child-metric">16mo → 22mo (+6 months QoQ)</div>
+              <div class="causal-grandchildren" style="margin-top:10px;">
+                <div class="causal-gc"><strong>Sales cycle lengthening</strong>Mid-funnel deal velocity down 34% QoQ</div>
+                <div class="causal-gc"><strong>ICP drift to larger deals</strong>Avg deal size up 40%, but close rate down 28%</div>
+              </div>
+            </div>
+            <div class="causal-child">
+              <div class="causal-child-label">Driver 2</div>
+              <div class="causal-child-name">Sales Efficiency declining</div>
+              <div class="causal-child-metric">1.1x → 0.7x (Magic Number)</div>
+              <div class="causal-grandchildren" style="margin-top:10px;">
+                <div class="causal-gc"><strong>Win rate dropping</strong>37% → 26% — losing more at evaluation stage</div>
+                <div class="causal-gc"><strong>S&M spend accelerating</strong>+38% headcount cost without proportional ARR</div>
+              </div>
+            </div>
+            <div class="causal-child">
+              <div class="causal-child-label">Driver 3 (secondary)</div>
+              <div class="causal-child-name">Burn Multiple rising</div>
+              <div class="causal-child-metric">1.6x → 2.4x</div>
+              <div class="causal-grandchildren" style="margin-top:10px;">
+                <div class="causal-gc"><strong>Expansion not compensating</strong>NRR fell 7pp, reducing net ARR efficiency</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trend analysis panel -->
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div class="card">
+            <div class="card-title">Sales Cycle — Last 6 Quarters</div>
+            <div style="display:flex;align-items:flex-end;gap:8px;height:80px;padding:8px 0;">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">
+                <div style="flex:1;display:flex;align-items:flex-end;"><div style="width:100%;height:38%;background:var(--green-light);border-radius:3px 3px 0 0;"></div></div>
+                <div style="font-size:9px;color:var(--text-dim);">Q4'24</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">
+                <div style="flex:1;display:flex;align-items:flex-end;"><div style="width:100%;height:45%;background:var(--green-light);border-radius:3px 3px 0 0;"></div></div>
+                <div style="font-size:9px;color:var(--text-dim);">Q1'25</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">
+                <div style="flex:1;display:flex;align-items:flex-end;"><div style="width:100%;height:50%;background:var(--green-light);border-radius:3px 3px 0 0;"></div></div>
+                <div style="font-size:9px;color:var(--text-dim);">Q2'25</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">
+                <div style="flex:1;display:flex;align-items:flex-end;"><div style="width:100%;height:63%;background:var(--orange);border-radius:3px 3px 0 0;"></div></div>
+                <div style="font-size:9px;color:var(--text-dim);">Q3'25</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">
+                <div style="flex:1;display:flex;align-items:flex-end;"><div style="width:100%;height:80%;background:var(--red);border-radius:3px 3px 0 0;"></div></div>
+                <div style="font-size:9px;color:var(--text-dim);">Q4'25</div>
+              </div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">
+                <div style="flex:1;display:flex;align-items:flex-end;"><div style="width:100%;height:100%;background:var(--red);border-radius:3px 3px 0 0;"></div></div>
+                <div style="font-size:9px;color:var(--text-dim);">Q1'26</div>
+              </div>
+            </div>
+            <div style="font-size:12px;color:var(--text-dim);margin-top:4px;">Avg days to close: <span style="color:var(--red);font-family:var(--mono);">62 days</span> (was 39 days in Q4'24)</div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Win Rate — Last 6 Quarters</div>
+            <div style="display:flex;align-items:flex-end;gap:8px;height:80px;padding:8px 0;">
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;"><div style="flex:1;display:flex;align-items:flex-end;"><div style="width:100%;height:100%;background:var(--green-light);border-radius:3px 3px 0 0;"></div></div><div style="font-size:9px;color:var(--text-dim);">Q4'24</div></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;"><div style="flex:1;display:flex;align-items:flex-end;"><div style="width:100%;height:95%;background:var(--green-light);border-radius:3px 3px 0 0;"></div></div><div style="font-size:9px;color:var(--text-dim);">Q1'25</div></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;"><div style="flex:1;display:flex;align-items:flex-end;"><div style="width:100%;height:82%;background:var(--green-light);border-radius:3px 3px 0 0;"></div></div><div style="font-size:9px;color:var(--text-dim);">Q2'25</div></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;"><div style="flex:1;display:flex;align-items:flex-end;"><div style="width:100%;height:68%;background:var(--orange);border-radius:3px 3px 0 0;"></div></div><div style="font-size:9px;color:var(--text-dim);">Q3'25</div></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;"><div style="flex:1;display:flex;align-items:flex-end;"><div style="width:100%;height:50%;background:var(--red);border-radius:3px 3px 0 0;"></div></div><div style="font-size:9px;color:var(--text-dim);">Q4'25</div></div>
+              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;"><div style="flex:1;display:flex;align-items:flex-end;"><div style="width:100%;height:37%;background:var(--red);border-radius:3px 3px 0 0;"></div></div><div style="font-size:9px;color:var(--text-dim);">Q1'26</div></div>
+            </div>
+            <div style="font-size:12px;color:var(--text-dim);margin-top:4px;">Win rate: <span style="color:var(--red);font-family:var(--mono);">26%</span> (was 37% in Q4'24)</div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Root Cause Summary</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;"><span style="color:var(--red);">→</span><span style="color:var(--text-muted);">ICP has drifted toward larger, more complex deals</span></div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;"><span style="color:var(--red);">→</span><span style="color:var(--text-muted);">Evaluation-stage loss rate is driving CAC inflation</span></div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;"><span style="color:var(--red);">→</span><span style="color:var(--text-muted);">S&M headcount grew ahead of system capacity</span></div>
+              <div style="display:flex;align-items:center;gap:10px;font-size:13px;"><span style="color:var(--orange);">→</span><span style="color:var(--text-muted);">Expansion not compensating for new-logo cost inflation</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ────────────────────────────────────────────────── -->
+    <!-- SCREEN 4: EXECUTION LEVERS                        -->
+    <!-- ────────────────────────────────────────────────── -->
+    <div class="screen" id="s4">
+      <div class="screen-header">
+        <div class="screen-num">Screen 04 / Execution Levers</div>
+        <h1 class="screen-title">What should you actually do?</h1>
+        <p class="screen-sub">Ranked execution levers prioritised by GFS impact, time to effect, and confidence. Not all actions are equal — sequence matters.</p>
+        <div class="screen-narration">Fix ICP definition first — you recover 60% of the efficiency loss from a single lever.</div>
+      </div>
+
+      <div class="grid-2-1">
+        <div class="lever-list">
+          <div class="lever-card top-pick">
+            <div>
+              <div class="lever-rank">#1 <span class="pick-label">⭐ Top pick</span></div>
+              <div class="lever-name">Tighten ICP definition</div>
+              <div class="lever-desc">Redefine your Ideal Customer Profile to exclude deal profiles with cycles >45 days. Introduce ICP scoring at top-of-funnel to disqualify low-fit opportunities early. This directly improves win rate and compresses sales cycle — the two primary drivers of CAC inflation.</div>
+              <div class="lever-tags">
+                <span class="lever-tag impact">↑ GFS +0.6</span>
+                <span class="lever-tag time">1–2 quarters</span>
+                <span class="lever-tag conf">High confidence</span>
+              </div>
+            </div>
+            <div class="lever-impact-bar">
+              <div class="lever-gfs-delta">+0.6</div>
+              <div class="lever-gfs-label">GFS lift</div>
+            </div>
+          </div>
+
+          <div class="lever-card">
+            <div>
+              <div class="lever-rank">#2</div>
+              <div class="lever-name">Shift focus to expansion in top accounts</div>
+              <div class="lever-desc">Launch a structured expansion programme in your top 30 accounts. Target +4% NRR uplift through upsell and cross-sell motions. Expansion ARR has a lower CAC by definition and directly improves retention score — the secondary weakening subsystem.</div>
+              <div class="lever-tags">
+                <span class="lever-tag impact">↑ GFS +0.4</span>
+                <span class="lever-tag time">1–3 quarters</span>
+                <span class="lever-tag conf">High confidence</span>
+              </div>
+            </div>
+            <div class="lever-impact-bar">
+              <div class="lever-gfs-delta">+0.4</div>
+              <div class="lever-gfs-label">GFS lift</div>
+            </div>
+          </div>
+
+          <div class="lever-card">
+            <div>
+              <div class="lever-rank">#3</div>
+              <div class="lever-name">Pause new sales hiring</div>
+              <div class="lever-desc">Halt incremental AE hiring until win rate recovers above 32%. Adding headcount into a broken motion amplifies CAC — each new rep dilutes efficiency further. Redirect headcount budget to Customer Success to support the expansion lever.</div>
+              <div class="lever-tags">
+                <span class="lever-tag impact">↑ GFS +0.3</span>
+                <span class="lever-tag time">Immediate</span>
+                <span class="lever-tag conf">High confidence</span>
+              </div>
+            </div>
+            <div class="lever-impact-bar">
+              <div class="lever-gfs-delta">+0.3</div>
+              <div class="lever-gfs-label">GFS lift</div>
+            </div>
+          </div>
+
+          <div class="lever-card">
+            <div>
+              <div class="lever-rank">#4</div>
+              <div class="lever-name">Shift mix toward inbound / PLG</div>
+              <div class="lever-desc">Accelerate inbound content and product-led growth motions to structurally reduce CAC over 2–3 quarters. Inbound-sourced deals close faster and have lower acquisition cost. Current inbound mix is ~35% — target 50%+ to meaningfully shift the efficiency curve.</div>
+              <div class="lever-tags">
+                <span class="lever-tag impact">↑ GFS +0.2</span>
+                <span class="lever-tag time">2–3 quarters</span>
+                <span class="lever-tag conf">Medium confidence</span>
+              </div>
+            </div>
+            <div class="lever-impact-bar">
+              <div class="lever-gfs-delta">+0.2</div>
+              <div class="lever-gfs-label">GFS lift</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Outcome monitoring panel -->
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div class="card">
+            <div class="card-title">Combined GFS Impact (if all levers executed)</div>
+            <div style="text-align:center;padding:16px 0;">
+              <div style="font-size:12px;color:var(--text-dim);margin-bottom:4px;">Current GFS</div>
+              <div style="font-family:var(--serif);font-size:36px;color:var(--red);">2.9</div>
+              <div style="font-size:20px;color:var(--text-dim);margin:8px 0;">↓</div>
+              <div style="font-size:12px;color:var(--text-dim);margin-bottom:4px;">Projected GFS (60–90 days)</div>
+              <div style="font-family:var(--serif);font-size:36px;color:var(--green-light);">3.4</div>
+              <div style="font-size:12px;color:var(--text-dim);margin-top:8px;">Zone: <strong style="color:var(--green-light);">FIT</strong></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Outcome Monitoring — 60–90 Days</div>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div class="metric-tile" style="padding:12px 14px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                  <div><div class="m-label">CAC Payback</div><div style="font-size:14px;color:var(--text);">Improving?</div></div>
+                  <div style="font-size:11px;color:var(--text-dim);text-align:right;">Target: ≤18mo</div>
+                </div>
+              </div>
+              <div class="metric-tile" style="padding:12px 14px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                  <div><div class="m-label">NRR from expansion</div><div style="font-size:14px;color:var(--text);">Improving?</div></div>
+                  <div style="font-size:11px;color:var(--text-dim);text-align:right;">Target: ≥112%</div>
+                </div>
+              </div>
+              <div class="metric-tile" style="padding:12px 14px;">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                  <div><div class="m-label">Win rate (mid-funnel)</div><div style="font-size:14px;color:var(--text);">Improving?</div></div>
+                  <div style="font-size:11px;color:var(--text-dim);text-align:right;">Target: ≥32%</div>
+                </div>
+              </div>
+              <div class="metric-tile" style="padding:12px 14px;border-color:var(--border-green);">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                  <div><div class="m-label">GFS at 90 days</div><div style="font-size:14px;color:var(--text);">Re-measure</div></div>
+                  <div style="font-size:11px;color:var(--green-light);text-align:right;">Trigger: Apr 2026</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ────────────────────────────────────────────────── -->
+    <!-- SCREEN 5: SIMULATION                              -->
+    <!-- ────────────────────────────────────────────────── -->
+    <div class="screen" id="s5">
+      <div class="screen-header">
+        <div class="screen-num">Screen 05 / Simulation</div>
+        <h1 class="screen-title">What happens if you fix this?</h1>
+        <p class="screen-sub">Adjust execution levers and see how the GFS, OGR, and zone respond. Turns analysis into a control system.</p>
+        <div class="screen-narration">This is your "Stripe moment" — analysis becomes a control system.</div>
+      </div>
+
+      <div class="grid-2">
+        <!-- Sliders -->
+        <div class="card">
+          <div class="card-title">Adjust Levers</div>
+          <div style="display:flex;flex-direction:column;gap:20px;margin-top:4px;">
+            <div class="sim-row">
+              <div class="sim-label">Win Rate</div>
+              <div class="sim-slider-wrap">
+                <input class="sim-slider" type="range" min="20" max="50" value="26" id="sl-wr" oninput="runSim()">
+                <span class="sim-val" id="sv-wr">26%</span>
+              </div>
+            </div>
+            <div class="sim-row">
+              <div class="sim-label">Sales Cycle (days)</div>
+              <div class="sim-slider-wrap">
+                <input class="sim-slider" type="range" min="30" max="70" value="62" id="sl-sc" oninput="runSim()">
+                <span class="sim-val" id="sv-sc">62d</span>
+              </div>
+            </div>
+            <div class="sim-row">
+              <div class="sim-label">NRR</div>
+              <div class="sim-slider-wrap">
+                <input class="sim-slider" type="range" min="100" max="140" value="108" id="sl-nrr" oninput="runSim()">
+                <span class="sim-val" id="sv-nrr">108%</span>
+              </div>
+            </div>
+            <div class="sim-row">
+              <div class="sim-label">Inbound Mix</div>
+              <div class="sim-slider-wrap">
+                <input class="sim-slider" type="range" min="20" max="70" value="35" id="sl-ib" oninput="runSim()">
+                <span class="sim-val" id="sv-ib">35%</span>
+              </div>
+            </div>
+            <div class="sim-row">
+              <div class="sim-label">Growth Rate (target)</div>
+              <div class="sim-slider-wrap">
+                <input class="sim-slider" type="range" min="25" max="55" value="45" id="sl-gr" oninput="runSim()">
+                <span class="sim-val" id="sv-gr">45%</span>
+              </div>
+            </div>
+          </div>
+          <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);display:flex;gap:10px;">
+            <button onclick="resetSim()" style="flex:1;padding:9px;background:var(--dark4);border:1px solid var(--border);border-radius:6px;color:var(--text-muted);font-size:13px;cursor:pointer;font-family:var(--sans);">↺ Reset to current</button>
+            <button onclick="applyTarget()" style="flex:1;padding:9px;background:rgba(58,175,102,0.15);border:1px solid var(--border-green);border-radius:6px;color:var(--green-light);font-size:13px;cursor:pointer;font-family:var(--sans);">Apply target scenario →</button>
+          </div>
+        </div>
+
+        <!-- Results -->
+        <div>
+          <div class="sim-results">
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:1.2px;color:var(--text-dim);margin-bottom:12px;">Simulated outcome</div>
+            <div class="sim-headline" id="sim-gfs">GFS 2.9 → 2.9</div>
+            <div class="sim-detail" id="sim-detail">Adjust the levers to see how the system responds.</div>
+            <div id="sim-zone-row" style="margin-top:10px;">
+              <span class="sim-zone over">OVER</span>
+              <span class="sim-arrow" style="color:var(--text-dim);margin:0 8px;">→</span>
+              <span class="sim-zone over" id="sim-zone-after">OVER</span>
+            </div>
+            <div class="sim-metrics">
+              <div class="sim-metric">
+                <div class="label">CAC Payback</div>
+                <div class="before">22mo</div>
+                <div class="after" id="sim-cac">22mo</div>
+              </div>
+              <div class="sim-metric">
+                <div class="label">Sales Efficiency</div>
+                <div class="before">0.7x</div>
+                <div class="after" id="sim-se">0.7x</div>
+              </div>
+              <div class="sim-metric">
+                <div class="label">OGR Range</div>
+                <div class="before">32–38%</div>
+                <div class="after" id="sim-ogr">32–38%</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="card" style="margin-top:12px;">
+            <div class="card-title">Scenario Presets</div>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <button onclick="setPreset('minimal')" style="padding:10px 14px;background:var(--dark3);border:1px solid var(--border);border-radius:8px;color:var(--text-muted);font-size:13px;cursor:pointer;font-family:var(--sans);text-align:left;">🔧 Minimal intervention — ICP tighten only</button>
+              <button onclick="setPreset('full')" style="padding:10px 14px;background:var(--dark3);border:1px solid var(--border);border-radius:8px;color:var(--text-muted);font-size:13px;cursor:pointer;font-family:var(--sans);text-align:left;">⭐ Full playbook — all 4 levers activated</button>
+              <button onclick="setPreset('conservative')" style="padding:10px 14px;background:var(--dark3);border:1px solid var(--border);border-radius:8px;color:var(--text-muted);font-size:13px;cursor:pointer;font-family:var(--sans);text-align:left;">🛡️ Conservative — slow growth, protect efficiency</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+  </main>
+
+<script>
+// ── NAVIGATION ──────────────────────────────────────────
+function showScreen(id, el) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  el.classList.add('active');
+  if (id === 's1') drawSpeedometer();
+}
+
+// ── SPEEDOMETER ─────────────────────────────────────────
+function drawSpeedometer() {
+  const canvas = document.getElementById('speedo');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  const cx = W / 2, cy = H - 20, r = H - 30;
+
+  ctx.clearRect(0, 0, W, H);
+
+  // Track segments: Under / Fit / Over
+  const start = Math.PI;
+  const end = 2 * Math.PI;
+  const range = end - start;
+
+  // Under zone (0–32%)
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, start, start + range * 0.53);
+  ctx.strokeStyle = 'rgba(224,123,0,0.35)';
+  ctx.lineWidth = 16; ctx.lineCap = 'butt'; ctx.stroke();
+
+  // Fit zone (32–38%)
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, start + range * 0.53, start + range * 0.63);
+  ctx.strokeStyle = 'rgba(58,175,102,0.5)';
+  ctx.lineWidth = 16; ctx.stroke();
+
+  // Over zone (38–60%)
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, start + range * 0.63, end);
+  ctx.strokeStyle = 'rgba(224,90,78,0.35)';
+  ctx.lineWidth = 16; ctx.stroke();
+
+  // Track outline
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, start, end);
+  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
+  ctx.lineWidth = 18; ctx.stroke();
+
+  // Needle at 45% (out of 60% max = 75% of range)
+  const needlePct = 0.75;
+  const needleAngle = start + range * needlePct;
+  ctx.save();
+  ctx.translate(cx, cy);
+  ctx.rotate(needleAngle);
+  ctx.beginPath();
+  ctx.moveTo(0, 0);
+  ctx.lineTo(r - 8, 0);
+  ctx.strokeStyle = '#e05a4e';
+  ctx.lineWidth = 2.5;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+  ctx.restore();
+
+  // Hub
+  ctx.beginPath();
+  ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+  ctx.fillStyle = '#e05a4e';
+  ctx.fill();
+
+  // Labels
+  ctx.fillStyle = 'rgba(138,169,138,0.7)';
+  ctx.font = '10px DM Mono, monospace';
+  ctx.textAlign = 'left'; ctx.fillText('UNDER', 6, cy - r * 0.3 + 10);
+  ctx.textAlign = 'center'; ctx.fillText('FIT', cx, cy - r - 8);
+  ctx.textAlign = 'right'; ctx.fillText('OVER', W - 6, cy - r * 0.3 + 10);
+}
+
+window.addEventListener('load', drawSpeedometer);
+
+// ── SIMULATION ──────────────────────────────────────────
+const BASE = { wr:26, sc:62, nrr:108, ib:35, gr:45 };
+
+function runSim() {
+  const wr = +document.getElementById('sl-wr').value;
+  const sc = +document.getElementById('sl-sc').value;
+  const nrr = +document.getElementById('sl-nrr').value;
+  const ib = +document.getElementById('sl-ib').value;
+  const gr = +document.getElementById('sl-gr').value;
+
+  document.getElementById('sv-wr').textContent = wr + '%';
+  document.getElementById('sv-sc').textContent = sc + 'd';
+  document.getElementById('sv-nrr').textContent = nrr + '%';
+  document.getElementById('sv-ib').textContent = ib + '%';
+  document.getElementById('sv-gr').textContent = gr + '%';
+
+  // Update slider fill
+  ['wr','sc','nrr','ib','gr'].forEach(k => {
+    const sl = document.getElementById('sl-'+k);
+    const pct = (sl.value - sl.min) / (sl.max - sl.min) * 100;
+    sl.style.setProperty('--pct', pct + '%');
+  });
+
+  // Simple proxy model
+  const wrImpact   = (wr - 26) / 24 * 0.5;
+  const scImpact   = (62 - sc) / 32 * 0.4;
+  const nrrImpact  = (nrr - 108) / 32 * 0.4;
+  const ibImpact   = (ib - 35) / 35 * 0.2;
+  const grImpact   = (45 - gr) / 20 * 0.15;
+
+  const newGFS = Math.min(5, Math.max(1.5, 2.9 + wrImpact + scImpact + nrrImpact + ibImpact + grImpact));
+
+  // CAC proxy
+  const newCAC = Math.max(10, Math.round(22 * (BASE.wr / wr) * (sc / BASE.sc)));
+  // SE proxy
+  const newSE = Math.min(2.5, Math.max(0.3, (0.7 * (wr / BASE.wr) * (BASE.sc / sc)))).toFixed(1);
+  // OGR
+  const ogrLow = Math.round(32 * 1); const ogrHigh = Math.round(ogrLow + (newGFS - 2.5) * 4);
+
+  // Zone
+  let zone, zoneClass;
+  if (gr < ogrLow) { zone = 'UNDER'; zoneClass = 'under'; }
+  else if (gr <= ogrHigh) { zone = 'FIT'; zoneClass = 'fit'; }
+  else { zone = 'OVER'; zoneClass = 'over'; }
+
+  document.getElementById('sim-gfs').textContent = `GFS 2.9 → ${newGFS.toFixed(2)}`;
+
+  let detail = '';
+  if (newGFS >= 3.5) detail = 'System is recovering. Growth can be sustained at current rate.';
+  else if (newGFS >= 3.0) detail = 'System approaching sustainable range. Continue lever execution.';
+  else if (newGFS > 2.9) detail = 'Marginal improvement. Levers need more aggressive application.';
+  else detail = 'Adjust the levers to see how the system responds.';
+  document.getElementById('sim-detail').textContent = detail;
+
+  const zoneEl = document.getElementById('sim-zone-after');
+  zoneEl.textContent = zone;
+  zoneEl.className = 'sim-zone ' + zoneClass;
+
+  document.getElementById('sim-cac').textContent = newCAC + 'mo';
+  document.getElementById('sim-se').textContent = newSE + 'x';
+  document.getElementById('sim-ogr').textContent = ogrLow + '–' + ogrHigh + '%';
+}
+
+function resetSim() {
+  document.getElementById('sl-wr').value = 26;
+  document.getElementById('sl-sc').value = 62;
+  document.getElementById('sl-nrr').value = 108;
+  document.getElementById('sl-ib').value = 35;
+  document.getElementById('sl-gr').value = 45;
+  runSim();
+}
+
+function applyTarget() {
+  setPreset('full');
+}
+
+function setPreset(type) {
+  if (type === 'minimal') {
+    document.getElementById('sl-wr').value = 33;
+    document.getElementById('sl-sc').value = 48;
+    document.getElementById('sl-nrr').value = 110;
+    document.getElementById('sl-ib').value = 38;
+    document.getElementById('sl-gr').value = 45;
+  } else if (type === 'full') {
+    document.getElementById('sl-wr').value = 38;
+    document.getElementById('sl-sc').value = 40;
+    document.getElementById('sl-nrr').value = 118;
+    document.getElementById('sl-ib').value = 50;
+    document.getElementById('sl-gr').value = 38;
+  } else if (type === 'conservative') {
+    document.getElementById('sl-wr').value = 30;
+    document.getElementById('sl-sc').value = 55;
+    document.getElementById('sl-nrr').value = 112;
+    document.getElementById('sl-ib').value = 40;
+    document.getElementById('sl-gr').value = 32;
+  }
+  runSim();
+}
+
+
+// Init
+runSim();
+</script>
+</body>
+</html>
