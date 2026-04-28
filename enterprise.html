@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>GrowFitt Enterprise — Control Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
@@ -20,7 +20,7 @@
   --blue:#3a8fd9;--blue-bg:rgba(58,143,217,0.12);
   --serif:'DM Serif Display',Georgia,serif;
   --mono:'DM Mono',monospace;
-  --sans:'Syne',system-ui,sans-serif;
+  --sans:'Open Sans',system-ui,sans-serif;
   --nav-h:64px;
   --sidebar-w:220px;
 }
@@ -218,6 +218,13 @@ body{font-family:var(--sans);background:var(--dark);color:var(--text);min-height
 .root-cause-box .icon{font-size:18px;margin-top:2px;}
 .root-cause-box p{font-size:13.5px;color:var(--text);line-height:1.6;}
 .root-cause-box strong{color:var(--red);}
+
+
+  /* ── CHART BARS (q-bar-wrap, q-bar, q-label) ── */
+  .quarter-row{display:flex;align-items:flex-end;gap:4px;height:60px;width:100%;}
+  .q-bar-wrap{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;min-width:0;}
+  .q-bar{width:100%;min-height:4px;border-radius:3px 3px 0 0;transition:height 0.4s ease;border:none;}
+  .q-label{font-size:9px;color:var(--text-dim);white-space:nowrap;font-family:'Open Sans',sans-serif;}
 
 </style>
 </head>
@@ -556,45 +563,13 @@ body{font-family:var(--sans);background:var(--dark);color:var(--text);min-height
         <div style="display:flex;flex-direction:column;gap:12px;">
           <div class="card">
             <div class="card-title">Sales Cycle — Last 6 Quarters</div>
-            <div style="display:flex;align-items:flex-end;gap:8px;height:80px;padding:8px 0;">
-              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">
-                <div style="flex:1;display:flex;align-items:flex-end;"><div style="width:100%;height:38%;background:var(--green-light);border-radius:3px 3px 0 0;"></div></div>
-                <div style="font-size:9px;color:var(--text-dim);">Q4'24</div>
-              </div>
-              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">
-                <div style="flex:1;display:flex;align-items:flex-end;"><div style="width:100%;height:45%;background:var(--green-light);border-radius:3px 3px 0 0;"></div></div>
-                <div style="font-size:9px;color:var(--text-dim);">Q1'25</div>
-              </div>
-              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">
-                <div style="flex:1;display:flex;align-items:flex-end;"><div style="width:100%;height:50%;background:var(--green-light);border-radius:3px 3px 0 0;"></div></div>
-                <div style="font-size:9px;color:var(--text-dim);">Q2'25</div>
-              </div>
-              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">
-                <div style="flex:1;display:flex;align-items:flex-end;"><div style="width:100%;height:63%;background:var(--orange);border-radius:3px 3px 0 0;"></div></div>
-                <div style="font-size:9px;color:var(--text-dim);">Q3'25</div>
-              </div>
-              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">
-                <div style="flex:1;display:flex;align-items:flex-end;"><div style="width:100%;height:80%;background:var(--red);border-radius:3px 3px 0 0;"></div></div>
-                <div style="font-size:9px;color:var(--text-dim);">Q4'25</div>
-              </div>
-              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;">
-                <div style="flex:1;display:flex;align-items:flex-end;"><div style="width:100%;height:100%;background:var(--red);border-radius:3px 3px 0 0;"></div></div>
-                <div style="font-size:9px;color:var(--text-dim);">Q1'26</div>
-              </div>
-            </div>
+            <div class="quarter-row" id="q-cycle-bars" style="height:80px;margin-bottom:4px;"></div>
             <div style="font-size:12px;color:var(--text-dim);margin-top:4px;" id="q-cycle-label">Avg days to close: <span style="color:var(--red);font-family:var(--mono);">62 days</span> (was 39 days in Q4'24)</div>
           </div>
 
           <div class="card">
             <div class="card-title">Win Rate — Last 6 Quarters</div>
-            <div style="display:flex;align-items:flex-end;gap:8px;height:80px;padding:8px 0;">
-              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;"><div style="flex:1;display:flex;align-items:flex-end;"><div style="width:100%;height:100%;background:var(--green-light);border-radius:3px 3px 0 0;"></div></div><div style="font-size:9px;color:var(--text-dim);">Q4'24</div></div>
-              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;"><div style="flex:1;display:flex;align-items:flex-end;"><div style="width:100%;height:95%;background:var(--green-light);border-radius:3px 3px 0 0;"></div></div><div style="font-size:9px;color:var(--text-dim);">Q1'25</div></div>
-              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;"><div style="flex:1;display:flex;align-items:flex-end;"><div style="width:100%;height:82%;background:var(--green-light);border-radius:3px 3px 0 0;"></div></div><div style="font-size:9px;color:var(--text-dim);">Q2'25</div></div>
-              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;"><div style="flex:1;display:flex;align-items:flex-end;"><div style="width:100%;height:68%;background:var(--orange);border-radius:3px 3px 0 0;"></div></div><div style="font-size:9px;color:var(--text-dim);">Q3'25</div></div>
-              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;"><div style="flex:1;display:flex;align-items:flex-end;"><div style="width:100%;height:50%;background:var(--red);border-radius:3px 3px 0 0;"></div></div><div style="font-size:9px;color:var(--text-dim);">Q4'25</div></div>
-              <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;"><div style="flex:1;display:flex;align-items:flex-end;"><div style="width:100%;height:37%;background:var(--red);border-radius:3px 3px 0 0;"></div></div><div style="font-size:9px;color:var(--text-dim);">Q1'26</div></div>
-            </div>
+            <div class="quarter-row" id="q-winrate-bars" style="height:80px;margin-bottom:4px;"></div>
             <div style="font-size:12px;color:var(--text-dim);margin-top:4px;" id="q-winrate-label">Win rate: <span style="color:var(--red);font-family:var(--mono);">26%</span> (was 37% in Q4'24)</div>
           </div>
 
@@ -879,6 +854,8 @@ const QUARTER_DATA = {
     // Causal diagnosis
     salesCycleDays: 62, salesCyclePrev: 39, salesCyclePrevQ: "Q4'24",
     winRate: 26,        winRatePrev: 37,    winRatePrevQ: "Q4'24",
+    salesCycleTrend: [{v:39,l:"Q4'24"},{v:40,l:"Q1'25"},{v:42,l:"Q2'25"},{v:48,l:"Q3'25"},{v:54,l:"Q4'25"},{v:62,l:"Q1'26"}],
+    winRateTrend:    [{v:37,l:"Q4'24"},{v:36,l:"Q1'25"},{v:34,l:"Q2'25"},{v:32,l:"Q3'25"},{v:30,l:"Q4'25"},{v:26,l:"Q1'26"}],
     inference: 'Elevation Software is growing at <strong style="color:var(--red);">45%</strong>, but the system fitness score of <strong style="color:var(--red);">2.9</strong> means the system can only sustainably support <strong style="color:var(--text);">32–38%</strong> growth. The gap is being bridged by burning efficiency and compressing retention — both of which will degrade further unless addressed in the next 1–2 quarters.',
   },
 
@@ -906,6 +883,8 @@ const QUARTER_DATA = {
     gfsTrendData: [{v:3.7,l:'Q1\'25'},{v:3.4,l:'Q2\'25'},{v:3.2,l:'Q3\'25'},{v:3.0,l:'Q4\'25'}],
     salesCycleDays: 51, salesCyclePrev: 39, salesCyclePrevQ: "Q4'24",
     winRate: 31,        winRatePrev: 37,    winRatePrevQ: "Q4'24",
+    salesCycleTrend: [{v:39,l:"Q4'24"},{v:40,l:"Q1'25"},{v:42,l:"Q2'25"},{v:48,l:"Q3'25"},{v:51,l:"Q4'25"}],
+    winRateTrend:    [{v:37,l:"Q4'24"},{v:36,l:"Q1'25"},{v:34,l:"Q2'25"},{v:32,l:"Q3'25"},{v:31,l:"Q4'25"}],
     inference: 'Elevation Software is growing at <strong style="color:var(--orange);">42%</strong>, slightly above the optimal range of <strong style="color:var(--text);">33–40%</strong>. Efficiency is showing early deterioration — CAC payback has risen to 18 months and sales efficiency dropped to 0.85x. Action is needed before the system crosses into Fragile territory.',
   },
 
@@ -933,6 +912,8 @@ const QUARTER_DATA = {
     gfsTrendData: [{v:4.0,l:'Q4\'24'},{v:3.7,l:'Q1\'25'},{v:3.4,l:'Q2\'25'},{v:3.2,l:'Q3\'25'}],
     salesCycleDays: 44, salesCyclePrev: 39, salesCyclePrevQ: "Q4'24",
     winRate: 34,        winRatePrev: 37,    winRatePrevQ: "Q4'24",
+    salesCycleTrend: [{v:39,l:"Q4'24"},{v:40,l:"Q1'25"},{v:42,l:"Q2'25"},{v:44,l:"Q3'25"}],
+    winRateTrend:    [{v:37,l:"Q4'24"},{v:36,l:"Q1'25"},{v:34,l:"Q2'25"},{v:34,l:"Q3'25"}],
     inference: 'Elevation Software is growing at <strong style="color:var(--green-light);">38%</strong>, within the optimal range of <strong style="color:var(--text);">34–42%</strong>. System fitness is solid at <strong style="color:var(--orange);">3.2</strong>. However, efficiency is starting to soften — CAC payback and burn multiple are creeping upward. Early action to tighten ICP and improve expansion motions will prevent deterioration.',
   },
 };
@@ -964,7 +945,23 @@ function renderGFSBars(containerId, data) {
     const h = Math.max(8, Math.round(d.v / 5 * 100));
     const isCurrent = i === data.length - 1;
     const col = d.v >= 3.8 ? 'var(--green-light)' : d.v >= 3.0 ? 'var(--orange)' : 'var(--red)';
-    return `<div class="q-bar-wrap"><div class="q-bar" style="height:${h}%;background:${col};border-radius:3px 3px 0 0;${isCurrent ? 'outline:2px solid rgba(255,255,255,0.3);' : ''}" title="GFS ${d.v}"></div><div class="q-label" style="${isCurrent ? 'color:var(--text);' : ''}">${d.l}</div></div>`;
+    return `<div class="q-bar-wrap"><div class="q-bar" style="height:${h}%;background:${col};" title="GFS ${d.v}"></div><div class="q-label" style="${isCurrent ? 'color:var(--text);' : ''}">${d.l}</div></div>`;
+  }).join('');
+}
+
+
+function renderRawBars(containerId, data, maxVal, lowerIsBetter) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  el.innerHTML = data.map(d => {
+    const pct = Math.max(8, Math.round((d.v / maxVal) * 100));
+    let col;
+    if (lowerIsBetter) {
+      col = d.v <= maxVal*0.55 ? 'var(--green-light)' : d.v <= maxVal*0.75 ? 'var(--orange)' : 'var(--red)';
+    } else {
+      col = d.v >= maxVal*0.9 ? 'var(--green-light)' : d.v >= maxVal*0.75 ? 'var(--orange)' : 'var(--red)';
+    }
+    return '<div class="q-bar-wrap"><div class="q-bar" style="height:' + pct + '%;background:' + col + ';" title="' + d.v + '"></div><div class="q-label">' + d.l + '</div></div>';
   }).join('');
 }
 
@@ -1062,8 +1059,10 @@ function renderQuarter(qKey) {
   set('q-burn-delta', q.burnDelta);
 
   // Screen 3 causal metrics
-  set('q-cycle-label', `Avg days to close: <span style="color:${q.salesCycleDays > 45 ? 'var(--red)' : 'var(--orange)'};font-family:var(--mono);">${q.salesCycleDays} days</span> (was ${q.salesCyclePrev} days in ${q.salesCyclePrevQ})`);
-  set('q-winrate-label', `Win rate: <span style="color:${q.winRate < 30 ? 'var(--red)' : 'var(--orange)'};font-family:var(--mono);">${q.winRate}%</span> (was ${q.winRatePrev}% in ${q.winRatePrevQ})`);
+  set('q-cycle-label', 'Avg days to close: <span style="color:' + (q.salesCycleDays > 45 ? 'var(--red)' : 'var(--orange)') + ';">' + q.salesCycleDays + ' days</span> (was ' + q.salesCyclePrev + ' days in ' + q.salesCyclePrevQ + ')');
+  set('q-winrate-label', 'Win rate: <span style="color:' + (q.winRate < 30 ? 'var(--red)' : 'var(--orange)') + ';">' + q.winRate + '%</span> (was ' + q.winRatePrev + '% in ' + q.winRatePrevQ + ')');
+  if (q.salesCycleTrend) renderRawBars('q-cycle-bars', q.salesCycleTrend, 70, true);
+  if (q.winRateTrend) renderRawBars('q-winrate-bars', q.winRateTrend, 40, false);
 
   // Redraw speedometer with correct needle
   drawSpeedometer(q.needlePct, q.zone);
@@ -1142,12 +1141,15 @@ function drawSpeedometer(needlePct, zone) {
   ctx.fillStyle = zone === 'fit' ? '#3aaf66' : '#e05a4e';
   ctx.fill();
 
-  // Labels
-  ctx.fillStyle = 'rgba(138,169,138,0.7)';
-  ctx.font = '10px DM Mono, monospace';
-  ctx.textAlign = 'left'; ctx.fillText('UNDER', 6, cy - r * 0.3 + 10);
-  ctx.textAlign = 'center'; ctx.fillText('FIT', cx, cy - r - 8);
-  ctx.textAlign = 'right'; ctx.fillText('OVER', W - 6, cy - r * 0.3 + 10);
+  // Labels drawn last so they appear above the arc
+  ctx.fillStyle = 'rgba(200,220,200,0.85)';
+  ctx.font = 'bold 10px Open Sans, sans-serif';
+  ctx.textAlign = 'left';  ctx.fillText('UNDER', 8, cy - r * 0.28 + 8);
+  ctx.textAlign = 'right'; ctx.fillText('OVER', W - 8, cy - r * 0.28 + 8);
+  // FIT label — drawn in green, centered above the arc
+  ctx.fillStyle = 'rgba(58,175,102,0.9)';
+  ctx.textAlign = 'center';
+  ctx.fillText('FIT', cx, cy - r - 6);
 }
 
 window.addEventListener('load', function() { renderQuarter('Q1 2026'); });
