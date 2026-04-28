@@ -232,12 +232,12 @@ body{font-family:var(--sans);background:var(--dark);color:var(--text);min-height
     <div style="font-size:13px;color:var(--text-dim);">Control System</div>
     <div class="topnav-company">
       <div class="company-pill">
-        <div class="company-dot over"></div>
+        <div class="company-dot over" id="q-zone-dot"></div>
         <span class="company-name">Elevation Software Ltd</span>
         <span style="color:var(--text-dim);font-size:11px;">·</span>
-        <span class="company-zone">OVER ZONE</span>
+        <span class="company-zone" id="q-zone-badge">OVER ZONE</span>
       </div>
-      <select class="period-select">
+      <select class="period-select" id="quarter-select" onchange="renderQuarter(this.value)">
         <option>Q1 2026</option>
         <option>Q4 2025</option>
         <option>Q3 2025</option>
@@ -304,16 +304,16 @@ body{font-family:var(--sans);background:var(--dark);color:var(--text);min-height
           <div class="speedo-wrap">
             <canvas class="speedo-canvas" id="speedo" width="280" height="160"></canvas>
             <div class="speedo-score">
-              <div class="speedo-num">2.9</div>
-              <div class="speedo-label">/ 5.00 · Fragile</div>
-              <div class="speedo-zone">OVER ZONE — System under strain</div>
+              <div class="speedo-num" id="q-gfs">2.9</div>
+              <div class="speedo-label" id="q-gfs-label">/ 5.00 · Fragile</div>
+              <div class="speedo-zone" id="q-speedo-zone">OVER ZONE — System under strain</div>
             </div>
           </div>
 
           <div class="ogr-bar-wrap" style="margin-top:24px;">
             <div class="ogr-bar-label">
               <span>Optimal Growth Range (CBGR-adjusted)</span>
-              <span style="color:var(--text-muted);">32% — 38%</span>
+              <span style="color:var(--text-muted);" id="q-ogr-label">32% — 38%</span>
             </div>
             <div class="ogr-track">
               <!-- Fit zone: 32–38% on a 0–60% scale -->
@@ -325,8 +325,8 @@ body{font-family:var(--sans);background:var(--dark);color:var(--text);min-height
               <span>0%</span><span>15%</span><span>30%</span><span>45%</span><span>60%</span>
             </div>
             <div class="ogr-legend">
-              <div class="ogr-legend-item"><div class="ogr-legend-dot" style="background:rgba(58,175,102,0.4);"></div>Fit zone (32–38%)</div>
-              <div class="ogr-legend-item"><div class="ogr-legend-dot" style="background:var(--red);"></div>Actual (45%)</div>
+              <div class="ogr-legend-item"><div class="ogr-legend-dot" style="background:rgba(58,175,102,0.4);"></div><span id="q-ogr-legend">Fit zone (32–38%)</span></div>
+              <div class="ogr-legend-item"><div class="ogr-legend-dot" style="background:var(--red);"></div><span id="q-growth-legend">Actual (45%)</span></div>
             </div>
           </div>
         </div>
@@ -335,25 +335,20 @@ body{font-family:var(--sans);background:var(--dark);color:var(--text);min-height
         <div style="display:flex;flex-direction:column;gap:12px;">
           <div class="metric-tile">
             <div class="m-label">Actual Growth</div>
-            <div class="m-val red">45%</div>
+            <div class="m-val red" id="q-growth-val">45%</div>
             <div class="m-sub">LTM revenue growth</div>
-            <div class="m-delta down">↑ 7pp above OGR ceiling</div>
+            <div class="m-delta down" id="q-growth-delta">↑ 7pp above OGR ceiling</div>
           </div>
           <div class="metric-tile">
             <div class="m-label">OGR Range</div>
-            <div class="m-val" style="font-size:22px;color:var(--text);">32–38%</div>
+            <div class="m-val" style="font-size:22px;color:var(--text);" id="q-ogr-tile">32–38%</div>
             <div class="m-sub">CBGR-adjusted · Horizontal SaaS</div>
           </div>
           <div class="metric-tile">
             <div class="m-label">GFS Trend</div>
-            <div class="m-val warn" style="font-size:22px;">2.9 ↓</div>
-            <div class="m-sub">Was 3.2 last quarter</div>
-            <div class="quarter-row" style="margin-top:8px;">
-              <div class="q-bar-wrap"><div class="q-bar ok" style="height:70%;background:var(--green-light);"></div><div class="q-label">Q2</div></div>
-              <div class="q-bar-wrap"><div class="q-bar ok" style="height:80%;background:var(--green-light);"></div><div class="q-label">Q3</div></div>
-              <div class="q-bar-wrap"><div class="q-bar warn" style="height:65%;background:var(--orange);"></div><div class="q-label">Q4</div></div>
-              <div class="q-bar-wrap"><div class="q-bar bad" style="height:55%;background:var(--red);"></div><div class="q-label">Q1</div></div>
-            </div>
+            <div class="m-val warn" style="font-size:22px;" id="q-gfs-trend-val">2.9 ↓</div>
+            <div class="m-sub" id="q-gfs-trend-sub">Was 3.2 last quarter</div>
+            <div class="quarter-row" style="margin-top:8px;" id="q-gfs-bars"></div>
           </div>
         </div>
       </div>
@@ -364,7 +359,7 @@ body{font-family:var(--sans);background:var(--dark);color:var(--text);min-height
           <div style="font-size:24px;">⚠️</div>
           <div>
             <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px;">System Inference</div>
-            <p style="font-size:13.5px;color:var(--text-muted);line-height:1.65;max-width:700px;">Elevation Software is growing at <strong style="color:var(--red);">45%</strong>, but the system fitness score of <strong style="color:var(--red);">2.9</strong> means the system can only sustainably support <strong style="color:var(--text);">32–38%</strong> growth. The gap is being bridged by burning efficiency and compressing retention — both of which will degrade further unless addressed in the next 1–2 quarters.</p>
+            <p style="font-size:13.5px;color:var(--text-muted);line-height:1.65;max-width:700px;"><span id="q-inference-text">Elevation Software is growing at <strong style="color:var(--red);">45%</strong>, but the system fitness score of <strong style="color:var(--red);">2.9</strong> means the system can only sustainably support <strong style="color:var(--text);">32–38%</strong> growth.</span> The gap is being bridged by burning efficiency and compressing retention — both of which will degrade further unless addressed in the next 1–2 quarters.</p>
             <div style="margin-top:12px;font-size:13px;color:var(--text-dim);font-style:italic;">"Growth is not the problem. The way they are achieving it is."</div>
           </div>
         </div>
@@ -374,21 +369,21 @@ body{font-family:var(--sans);background:var(--dark);color:var(--text);min-height
       <div class="grid-3" style="margin-top:16px;">
         <div class="metric-tile">
           <div class="m-label">Net Revenue Retention</div>
-          <div class="m-val warn">108%</div>
-          <div class="m-sub">Was 115% · Declining</div>
-          <div class="m-delta down">↓ 7pp QoQ</div>
+          <div class="m-val warn" id="q-nrr">108%</div>
+          <div class="m-sub" id="q-nrr-sub">Was 115% · Declining</div>
+          <div class="m-delta down" id="q-nrr-delta">↓ 7pp QoQ</div>
         </div>
         <div class="metric-tile">
           <div class="m-label">CAC Payback</div>
-          <div class="m-val warn">22mo</div>
-          <div class="m-sub">Was 16mo · Rising</div>
-          <div class="m-delta down">↑ 6 months QoQ</div>
+          <div class="m-val warn" id="q-cac">22mo</div>
+          <div class="m-sub" id="q-cac-sub">Was 16mo · Rising</div>
+          <div class="m-delta down" id="q-cac-delta">↑ 6 months QoQ</div>
         </div>
         <div class="metric-tile">
           <div class="m-label">Sales Efficiency</div>
-          <div class="m-val warn">0.7x</div>
+          <div class="m-val warn" id="q-se">0.7x</div>
           <div class="m-sub">Magic Number · Below 1.0x</div>
-          <div class="m-delta down">↓ 0.3x QoQ</div>
+          <div class="m-delta down" id="q-se-delta">↓ 0.3x QoQ</div>
         </div>
       </div>
     </div>
@@ -411,39 +406,39 @@ body{font-family:var(--sans);background:var(--dark);color:var(--text);min-height
             <div class="sub-bar-row">
               <div class="sub-bar-header">
                 <span class="sub-bar-name">Growth Quality (GQS)</span>
-                <span class="sub-bar-score ok">3.4 / 5.0</span>
+                <span class="sub-bar-score ok" id="q-gqs-score">3.4 / 5.0</span>
               </div>
               <div class="sub-bar-track">
-                <div class="sub-bar-fill ok" style="width:68%;"></div>
+                <div class="sub-bar-fill ok" id="q-gqs-fill" style="width:68%;"></div>
                 <div class="sub-bar-threshold" style="left:60%;"></div>
               </div>
-              <div class="sub-bar-desc">Inbound mix improving, deal quality stable. Pipeline is holding.</div>
+              <div class="sub-bar-desc" id="q-gqs-desc">Inbound mix improving, deal quality stable. Pipeline is holding.</div>
             </div>
 
             <div class="sub-bar-row">
               <div class="sub-bar-header">
                 <span class="sub-bar-name">Retention Score (RS)</span>
-                <span class="sub-bar-score warn">3.1 / 5.0</span>
+                <span class="sub-bar-score warn" id="q-rs-score">3.1 / 5.0</span>
               </div>
               <div class="sub-bar-track">
-                <div class="sub-bar-fill warn" style="width:62%;"></div>
+                <div class="sub-bar-fill warn" id="q-rs-fill" style="width:62%;"></div>
                 <div class="sub-bar-threshold" style="left:60%;"></div>
               </div>
-              <div class="sub-bar-desc">NRR declining 7pp QoQ. Expansion velocity has slowed materially.</div>
+              <div class="sub-bar-desc" id="q-rs-desc">NRR declining 7pp QoQ. Expansion velocity has slowed materially.</div>
             </div>
 
             <div class="sub-bar-row">
               <div class="sub-bar-header">
                 <span class="sub-bar-name">Efficiency Score (ES)
-                  <span class="constraint-badge critical">⚡ Constraint</span>
+                  <span class="constraint-badge critical" id="q-es-badge">⚡ Constraint</span>
                 </span>
-                <span class="sub-bar-score bad">2.4 / 5.0</span>
+                <span class="sub-bar-score bad" id="q-es-score">2.4 / 5.0</span>
               </div>
               <div class="sub-bar-track">
-                <div class="sub-bar-fill bad" style="width:48%;"></div>
+                <div class="sub-bar-fill bad" id="q-es-fill" style="width:48%;"></div>
                 <div class="sub-bar-threshold" style="left:60%;"></div>
               </div>
-              <div class="sub-bar-desc">Below threshold. CAC rising, sales efficiency at 0.7x. Burn multiple climbing.</div>
+              <div class="sub-bar-desc" id="q-es-desc">Below threshold. CAC rising, sales efficiency at 0.7x. Burn multiple climbing.</div>
             </div>
           </div>
           <div style="display:flex;align-items:center;gap:8px;margin-top:16px;padding-top:16px;border-top:1px solid var(--border);font-size:11px;color:var(--text-dim);">
@@ -457,31 +452,16 @@ body{font-family:var(--sans);background:var(--dark);color:var(--text);min-height
           <div class="card-title">Quarterly Trend — All Subsystems</div>
           <div style="display:flex;flex-direction:column;gap:20px;">
             <div>
-              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;"><span style="color:var(--text-muted);">Growth Quality (GQS)</span><span style="color:var(--green-light);font-family:var(--mono);">Stable</span></div>
-              <div class="quarter-row" style="height:40px;">
-                <div class="q-bar-wrap"><div class="q-bar" style="height:65%;background:var(--green-light);border-radius:3px 3px 0 0;"></div><div class="q-label">Q2</div></div>
-                <div class="q-bar-wrap"><div class="q-bar" style="height:70%;background:var(--green-light);border-radius:3px 3px 0 0;"></div><div class="q-label">Q3</div></div>
-                <div class="q-bar-wrap"><div class="q-bar" style="height:68%;background:var(--green-light);border-radius:3px 3px 0 0;"></div><div class="q-label">Q4</div></div>
-                <div class="q-bar-wrap"><div class="q-bar" style="height:68%;background:var(--green-light);border-radius:3px 3px 0 0;"></div><div class="q-label">Q1</div></div>
-              </div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;"><span style="color:var(--text-muted);">Growth Quality (GQS)</span><span id="q-gqs-trend-label" style="color:var(--green-light);font-family:var(--mono);">Stable</span></div>
+              <div class="quarter-row" style="height:40px;" id="q-gqs-trend"></div>
             </div>
             <div>
-              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;"><span style="color:var(--text-muted);">Retention Score (RS)</span><span style="color:var(--orange);font-family:var(--mono);">Declining ↓</span></div>
-              <div class="quarter-row" style="height:40px;">
-                <div class="q-bar-wrap"><div class="q-bar" style="height:80%;background:var(--green-light);border-radius:3px 3px 0 0;"></div><div class="q-label">Q2</div></div>
-                <div class="q-bar-wrap"><div class="q-bar" style="height:72%;background:var(--green-light);border-radius:3px 3px 0 0;"></div><div class="q-label">Q3</div></div>
-                <div class="q-bar-wrap"><div class="q-bar" style="height:60%;background:var(--orange);border-radius:3px 3px 0 0;"></div><div class="q-label">Q4</div></div>
-                <div class="q-bar-wrap"><div class="q-bar" style="height:52%;background:var(--orange);border-radius:3px 3px 0 0;"></div><div class="q-label">Q1</div></div>
-              </div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;"><span style="color:var(--text-muted);">Retention Score (RS)</span><span id="q-rs-trend-label" style="color:var(--orange);font-family:var(--mono);">Declining ↓</span></div>
+              <div class="quarter-row" style="height:40px;" id="q-rs-trend"></div>
             </div>
             <div>
-              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;"><span style="color:var(--text-muted);">Efficiency Score (ES)</span><span style="color:var(--red);font-family:var(--mono);">Breaking ↓↓</span></div>
-              <div class="quarter-row" style="height:40px;">
-                <div class="q-bar-wrap"><div class="q-bar" style="height:70%;background:var(--green-light);border-radius:3px 3px 0 0;"></div><div class="q-label">Q2</div></div>
-                <div class="q-bar-wrap"><div class="q-bar" style="height:58%;background:var(--orange);border-radius:3px 3px 0 0;"></div><div class="q-label">Q3</div></div>
-                <div class="q-bar-wrap"><div class="q-bar" style="height:42%;background:var(--red);border-radius:3px 3px 0 0;"></div><div class="q-label">Q4</div></div>
-                <div class="q-bar-wrap"><div class="q-bar" style="height:30%;background:var(--red);border-radius:3px 3px 0 0;"></div><div class="q-label">Q1</div></div>
-              </div>
+              <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:6px;"><span style="color:var(--text-muted);">Efficiency Score (ES)</span><span id="q-es-trend-label" style="color:var(--red);font-family:var(--mono);">Breaking ↓↓</span></div>
+              <div class="quarter-row" style="height:40px;" id="q-es-trend"></div>
             </div>
           </div>
 
@@ -602,7 +582,7 @@ body{font-family:var(--sans);background:var(--dark);color:var(--text);min-height
                 <div style="font-size:9px;color:var(--text-dim);">Q1'26</div>
               </div>
             </div>
-            <div style="font-size:12px;color:var(--text-dim);margin-top:4px;">Avg days to close: <span style="color:var(--red);font-family:var(--mono);">62 days</span> (was 39 days in Q4'24)</div>
+            <div style="font-size:12px;color:var(--text-dim);margin-top:4px;" id="q-cycle-label">Avg days to close: <span style="color:var(--red);font-family:var(--mono);">62 days</span> (was 39 days in Q4'24)</div>
           </div>
 
           <div class="card">
@@ -615,7 +595,7 @@ body{font-family:var(--sans);background:var(--dark);color:var(--text);min-height
               <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;"><div style="flex:1;display:flex;align-items:flex-end;"><div style="width:100%;height:50%;background:var(--red);border-radius:3px 3px 0 0;"></div></div><div style="font-size:9px;color:var(--text-dim);">Q4'25</div></div>
               <div style="display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;"><div style="flex:1;display:flex;align-items:flex-end;"><div style="width:100%;height:37%;background:var(--red);border-radius:3px 3px 0 0;"></div></div><div style="font-size:9px;color:var(--text-dim);">Q1'26</div></div>
             </div>
-            <div style="font-size:12px;color:var(--text-dim);margin-top:4px;">Win rate: <span style="color:var(--red);font-family:var(--mono);">26%</span> (was 37% in Q4'24)</div>
+            <div style="font-size:12px;color:var(--text-dim);margin-top:4px;" id="q-winrate-label">Win rate: <span style="color:var(--red);font-family:var(--mono);">26%</span> (was 37% in Q4'24)</div>
           </div>
 
           <div class="card">
@@ -864,17 +844,247 @@ body{font-family:var(--sans);background:var(--dark);color:var(--text);min-height
   </main>
 
 <script>
-// ── NAVIGATION ──────────────────────────────────────────
+// ── QUARTER DATA MODEL ────────────────────────────────────────────────────────
+// Full dataset for Elevation Software Ltd across Q3 2025, Q4 2025, Q1 2026
+// Historical quarters shown in trend charts go back to Q2 2025
+
+const QUARTER_DATA = {
+  'Q1 2026': {
+    label: 'Q1 2026',
+    zone: 'over',
+    zoneBadge: 'OVER ZONE',
+    gfs: 2.9,
+    gfsInterpretation: 'Fragile',
+    ogrLow: 32,  ogrHigh: 38,
+    growth: 45,
+    // Needle position as % of 60% max scale
+    needlePct: 0.75,
+    ogrFitLeft: '53.3%', ogrFitWidth: '10%', ogrNeedle: '75%',
+    nrr: 108,  nrrPrev: 115,  nrrDelta: -7,
+    cac: 22,   cacPrev: 16,   cacDelta: +6,
+    se:  0.7,  sePrev: 1.0,   seDelta: -0.3,
+    burn: 2.4, burnDelta: '+60% above efficient range',
+    // Subsystem scores
+    gqs: 3.4, gqsWidth: 68, gqsClass: 'ok',   gqsDesc: 'Inbound mix improving, deal quality stable. Pipeline is holding.',              gqsTrend: 'Stable',      gqsTrendCol: 'var(--green-light)',
+    rs:  3.1, rsWidth:  62, rsClass:  'warn',  rsDesc:  'NRR declining 7pp QoQ. Expansion velocity has slowed materially.',              rsTrend:  'Declining ↓', rsTrendCol:  'var(--orange)',
+    es:  2.4, esWidth:  48, esClass:  'bad',   esDesc:  'Below threshold. CAC rising, sales efficiency at 0.7x. Burn multiple climbing.', esTrend:  'Breaking ↓↓', esTrendCol:  'var(--red)',
+    esConstraint: true,
+    // Trend chart data — 4 quarters of history shown in trend bars
+    // [value, label] — value 0–5 for subsystem, normalised
+    gqsTrendData: [{v:3.3,l:'Q2\'25'},{v:3.4,l:'Q3\'25'},{v:3.4,l:'Q4\'25'},{v:3.4,l:'Q1\'26'}],
+    rsTrendData:  [{v:4.0,l:'Q2\'25'},{v:3.6,l:'Q3\'25'},{v:3.3,l:'Q4\'25'},{v:3.1,l:'Q1\'26'}],
+    esTrendData:  [{v:3.5,l:'Q2\'25'},{v:3.1,l:'Q3\'25'},{v:2.8,l:'Q4\'25'},{v:2.4,l:'Q1\'26'}],
+    // GFS trend bars (4 quarters)
+    gfsTrendData: [{v:3.4,l:'Q2\'25'},{v:3.2,l:'Q3\'25'},{v:3.0,l:'Q4\'25'},{v:2.9,l:'Q1\'26'}],
+    // Causal diagnosis
+    salesCycleDays: 62, salesCyclePrev: 39, salesCyclePrevQ: "Q4'24",
+    winRate: 26,        winRatePrev: 37,    winRatePrevQ: "Q4'24",
+    inference: 'Elevation Software is growing at <strong style="color:var(--red);">45%</strong>, but the system fitness score of <strong style="color:var(--red);">2.9</strong> means the system can only sustainably support <strong style="color:var(--text);">32–38%</strong> growth. The gap is being bridged by burning efficiency and compressing retention — both of which will degrade further unless addressed in the next 1–2 quarters.',
+  },
+
+  'Q4 2025': {
+    label: 'Q4 2025',
+    zone: 'over',
+    zoneBadge: 'OVER ZONE',
+    gfs: 3.0,
+    gfsInterpretation: 'Average',
+    ogrLow: 33, ogrHigh: 40,
+    growth: 42,
+    needlePct: 0.70,
+    ogrFitLeft: '55%', ogrFitWidth: '11.7%', ogrNeedle: '70%',
+    nrr: 113,  nrrPrev: 118,  nrrDelta: -5,
+    cac: 18,   cacPrev: 14,   cacDelta: +4,
+    se:  0.85, sePrev: 1.1,   seDelta: -0.25,
+    burn: 2.1, burnDelta: '+40% above efficient range',
+    gqs: 3.4, gqsWidth: 68, gqsClass: 'ok',   gqsDesc: 'Inbound pull holding. Deal quality showing early signs of softening.',              gqsTrend: 'Stable',          gqsTrendCol: 'var(--green-light)',
+    rs:  3.3, rsWidth:  66, rsClass:  'ok',   rsDesc:  'NRR down 5pp from Q3. Cohort stability starting to show stress.',                   rsTrend:  'Softening ↓',     rsTrendCol:  'var(--orange)',
+    es:  2.8, esWidth:  56, esClass:  'warn', esDesc:  'Approaching threshold. CAC payback up to 18 months, burn multiple rising.',          esTrend:  'Deteriorating ↓', esTrendCol:  'var(--orange)',
+    esConstraint: true,
+    gqsTrendData: [{v:3.3,l:'Q1\'25'},{v:3.2,l:'Q2\'25'},{v:3.4,l:'Q3\'25'},{v:3.4,l:'Q4\'25'}],
+    rsTrendData:  [{v:4.2,l:'Q1\'25'},{v:4.0,l:'Q2\'25'},{v:3.6,l:'Q3\'25'},{v:3.3,l:'Q4\'25'}],
+    esTrendData:  [{v:4.0,l:'Q1\'25'},{v:3.5,l:'Q2\'25'},{v:3.1,l:'Q3\'25'},{v:2.8,l:'Q4\'25'}],
+    gfsTrendData: [{v:3.7,l:'Q1\'25'},{v:3.4,l:'Q2\'25'},{v:3.2,l:'Q3\'25'},{v:3.0,l:'Q4\'25'}],
+    salesCycleDays: 51, salesCyclePrev: 39, salesCyclePrevQ: "Q4'24",
+    winRate: 31,        winRatePrev: 37,    winRatePrevQ: "Q4'24",
+    inference: 'Elevation Software is growing at <strong style="color:var(--orange);">42%</strong>, slightly above the optimal range of <strong style="color:var(--text);">33–40%</strong>. Efficiency is showing early deterioration — CAC payback has risen to 18 months and sales efficiency dropped to 0.85x. Action is needed before the system crosses into Fragile territory.',
+  },
+
+  'Q3 2025': {
+    label: 'Q3 2025',
+    zone: 'fit',
+    zoneBadge: 'FIT ZONE',
+    gfs: 3.2,
+    gfsInterpretation: 'Average',
+    ogrLow: 34, ogrHigh: 42,
+    growth: 38,
+    needlePct: 0.633,
+    ogrFitLeft: '56.7%', ogrFitWidth: '13.3%', ogrNeedle: '63.3%',
+    nrr: 118,  nrrPrev: 122,  nrrDelta: -4,
+    cac: 14,   cacPrev: 12,   cacDelta: +2,
+    se:  1.1,  sePrev: 1.3,   seDelta: -0.2,
+    burn: 1.8, burnDelta: '+20% above efficient range',
+    gqs: 3.4, gqsWidth: 68, gqsClass: 'ok',   gqsDesc: 'Growth quality strong. Inbound mix at 40%, deal quality tracking well.',     gqsTrend: 'Stable',      gqsTrendCol: 'var(--green-light)',
+    rs:  3.6, rsWidth:  72, rsClass:  'ok',   rsDesc:  'NRR at 118%, GRR holding. Cohort stability good across most segments.',        rsTrend:  'Healthy',     rsTrendCol:  'var(--green-light)',
+    es:  3.1, esWidth:  62, esClass:  'ok',   esDesc:  'Efficiency holding above threshold. CAC payback at 14mo, burn at 1.8x.',        esTrend:  'Softening ↓', esTrendCol:  'var(--orange)',
+    esConstraint: false,
+    gqsTrendData: [{v:3.2,l:'Q4\'24'},{v:3.3,l:'Q1\'25'},{v:3.2,l:'Q2\'25'},{v:3.4,l:'Q3\'25'}],
+    rsTrendData:  [{v:4.4,l:'Q4\'24'},{v:4.2,l:'Q1\'25'},{v:4.0,l:'Q2\'25'},{v:3.6,l:'Q3\'25'}],
+    esTrendData:  [{v:4.2,l:'Q4\'24'},{v:4.0,l:'Q1\'25'},{v:3.5,l:'Q2\'25'},{v:3.1,l:'Q3\'25'}],
+    gfsTrendData: [{v:4.0,l:'Q4\'24'},{v:3.7,l:'Q1\'25'},{v:3.4,l:'Q2\'25'},{v:3.2,l:'Q3\'25'}],
+    salesCycleDays: 44, salesCyclePrev: 39, salesCyclePrevQ: "Q4'24",
+    winRate: 34,        winRatePrev: 37,    winRatePrevQ: "Q4'24",
+    inference: 'Elevation Software is growing at <strong style="color:var(--green-light);">38%</strong>, within the optimal range of <strong style="color:var(--text);">34–42%</strong>. System fitness is solid at <strong style="color:var(--orange);">3.2</strong>. However, efficiency is starting to soften — CAC payback and burn multiple are creeping upward. Early action to tighten ICP and improve expansion motions will prevent deterioration.',
+  },
+};
+
+// ── RENDER ENGINE ─────────────────────────────────────────────────────────────
+function set(id, val) { const el = document.getElementById(id); if (el) el.innerHTML = val; }
+function setClass(id, cls) { const el = document.getElementById(id); if (el) el.className = el.className.replace(/\b(ok|warn|bad|fit|over|under)\b/g,'').trim() + ' ' + cls; }
+
+function barColor(cls) {
+  return cls === 'ok' ? 'var(--green-light)' : cls === 'warn' ? 'var(--orange)' : 'var(--red)';
+}
+
+function renderTrendBars(containerId, data) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const maxV = 5;
+  el.innerHTML = data.map(d => {
+    const h = Math.max(8, Math.round(d.v / maxV * 100));
+    const col = d.v >= 3.8 ? 'var(--green-light)' : d.v >= 3.0 ? 'var(--orange)' : 'var(--red)';
+    return `<div class="q-bar-wrap"><div class="q-bar" style="height:${h}%;background:${col};border-radius:3px 3px 0 0;" title="${d.v}"></div><div class="q-label">${d.l}</div></div>`;
+  }).join('');
+}
+
+function renderGFSBars(containerId, data) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  // Current quarter is last bar — highlight it
+  el.innerHTML = data.map((d, i) => {
+    const h = Math.max(8, Math.round(d.v / 5 * 100));
+    const isCurrent = i === data.length - 1;
+    const col = d.v >= 3.8 ? 'var(--green-light)' : d.v >= 3.0 ? 'var(--orange)' : 'var(--red)';
+    return `<div class="q-bar-wrap"><div class="q-bar" style="height:${h}%;background:${col};border-radius:3px 3px 0 0;${isCurrent ? 'outline:2px solid rgba(255,255,255,0.3);' : ''}" title="GFS ${d.v}"></div><div class="q-label" style="${isCurrent ? 'color:var(--text);' : ''}">${d.l}</div></div>`;
+  }).join('');
+}
+
+function renderQuarter(qKey) {
+  const q = QUARTER_DATA[qKey];
+  if (!q) return;
+
+  // ── Topnav ──
+  set('q-zone-badge', q.zoneBadge);
+  const dot = document.getElementById('q-zone-dot');
+  if (dot) { dot.className = 'company-dot ' + q.zone; }
+
+  // ── Screen 1: System State ──
+  set('q-gfs', q.gfs.toFixed(1));
+  set('q-gfs-label', `/ 5.00 · ${q.gfsInterpretation}`);
+  const speedoZoneText = q.zone === 'over' ? 'OVER ZONE — System under strain' : q.zone === 'fit' ? 'FIT ZONE — Growing sustainably' : 'UNDER ZONE — Below optimal pace';
+  set('q-speedo-zone', speedoZoneText);
+  const speedoEl = document.getElementById('q-speedo-zone');
+  if (speedoEl) { speedoEl.className = 'speedo-zone ' + (q.zone === 'fit' ? 'fit' : q.zone === 'under' ? 'under' : ''); }
+
+  set('q-ogr-label', `${q.ogrLow}% — ${q.ogrHigh}%`);
+  set('q-ogr-legend', `Fit zone (${q.ogrLow}–${q.ogrHigh}%)`);
+  set('q-growth-legend', `Actual (${q.growth}%)`);
+
+  // OGR bar needle + fit zone
+  const ogrFit = document.querySelector('.ogr-fit-range');
+  const ogrNeedle = document.querySelector('.ogr-needle');
+  if (ogrFit) { ogrFit.style.left = q.ogrFitLeft; ogrFit.style.width = q.ogrFitWidth; }
+  if (ogrNeedle) { ogrNeedle.style.left = q.ogrNeedle; ogrNeedle.style.background = q.zone === 'fit' ? 'var(--green-light)' : 'var(--red)'; }
+
+  const growthCol = q.zone === 'fit' ? 'var(--green-light)' : q.zone === 'over' ? 'var(--red)' : 'var(--orange)';
+  set('q-growth-val', `<span style="color:${growthCol}">${q.growth}%</span>`);
+  const growthAbove = q.growth - q.ogrHigh;
+  const growthBelow = q.ogrLow - q.growth;
+  set('q-growth-delta', q.zone === 'over' ? `↑ ${growthAbove}pp above OGR ceiling` : q.zone === 'fit' ? '✓ Within optimal range' : `↓ ${growthBelow}pp below OGR floor`);
+  set('q-ogr-tile', `${q.ogrLow}–${q.ogrHigh}%`);
+  const prevGfs = q.gfsTrendData.length >= 2 ? q.gfsTrendData[q.gfsTrendData.length-2].v : '-';
+  const gfsDirArr = q.gfs < prevGfs ? '↓' : q.gfs > prevGfs ? '↑' : '→';
+  const gfsDirCol = q.gfs < prevGfs ? 'var(--red)' : q.gfs > prevGfs ? 'var(--green-light)' : 'var(--orange)';
+  set('q-gfs-trend-val', `<span style="color:${gfsDirCol}">${q.gfs.toFixed(1)} ${gfsDirArr}</span>`);
+  set('q-gfs-trend-sub', `Was ${prevGfs} last quarter`);
+  renderGFSBars('q-gfs-bars', q.gfsTrendData);
+
+  // NRR / CAC / SE tiles
+  const nrrCol = q.nrr >= 120 ? 'var(--green-light)' : q.nrr >= 110 ? 'var(--orange)' : 'var(--red)';
+  set('q-nrr', `<span style="color:${nrrCol}">${q.nrr}%</span>`);
+  set('q-nrr-sub', `Was ${q.nrrPrev}% · ${q.nrrDelta < 0 ? 'Declining' : 'Improving'}`);
+  set('q-nrr-delta', `${q.nrrDelta < 0 ? '↓' : '↑'} ${Math.abs(q.nrrDelta)}pp QoQ`);
+  const cacCol = q.cac <= 14 ? 'var(--green-light)' : q.cac <= 20 ? 'var(--orange)' : 'var(--red)';
+  set('q-cac', `<span style="color:${cacCol}">${q.cac}mo</span>`);
+  set('q-cac-sub', `Was ${q.cacPrev}mo · ${q.cacDelta > 0 ? 'Rising' : 'Improving'}`);
+  set('q-cac-delta', `${q.cacDelta > 0 ? '↑' : '↓'} ${Math.abs(q.cacDelta)} months QoQ`);
+  const seCol = q.se >= 1.0 ? 'var(--green-light)' : q.se >= 0.8 ? 'var(--orange)' : 'var(--red)';
+  set('q-se', `<span style="color:${seCol}">${q.se.toFixed(2)}x</span>`);
+  set('q-se-delta', `${q.seDelta < 0 ? '↓' : '↑'} ${Math.abs(q.seDelta).toFixed(2)}x QoQ`);
+
+  // Inference
+  set('q-inference-text', q.inference);
+
+  // ── Screen 2: Subsystem scores ──
+  const scoreCls = (cls) => cls === 'ok' ? 'ok' : cls === 'warn' ? 'warn' : 'bad';
+  set('q-gqs-score', `${q.gqs.toFixed(1)} / 5.0`);
+  const gqsEl = document.getElementById('q-gqs-score'); if (gqsEl) gqsEl.className = 'sub-bar-score ' + scoreCls(q.gqsClass);
+  const gqsFill = document.getElementById('q-gqs-fill'); if (gqsFill) { gqsFill.style.width = q.gqsWidth + '%'; gqsFill.className = 'sub-bar-fill ' + q.gqsClass; }
+  set('q-gqs-desc', q.gqsDesc);
+  set('q-gqs-trend-label', `<span style="color:${q.gqsTrendCol};font-family:var(--mono);">${q.gqsTrend}</span>`);
+
+  set('q-rs-score', `${q.rs.toFixed(1)} / 5.0`);
+  const rsEl = document.getElementById('q-rs-score'); if (rsEl) rsEl.className = 'sub-bar-score ' + scoreCls(q.rsClass);
+  const rsFill = document.getElementById('q-rs-fill'); if (rsFill) { rsFill.style.width = q.rsWidth + '%'; rsFill.className = 'sub-bar-fill ' + q.rsClass; }
+  set('q-rs-desc', q.rsDesc);
+  set('q-rs-trend-label', `<span style="color:${q.rsTrendCol};font-family:var(--mono);">${q.rsTrend}</span>`);
+
+  set('q-es-score', `${q.es.toFixed(1)} / 5.0`);
+  const esEl = document.getElementById('q-es-score'); if (esEl) esEl.className = 'sub-bar-score ' + scoreCls(q.esClass);
+  const esFill = document.getElementById('q-es-fill'); if (esFill) { esFill.style.width = q.esWidth + '%'; esFill.className = 'sub-bar-fill ' + q.esClass; }
+  set('q-es-desc', q.esDesc);
+  set('q-es-trend-label', `<span style="color:${q.esTrendCol};font-family:var(--mono);">${q.esTrend}</span>`);
+  const esBadge = document.getElementById('q-es-badge');
+  if (esBadge) esBadge.style.display = q.esConstraint ? 'inline-flex' : 'none';
+
+  // Screen 2 trend charts
+  renderTrendBars('q-gqs-trend', q.gqsTrendData);
+  renderTrendBars('q-rs-trend', q.rsTrendData);
+  renderTrendBars('q-es-trend', q.esTrendData);
+
+  // Screen 2 constraint tiles
+  set('q-cac2', `${q.cac}mo`);
+  const cacAbove = Math.round(((q.cac - 14) / 14) * 100);
+  set('q-cac2-delta', `↑ ${cacAbove}% above benchmark`);
+  set('q-se2', `${q.se.toFixed(2)}x`);
+  const spendPerDollar = q.se > 0 ? (1/q.se).toFixed(2) : '—';
+  set('q-se2-delta', q.se < 1.0 ? `↓ Spending $${spendPerDollar} to generate $1` : '✓ Above 1.0x threshold');
+  set('q-burn', `${q.burn.toFixed(1)}x`);
+  set('q-burn-delta', q.burnDelta);
+
+  // Screen 3 causal metrics
+  set('q-cycle-label', `Avg days to close: <span style="color:${q.salesCycleDays > 45 ? 'var(--red)' : 'var(--orange)'};font-family:var(--mono);">${q.salesCycleDays} days</span> (was ${q.salesCyclePrev} days in ${q.salesCyclePrevQ})`);
+  set('q-winrate-label', `Win rate: <span style="color:${q.winRate < 30 ? 'var(--red)' : 'var(--orange)'};font-family:var(--mono);">${q.winRate}%</span> (was ${q.winRatePrev}% in ${q.winRatePrevQ})`);
+
+  // Redraw speedometer with correct needle
+  drawSpeedometer(q.needlePct, q.zone);
+}
+
+
 function showScreen(id, el) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   el.classList.add('active');
-  if (id === 's1') drawSpeedometer();
+  if (id === 's1') {
+    const q = QUARTER_DATA[document.getElementById('quarter-select').value] || QUARTER_DATA['Q1 2026'];
+    drawSpeedometer(q.needlePct, q.zone);
+  }
 }
 
 // ── SPEEDOMETER ─────────────────────────────────────────
-function drawSpeedometer() {
+function drawSpeedometer(needlePct, zone) {
+  needlePct = needlePct !== undefined ? needlePct : 0.75;
+  zone = zone || 'over';
   const canvas = document.getElementById('speedo');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
@@ -912,8 +1122,7 @@ function drawSpeedometer() {
   ctx.strokeStyle = 'rgba(255,255,255,0.04)';
   ctx.lineWidth = 18; ctx.stroke();
 
-  // Needle at 45% (out of 60% max = 75% of range)
-  const needlePct = 0.75;
+  // Needle position passed in from quarter data
   const needleAngle = start + range * needlePct;
   ctx.save();
   ctx.translate(cx, cy);
@@ -921,7 +1130,7 @@ function drawSpeedometer() {
   ctx.beginPath();
   ctx.moveTo(0, 0);
   ctx.lineTo(r - 8, 0);
-  ctx.strokeStyle = '#e05a4e';
+  ctx.strokeStyle = zone === 'fit' ? '#3aaf66' : '#e05a4e';
   ctx.lineWidth = 2.5;
   ctx.lineCap = 'round';
   ctx.stroke();
@@ -930,7 +1139,7 @@ function drawSpeedometer() {
   // Hub
   ctx.beginPath();
   ctx.arc(cx, cy, 6, 0, Math.PI * 2);
-  ctx.fillStyle = '#e05a4e';
+  ctx.fillStyle = zone === 'fit' ? '#3aaf66' : '#e05a4e';
   ctx.fill();
 
   // Labels
@@ -941,7 +1150,7 @@ function drawSpeedometer() {
   ctx.textAlign = 'right'; ctx.fillText('OVER', W - 6, cy - r * 0.3 + 10);
 }
 
-window.addEventListener('load', drawSpeedometer);
+window.addEventListener('load', function() { renderQuarter('Q1 2026'); });
 
 // ── SIMULATION ──────────────────────────────────────────
 const BASE = { wr:26, sc:62, nrr:108, ib:35, gr:45 };

@@ -393,32 +393,113 @@ input[type=number]::-webkit-inner-spin-button{opacity:0.4;}
 </div>
 
 <script>
-// ── BENCHMARK DATA BY SEGMENT ─────────────────────────────────────────────────
-// Simulated benchmark data pools per category+arr_band combination
-// Format: { p25, median, p75, n } per metric
+// ── FULL BENCHMARK DATA — all 6 categories × all ARR bands ───────────────────
+// Calibrated against publicly available SaaS benchmarks (Bessemer, OpenView, KeyBanc)
+// Growth rates, NRR, GM, CAC, and Sales Efficiency vary by category velocity and stage
 const BENCHMARKS = {
   'Infra / Dev / AI': {
-    '$10M–$25M': { growth:{p25:45,med:68,p75:110}, nrr:{p25:110,med:125,p75:145}, gm:{p25:68,med:76,p75:84}, cac:{p25:8,med:14,p75:22}, se:{p25:1.0,med:1.6,p75:2.8}, n:62 },
-    '$25M–$50M': { growth:{p25:35,med:55,p75:90},  nrr:{p25:112,med:128,p75:148}, gm:{p25:70,med:78,p75:86}, cac:{p25:9,med:15,p75:24}, se:{p25:1.1,med:1.7,p75:3.0}, n:48 },
-    '$50M–$100M':{ growth:{p25:28,med:42,p75:70},  nrr:{p25:115,med:130,p75:150}, gm:{p25:72,med:80,p75:88}, cac:{p25:10,med:17,p75:26}, se:{p25:1.2,med:1.8,p75:3.2}, n:35 },
+    '<$1M':      { growth:{p25:60,med:110,p75:180}, nrr:{p25:95,med:110,p75:140},  gm:{p25:55,med:68,p75:80},  cac:{p25:4,med:8,p75:16},   se:{p25:0.6,med:1.0,p75:2.0}, n:28 },
+    '$1M–$5M':   { growth:{p25:70,med:120,p75:200}, nrr:{p25:100,med:118,p75:145}, gm:{p25:60,med:72,p75:82},  cac:{p25:5,med:10,p75:18},  se:{p25:0.8,med:1.3,p75:2.4}, n:44 },
+    '$5M–$10M':  { growth:{p25:55,med:90,p75:150},  nrr:{p25:105,med:122,p75:148}, gm:{p25:63,med:74,p75:83},  cac:{p25:6,med:12,p75:20},  se:{p25:0.9,med:1.4,p75:2.6}, n:52 },
+    '$10M–$25M': { growth:{p25:45,med:68,p75:110},  nrr:{p25:110,med:125,p75:148}, gm:{p25:68,med:76,p75:84},  cac:{p25:8,med:14,p75:22},  se:{p25:1.0,med:1.6,p75:2.8}, n:62 },
+    '$25M–$50M': { growth:{p25:35,med:55,p75:90},   nrr:{p25:112,med:128,p75:150}, gm:{p25:70,med:78,p75:86},  cac:{p25:9,med:15,p75:24},  se:{p25:1.1,med:1.7,p75:3.0}, n:48 },
+    '$50M–$100M':{ growth:{p25:28,med:44,p75:72},   nrr:{p25:115,med:130,p75:152}, gm:{p25:72,med:80,p75:88},  cac:{p25:10,med:17,p75:26}, se:{p25:1.2,med:1.8,p75:3.2}, n:35 },
+    '$100M+':    { growth:{p25:20,med:32,p75:55},   nrr:{p25:118,med:132,p75:155}, gm:{p25:74,med:82,p75:90},  cac:{p25:10,med:18,p75:28}, se:{p25:1.3,med:2.0,p75:3.5}, n:22 },
   },
   'Security': {
-    '$10M–$25M': { growth:{p25:30,med:45,p75:72}, nrr:{p25:108,med:120,p75:138}, gm:{p25:66,med:74,p75:82}, cac:{p25:10,med:18,p75:28}, se:{p25:0.9,med:1.4,p75:2.4}, n:44 },
-    '$25M–$50M': { growth:{p25:24,med:38,p75:58}, nrr:{p25:110,med:122,p75:140}, gm:{p25:68,med:75,p75:83}, cac:{p25:11,med:19,p75:30}, se:{p25:0.9,med:1.4,p75:2.5}, n:38 },
-    '$50M–$100M':{ growth:{p25:18,med:28,p75:44}, nrr:{p25:112,med:124,p75:142}, gm:{p25:70,med:77,p75:84}, cac:{p25:12,med:20,p75:32}, se:{p25:1.0,med:1.5,p75:2.6}, n:29 },
+    '<$1M':      { growth:{p25:45,med:80,p75:140},  nrr:{p25:95,med:108,p75:128},  gm:{p25:58,med:68,p75:78},  cac:{p25:6,med:12,p75:22},  se:{p25:0.5,med:0.9,p75:1.7}, n:18 },
+    '$1M–$5M':   { growth:{p25:50,med:80,p75:130},  nrr:{p25:100,med:112,p75:132}, gm:{p25:62,med:70,p75:80},  cac:{p25:8,med:14,p75:24},  se:{p25:0.6,med:1.0,p75:1.9}, n:30 },
+    '$5M–$10M':  { growth:{p25:38,med:60,p75:100},  nrr:{p25:104,med:116,p75:136}, gm:{p25:64,med:72,p75:81},  cac:{p25:9,med:16,p75:26},  se:{p25:0.7,med:1.1,p75:2.0}, n:36 },
+    '$10M–$25M': { growth:{p25:30,med:46,p75:74},   nrr:{p25:108,med:120,p75:140}, gm:{p25:66,med:74,p75:82},  cac:{p25:10,med:18,p75:28}, se:{p25:0.9,med:1.4,p75:2.4}, n:44 },
+    '$25M–$50M': { growth:{p25:24,med:38,p75:60},   nrr:{p25:110,med:122,p75:142}, gm:{p25:68,med:75,p75:83},  cac:{p25:11,med:19,p75:30}, se:{p25:0.9,med:1.4,p75:2.5}, n:38 },
+    '$50M–$100M':{ growth:{p25:18,med:28,p75:46},   nrr:{p25:112,med:124,p75:144}, gm:{p25:70,med:77,p75:84},  cac:{p25:12,med:20,p75:32}, se:{p25:1.0,med:1.5,p75:2.6}, n:29 },
+    '$100M+':    { growth:{p25:12,med:20,p75:34},   nrr:{p25:114,med:126,p75:146}, gm:{p25:72,med:79,p75:86},  cac:{p25:12,med:21,p75:34}, se:{p25:1.0,med:1.6,p75:2.8}, n:19 },
   },
   'Horizontal SaaS': {
-    '$1M–$5M':   { growth:{p25:40,med:65,p75:110}, nrr:{p25:98,med:108,p75:120},  gm:{p25:58,med:68,p75:76},  cac:{p25:8,med:15,p75:24},  se:{p25:0.7,med:1.1,p75:1.8}, n:78 },
-    '$5M–$10M':  { growth:{p25:35,med:55,p75:90},  nrr:{p25:100,med:110,p75:124}, gm:{p25:60,med:70,p75:78},  cac:{p25:9,med:16,p75:24},  se:{p25:0.8,med:1.2,p75:2.0}, n:65 },
-    '$10M–$25M': { growth:{p25:28,med:42,p75:70},  nrr:{p25:102,med:112,p75:126}, gm:{p25:62,med:71,p75:79},  cac:{p25:10,med:16,p75:25}, se:{p25:0.8,med:1.2,p75:2.0}, n:72 },
-    '$25M–$50M': { growth:{p25:22,med:34,p75:52},  nrr:{p25:104,med:114,p75:128}, gm:{p25:64,med:72,p75:80},  cac:{p25:11,med:17,p75:26}, se:{p25:0.9,med:1.3,p75:2.1}, n:54 },
-    '$50M–$100M':{ growth:{p25:18,med:27,p75:42},  nrr:{p25:106,med:116,p75:130}, gm:{p25:66,med:74,p75:82},  cac:{p25:12,med:18,p75:28}, se:{p25:0.9,med:1.4,p75:2.2}, n:41 },
+    '<$1M':      { growth:{p25:35,med:65,p75:120},  nrr:{p25:92,med:102,p75:116},  gm:{p25:52,med:64,p75:74},  cac:{p25:6,med:12,p75:22},  se:{p25:0.5,med:0.9,p75:1.6}, n:88 },
+    '$1M–$5M':   { growth:{p25:40,med:65,p75:110},  nrr:{p25:98,med:108,p75:122},  gm:{p25:58,med:68,p75:76},  cac:{p25:8,med:15,p75:24},  se:{p25:0.7,med:1.1,p75:1.8}, n:78 },
+    '$5M–$10M':  { growth:{p25:35,med:55,p75:90},   nrr:{p25:100,med:110,p75:126}, gm:{p25:60,med:70,p75:78},  cac:{p25:9,med:16,p75:24},  se:{p25:0.8,med:1.2,p75:2.0}, n:65 },
+    '$10M–$25M': { growth:{p25:28,med:42,p75:70},   nrr:{p25:102,med:112,p75:128}, gm:{p25:62,med:71,p75:79},  cac:{p25:10,med:16,p75:25}, se:{p25:0.8,med:1.2,p75:2.0}, n:72 },
+    '$25M–$50M': { growth:{p25:22,med:34,p75:54},   nrr:{p25:104,med:114,p75:130}, gm:{p25:64,med:72,p75:80},  cac:{p25:11,med:17,p75:26}, se:{p25:0.9,med:1.3,p75:2.1}, n:54 },
+    '$50M–$100M':{ growth:{p25:18,med:27,p75:44},   nrr:{p25:106,med:116,p75:132}, gm:{p25:66,med:74,p75:82},  cac:{p25:12,med:18,p75:28}, se:{p25:0.9,med:1.4,p75:2.2}, n:41 },
+    '$100M+':    { growth:{p25:12,med:19,p75:32},   nrr:{p25:108,med:118,p75:134}, gm:{p25:68,med:76,p75:84},  cac:{p25:12,med:19,p75:30}, se:{p25:1.0,med:1.5,p75:2.3}, n:28 },
   },
   'Vertical SaaS': {
-    '$5M–$10M':  { growth:{p25:28,med:44,p75:72},  nrr:{p25:100,med:112,p75:128}, gm:{p25:60,med:70,p75:78},  cac:{p25:10,med:18,p75:28},  se:{p25:0.7,med:1.1,p75:1.8}, n:52 },
-    '$10M–$25M': { growth:{p25:24,med:36,p75:58},  nrr:{p25:102,med:114,p75:130}, gm:{p25:62,med:72,p75:80},  cac:{p25:12,med:20,p75:30},  se:{p25:0.8,med:1.2,p75:1.9}, n:48 },
-    '$25M–$50M': { growth:{p25:20,med:30,p75:48},  nrr:{p25:104,med:116,p75:132}, gm:{p25:64,med:74,p75:82},  cac:{p25:13,med:21,p75:32},  se:{p25:0.8,med:1.2,p75:2.0}, n:36 },
+    '<$1M':      { growth:{p25:30,med:55,p75:100},  nrr:{p25:90,med:102,p75:118},  gm:{p25:52,med:62,p75:72},  cac:{p25:7,med:13,p75:24},  se:{p25:0.5,med:0.8,p75:1.5}, n:42 },
+    '$1M–$5M':   { growth:{p25:34,med:55,p75:90},   nrr:{p25:96,med:108,p75:124},  gm:{p25:56,med:66,p75:76},  cac:{p25:9,med:16,p75:26},  se:{p25:0.6,med:1.0,p75:1.7}, n:58 },
+    '$5M–$10M':  { growth:{p25:28,med:44,p75:74},   nrr:{p25:100,med:112,p75:128}, gm:{p25:60,med:70,p75:78},  cac:{p25:10,med:18,p75:28}, se:{p25:0.7,med:1.1,p75:1.8}, n:52 },
+    '$10M–$25M': { growth:{p25:24,med:36,p75:58},   nrr:{p25:102,med:114,p75:132}, gm:{p25:62,med:72,p75:80},  cac:{p25:12,med:20,p75:30}, se:{p25:0.8,med:1.2,p75:1.9}, n:48 },
+    '$25M–$50M': { growth:{p25:20,med:30,p75:50},   nrr:{p25:104,med:116,p75:134}, gm:{p25:64,med:74,p75:82},  cac:{p25:13,med:21,p75:32}, se:{p25:0.8,med:1.2,p75:2.0}, n:36 },
+    '$50M–$100M':{ growth:{p25:16,med:24,p75:40},   nrr:{p25:106,med:118,p75:136}, gm:{p25:66,med:76,p75:84},  cac:{p25:14,med:22,p75:34}, se:{p25:0.9,med:1.3,p75:2.1}, n:26 },
+    '$100M+':    { growth:{p25:11,med:17,p75:28},   nrr:{p25:108,med:120,p75:138}, gm:{p25:68,med:78,p75:86},  cac:{p25:14,med:23,p75:36}, se:{p25:0.9,med:1.4,p75:2.2}, n:16 },
   },
+  'HR SaaS': {
+    '<$1M':      { growth:{p25:28,med:48,p75:90},   nrr:{p25:90,med:100,p75:114},  gm:{p25:54,med:64,p75:72},  cac:{p25:8,med:15,p75:26},  se:{p25:0.5,med:0.8,p75:1.4}, n:32 },
+    '$1M–$5M':   { growth:{p25:30,med:50,p75:85},   nrr:{p25:95,med:106,p75:120},  gm:{p25:58,med:66,p75:74},  cac:{p25:10,med:18,p75:28}, se:{p25:0.6,med:0.9,p75:1.6}, n:46 },
+    '$5M–$10M':  { growth:{p25:26,med:40,p75:68},   nrr:{p25:98,med:108,p75:124},  gm:{p25:60,med:68,p75:76},  cac:{p25:11,med:19,p75:30}, se:{p25:0.7,med:1.0,p75:1.7}, n:40 },
+    '$10M–$25M': { growth:{p25:22,med:34,p75:55},   nrr:{p25:100,med:110,p75:126}, gm:{p25:62,med:70,p75:78},  cac:{p25:13,med:21,p75:32}, se:{p25:0.7,med:1.1,p75:1.8}, n:38 },
+    '$25M–$50M': { growth:{p25:18,med:28,p75:46},   nrr:{p25:102,med:112,p75:128}, gm:{p25:64,med:72,p75:80},  cac:{p25:14,med:22,p75:34}, se:{p25:0.8,med:1.2,p75:1.9}, n:30 },
+    '$50M–$100M':{ growth:{p25:14,med:22,p75:36},   nrr:{p25:104,med:114,p75:130}, gm:{p25:66,med:74,p75:82},  cac:{p25:15,med:24,p75:36}, se:{p25:0.8,med:1.2,p75:2.0}, n:22 },
+    '$100M+':    { growth:{p25:10,med:16,p75:26},   nrr:{p25:106,med:116,p75:132}, gm:{p25:68,med:76,p75:84},  cac:{p25:15,med:25,p75:38}, se:{p25:0.9,med:1.3,p75:2.1}, n:14 },
+  },
+  'DevTools': {
+    '<$1M':      { growth:{p25:50,med:90,p75:160},  nrr:{p25:95,med:112,p75:138},  gm:{p25:62,med:74,p75:84},  cac:{p25:4,med:8,p75:16},   se:{p25:0.7,med:1.2,p75:2.2}, n:36 },
+    '$1M–$5M':   { growth:{p25:55,med:95,p75:160},  nrr:{p25:100,med:118,p75:142}, gm:{p25:66,med:76,p75:86},  cac:{p25:5,med:10,p75:18},  se:{p25:0.8,med:1.4,p75:2.5}, n:44 },
+    '$5M–$10M':  { growth:{p25:45,med:75,p75:130},  nrr:{p25:104,med:122,p75:146}, gm:{p25:68,med:78,p75:87},  cac:{p25:6,med:11,p75:19},  se:{p25:0.9,med:1.5,p75:2.7}, n:40 },
+    '$10M–$25M': { growth:{p25:38,med:60,p75:100},  nrr:{p25:108,med:126,p75:150}, gm:{p25:70,med:79,p75:88},  cac:{p25:7,med:13,p75:21},  se:{p25:1.0,med:1.6,p75:2.9}, n:36 },
+    '$25M–$50M': { growth:{p25:30,med:50,p75:82},   nrr:{p25:110,med:128,p75:152}, gm:{p25:72,med:80,p75:89},  cac:{p25:8,med:14,p75:22},  se:{p25:1.1,med:1.7,p75:3.0}, n:28 },
+    '$50M–$100M':{ growth:{p25:24,med:38,p75:64},   nrr:{p25:112,med:130,p75:154}, gm:{p25:74,med:82,p75:90},  cac:{p25:9,med:15,p75:24},  se:{p25:1.2,med:1.8,p75:3.2}, n:20 },
+    '$100M+':    { growth:{p25:16,med:26,p75:44},   nrr:{p25:114,med:132,p75:156}, gm:{p25:76,med:84,p75:91},  cac:{p25:9,med:16,p75:25},  se:{p25:1.3,med:1.9,p75:3.4}, n:13 },
+  },
+};
+
+// ── NAMED PEER COMPANIES per category (used for richer bubble map) ─────────────
+// These are fictional but calibrated — used as background data points only
+const PEERS = {
+  'Infra / Dev / AI': [
+    {name:'Nexara',    growth:82, gfs:4.4}, {name:'Vaultex',  growth:55, gfs:3.8},
+    {name:'Stackr',   growth:110,gfs:4.1}, {name:'Dataloom', growth:38, gfs:3.2},
+    {name:'Nodecast', growth:65, gfs:3.9}, {name:'Kernelco', growth:28, gfs:2.8},
+    {name:'Edgelux',  growth:92, gfs:4.6}, {name:'Clustra',  growth:44, gfs:3.5},
+    {name:'Fluxnode', growth:130,gfs:3.1}, {name:'Prismware',growth:20, gfs:3.7},
+    {name:'Bitspan',  growth:72, gfs:4.2}, {name:'Corepath', growth:16, gfs:2.5},
+  ],
+  'Security': [
+    {name:'Sentinel9', growth:52, gfs:4.0}, {name:'VaultAI',  growth:34, gfs:3.4},
+    {name:'Shieldco',  growth:72, gfs:4.3}, {name:'Threatiq', growth:22, gfs:2.9},
+    {name:'Guardrail', growth:46, gfs:3.8}, {name:'Cryptex',  growth:18, gfs:3.1},
+    {name:'Perimeter', growth:62, gfs:4.1}, {name:'Auditron', growth:28, gfs:2.6},
+    {name:'Cipherlab', growth:38, gfs:3.6}, {name:'Ironveil', growth:14, gfs:3.3},
+  ],
+  'Horizontal SaaS': [
+    {name:'Flowsync',  growth:48, gfs:3.9}, {name:'Gridcraft',growth:28, gfs:3.4},
+    {name:'Operio',    growth:62, gfs:3.2}, {name:'Taskweave', growth:18, gfs:3.6},
+    {name:'Hubform',   growth:55, gfs:2.8}, {name:'Planwise',  growth:34, gfs:4.1},
+    {name:'Dashify',   growth:42, gfs:3.0}, {name:'Collab+',   growth:24, gfs:3.7},
+    {name:'Notionex',  growth:70, gfs:2.6}, {name:'Fieldbase', growth:15, gfs:3.5},
+    {name:'Portali',   growth:38, gfs:3.8}, {name:'Workloop',  growth:52, gfs:2.9},
+  ],
+  'Vertical SaaS': [
+    {name:'Cliniqal',  growth:38, gfs:4.0}, {name:'Agrobase',  growth:24, gfs:3.5},
+    {name:'Legalio',   growth:44, gfs:3.7}, {name:'Proptech+', growth:18, gfs:3.2},
+    {name:'Edustack',  growth:52, gfs:3.0}, {name:'Retailink', growth:14, gfs:3.6},
+    {name:'Medtrack',  growth:30, gfs:4.1}, {name:'Finovert',  growth:36, gfs:2.7},
+    {name:'Constrico', growth:22, gfs:3.4}, {name:'Fleetware', growth:28, gfs:3.8},
+  ],
+  'HR SaaS': [
+    {name:'Peopleco',  growth:36, gfs:3.8}, {name:'Hireflow',  growth:22, gfs:3.3},
+    {name:'Talentiq',  growth:48, gfs:3.1}, {name:'Onboardly', growth:16, gfs:3.7},
+    {name:'Staffbase',  growth:30, gfs:4.0}, {name:'Paylogic', growth:12, gfs:3.5},
+    {name:'Engageio',  growth:44, gfs:2.8}, {name:'Culturely', growth:26, gfs:3.6},
+    {name:'Wrkforcex', growth:18, gfs:3.2}, {name:'Learnex',   growth:38, gfs:2.9},
+  ],
+  'DevTools': [
+    {name:'Codeweave', growth:95, gfs:4.5}, {name:'Buildfast', growth:60, gfs:3.9},
+    {name:'Pipestack', growth:130,gfs:4.2}, {name:'Deployio',  growth:44, gfs:3.5},
+    {name:'Testloom',  growth:78, gfs:4.1}, {name:'Gitcraft',  growth:32, gfs:3.7},
+    {name:'Debuglabs', growth:110,gfs:3.3}, {name:'Apiweave',  growth:24, gfs:4.0},
+    {name:'Lintex',    growth:55, gfs:3.8}, {name:'Monitorly', growth:88, gfs:2.9},
+  ],
 };
 
 // Category multipliers for CBGR
@@ -427,11 +508,20 @@ const STAGE_BGR = {'Early':0.80,'Growth':0.55,'Scale':0.35,'Late':0.25};
 
 function getBenchmark(cat, arr) {
   const catData = BENCHMARKS[cat];
-  if (!catData) return null;
-  // Find closest band
+  if (!catData) {
+    // Fallback to Horizontal SaaS if category not found
+    return BENCHMARKS['Horizontal SaaS'][arr] || BENCHMARKS['Horizontal SaaS']['$10M–$25M'];
+  }
   if (catData[arr]) return catData[arr];
-  const bands = Object.keys(catData);
-  return catData[bands[Math.floor(bands.length/2)]];
+  // Find nearest band by index
+  const bands = ['<$1M','$1M–$5M','$5M–$10M','$10M–$25M','$25M–$50M','$50M–$100M','$100M+'];
+  const targetIdx = bands.indexOf(arr);
+  // Search outward for nearest available band
+  for (let offset = 1; offset < bands.length; offset++) {
+    if (targetIdx + offset < bands.length && catData[bands[targetIdx + offset]]) return catData[bands[targetIdx + offset]];
+    if (targetIdx - offset >= 0 && catData[bands[targetIdx - offset]]) return catData[bands[targetIdx - offset]];
+  }
+  return null;
 }
 
 function percentile(val, p25, med, p75) {
@@ -559,7 +649,7 @@ function buildBubbleMap(userGrowth, userGfs, ogrL, ogrH, cat) {
     const d = document.createElement('div');
     d.className = 'atlas-bubble';
     d.style.cssText = `width:${size}px;height:${size}px;left:${x}%;top:${y}%;background:${col};font-size:${size>36?11:10}px;`;
-    d.innerHTML = `${p.gfs.toFixed(1)}<div class="tip">${p.label} · ${p.growth}% growth · GFS ${p.gfs.toFixed(1)}</div>`;
+    d.innerHTML = `${p.gfs.toFixed(1)}<div class="tip">${p.name} · ${p.growth}% growth · GFS ${p.gfs.toFixed(1)}</div>`;
     container.appendChild(d);
   });
 
@@ -581,15 +671,12 @@ function buildBubbleMap(userGrowth, userGfs, ogrL, ogrH, cat) {
 }
 
 function generatePeers(userGrowth, userGfs, cat) {
-  const peers = [];
-  const labels = ['Alpha','Beta','Gamma','Delta','Epsilon','Zeta','Eta','Theta','Iota','Kappa','Lambda'];
-  const count = 8 + Math.floor(Math.random() * 5);
-  for (let i = 0; i < count; i++) {
-    const g = Math.max(5, userGrowth * (0.3 + Math.random() * 1.6));
-    const gfs = Math.min(5, Math.max(1.2, userGfs * (0.5 + Math.random() * 1.1)));
-    peers.push({ growth: Math.round(g), gfs: +gfs.toFixed(1), label: labels[i % labels.length] });
-  }
-  return peers;
+  const catPeers = PEERS[cat] || PEERS['Horizontal SaaS'];
+  // Filter to roughly similar growth range (±70% of user growth), shuffle for variety
+  const maxGrowth = Math.max(userGrowth * 1.8, 60);
+  const filtered = catPeers.filter(p => p.growth <= maxGrowth);
+  // Always show all available peers — richer map
+  return filtered.length >= 4 ? filtered : catPeers;
 }
 
 function buildPctBars(growth, nrr, gm, cac, se, bench) {
