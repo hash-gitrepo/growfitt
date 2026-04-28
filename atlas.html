@@ -82,7 +82,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:0.3;}
 
 /* RESULTS */
 .results-section{max-width:1100px;margin:0 auto;padding:0 40px 80px;display:none;}
-.results-section.show{display:block;}
+.results-section.show{display:block !important;}
 .results-header{display:flex;align-items:center;gap:12px;margin-bottom:24px;}
 .results-header h2{font-family:var(--serif);font-size:24px;color:var(--text);letter-spacing:-0.5px;}
 .results-segment-tag{font-size:12px;padding:4px 14px;background:rgba(58,175,102,0.1);border:1px solid var(--border-green);border-radius:16px;color:var(--green-light);}
@@ -171,6 +171,20 @@ input[type=number]::-webkit-inner-spin-button{opacity:0.3;}
 }
 @keyframes fadeUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
 .fade-in{animation:fadeUp 0.35s ease forwards;}
+
+  /* ── METRIC SLIDERS ── */
+  .slider-field{display:flex;flex-direction:column;gap:5px;}
+  .slider-val-row{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:2px;}
+  .slider-cur{font-size:22px;font-weight:700;color:var(--green-light);letter-spacing:-0.5px;line-height:1;font-family:'DM Serif Display',Georgia,serif;}
+  .slider-cur.dim{color:var(--text-dim);font-size:16px;}
+  .slider-unit{font-size:13px;color:var(--text-muted);margin-left:1px;}
+  .slider-range{font-size:10px;color:var(--text-dim);}
+  input[type=range]{-webkit-appearance:none;appearance:none;width:100%;height:5px;border-radius:3px;outline:none;cursor:pointer;background:linear-gradient(to right,var(--green-light) 0%,var(--green-light) var(--pct,0%),var(--dark4) var(--pct,0%),var(--dark4) 100%);margin:4px 0 2px;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--green-light);border:2px solid var(--dark);box-shadow:0 1px 4px rgba(0,0,0,0.3);cursor:pointer;}
+  input[type=range]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--green-light);border:2px solid var(--dark);cursor:pointer;}
+  input[type=range].unset{background:var(--dark4);}
+  input[type=range].unset::-webkit-slider-thumb{background:var(--text-dim);}
+
 </style>
 </head>
 <body>
@@ -262,32 +276,69 @@ input[type=number]::-webkit-inner-spin-button{opacity:0.3;}
         </div>
       </div>
 
-      <!-- Row 2: Growth metrics -->
+      <!-- Row 2: Growth metrics — sliders -->
       <div class="section-label">Growth metrics</div>
       <div class="fields-row-2" style="margin-bottom:20px;">
-        <div class="field-group">
-          <div class="field-label">LTM Growth rate (%) <span style="color:var(--red);">*</span></div>
-          <input type="number" id="f-growth" placeholder="e.g. 38" min="0" max="300">
+
+        <!-- LTM Growth Rate -->
+        <div class="slider-field">
+          <div class="field-label">LTM Growth rate <span style="color:var(--red);">*</span></div>
+          <div class="slider-val-row">
+            <span><span class="slider-cur" id="disp-growth">—</span><span class="slider-unit">%</span></span>
+            <span class="slider-range">0% – 150%</span>
+          </div>
+          <input type="range" id="f-growth" min="0" max="150" step="1" value="0"
+            oninput="updateSlider('f-growth','disp-growth',this.value,'%',false)">
           <div class="field-hint">Year-over-year revenue growth</div>
         </div>
-        <div class="field-group">
-          <div class="field-label">NRR (%) <span class="field-optional">Optional</span></div>
-          <input type="number" id="f-nrr" placeholder="e.g. 115" min="50" max="200">
+
+        <!-- NRR -->
+        <div class="slider-field">
+          <div class="field-label">NRR <span class="field-optional">Optional</span></div>
+          <div class="slider-val-row">
+            <span><span class="slider-cur dim" id="disp-nrr">Not set</span><span class="slider-unit" id="unit-nrr"></span></span>
+            <span class="slider-range">80% – 160%</span>
+          </div>
+          <input type="range" id="f-nrr" min="80" max="160" step="1" value="80"
+            class="unset" oninput="updateSlider('f-nrr','disp-nrr',this.value,'%',true,'unit-nrr')">
           <div class="field-hint">Net Revenue Retention</div>
         </div>
-        <div class="field-group">
-          <div class="field-label">Gross Margin (%) <span class="field-optional">Optional</span></div>
-          <input type="number" id="f-gm" placeholder="e.g. 72" min="0" max="100">
+
+        <!-- Gross Margin -->
+        <div class="slider-field">
+          <div class="field-label">Gross Margin <span class="field-optional">Optional</span></div>
+          <div class="slider-val-row">
+            <span><span class="slider-cur dim" id="disp-gm">Not set</span><span class="slider-unit" id="unit-gm"></span></span>
+            <span class="slider-range">0% – 100%</span>
+          </div>
+          <input type="range" id="f-gm" min="0" max="100" step="1" value="0"
+            class="unset" oninput="updateSlider('f-gm','disp-gm',this.value,'%',true,'unit-gm')">
         </div>
-        <div class="field-group">
-          <div class="field-label">CAC Payback (mo) <span class="field-optional">Optional</span></div>
-          <input type="number" id="f-cac" placeholder="e.g. 18" min="1" max="60">
+
+        <!-- CAC Payback -->
+        <div class="slider-field">
+          <div class="field-label">CAC Payback <span class="field-optional">Optional</span></div>
+          <div class="slider-val-row">
+            <span><span class="slider-cur dim" id="disp-cac">Not set</span><span class="slider-unit" id="unit-cac"></span></span>
+            <span class="slider-range">3 – 48 months</span>
+          </div>
+          <input type="range" id="f-cac" min="3" max="48" step="1" value="3"
+            class="unset" oninput="updateSlider('f-cac','disp-cac',this.value,'mo',true,'unit-cac')">
+          <div class="field-hint">Months to recover acquisition cost</div>
         </div>
-        <div class="field-group">
+
+        <!-- Sales Efficiency -->
+        <div class="slider-field">
           <div class="field-label">Sales Efficiency <span class="field-optional">Optional</span></div>
-          <input type="number" id="f-se" placeholder="e.g. 1.1" min="0" max="10" step="0.1">
+          <div class="slider-val-row">
+            <span><span class="slider-cur dim" id="disp-se">Not set</span><span class="slider-unit" id="unit-se"></span></span>
+            <span class="slider-range">0 – 5x</span>
+          </div>
+          <input type="range" id="f-se" min="0" max="50" step="1" value="0"
+            class="unset" oninput="updateSlider('f-se','disp-se',this.value,'x',true,'unit-se',10)">
           <div class="field-hint">Magic Number (net new ARR ÷ S&M spend)</div>
         </div>
+
       </div>
 
       <!-- Submit -->
@@ -546,19 +597,74 @@ function estimateGFS(growth, nrr, gm, se, stage, cat) {
 }
 
 // ── RUN ATLAS ─────────────────────────────────────────────────────────────────
+
+// ── SLIDER LOGIC ──────────────────────────────────────────────────────────────
+// optional: if true, slider starts "unset" and activates on first move
+// divisor: for sales efficiency (stored 0-50, displayed 0.0-5.0)
+function updateSlider(sliderId, dispId, rawVal, unit, optional, unitId, divisor) {
+  const slider = document.getElementById(sliderId);
+  const disp   = document.getElementById(dispId);
+  const val    = divisor ? (parseInt(rawVal) / divisor).toFixed(1) : rawVal;
+  const min    = parseFloat(slider.min);
+  const max    = parseFloat(slider.max);
+  const pct    = ((rawVal - min) / (max - min) * 100).toFixed(1);
+
+  if (optional) {
+    // First interaction: activate the slider
+    if (slider.classList.contains('unset')) {
+      slider.classList.remove('unset');
+      if (unitId) document.getElementById(unitId).textContent = unit;
+    }
+  }
+
+  // Update display
+  disp.textContent = val;
+  disp.classList.remove('dim');
+  disp.style.color = 'var(--green-light)';
+  disp.style.fontSize = '22px';
+
+  // Update track fill
+  slider.style.setProperty('--pct', pct + '%');
+}
+
+// Reset optional slider back to unset state
+function resetSlider(sliderId, dispId, unitId) {
+  const slider = document.getElementById(sliderId);
+  slider.classList.add('unset');
+  slider.style.removeProperty('--pct');
+  const disp = document.getElementById(dispId);
+  disp.textContent = 'Not set';
+  disp.classList.add('dim');
+  disp.style.color = '';
+  disp.style.fontSize = '';
+  if (unitId) document.getElementById(unitId).textContent = '';
+}
+
+// Init growth slider fill on load
+document.addEventListener('DOMContentLoaded', function() {
+  const g = document.getElementById('f-growth');
+  if (g) g.style.setProperty('--pct', '0%');
+});
+
+
 function runAtlas() {
+  try {
   const cat    = document.getElementById('f-category').value;
   const arr    = document.getElementById('f-arr').value;
   const stage  = document.getElementById('f-stage').value || 'Growth';
-  const growth = parseFloat(document.getElementById('f-growth').value);
-  const nrr    = parseFloat(document.getElementById('f-nrr').value) || null;
-  const gm     = parseFloat(document.getElementById('f-gm').value) || null;
-  const cac    = parseFloat(document.getElementById('f-cac').value) || null;
-  const se     = parseFloat(document.getElementById('f-se').value) || null;
+  const growth = parseInt(document.getElementById('f-growth').value) || 0;
+  const _nrrEl = document.getElementById('f-nrr');
+  const _gmEl  = document.getElementById('f-gm');
+  const _cacEl = document.getElementById('f-cac');
+  const _seEl  = document.getElementById('f-se');
+  const nrr = _nrrEl.classList.contains('unset') ? null : parseInt(_nrrEl.value);
+  const gm  = _gmEl.classList.contains('unset')  ? null : parseInt(_gmEl.value);
+  const cac = _cacEl.classList.contains('unset') ? null : parseInt(_cacEl.value);
+  const se  = _seEl.classList.contains('unset')  ? null : parseInt(_seEl.value) / 10;
 
   if (!cat) { alert('Please select a Category.'); document.getElementById('f-category').focus(); return; }
   if (!arr) { alert('Please select an ARR / Revenue band.'); document.getElementById('f-arr').focus(); return; }
-  if (!growth || isNaN(growth)) { alert('Please enter your LTM Growth rate.'); document.getElementById('f-growth').focus(); return; }
+  if (!growth || growth <= 0) { alert('Please drag the LTM Growth rate slider to set your growth rate.'); document.getElementById('f-growth').focus(); return; }
 
   const bench = getBenchmark(cat, arr);
   const res = estimateGFS(growth, nrr, gm, se, stage, cat);
@@ -607,6 +713,7 @@ function runAtlas() {
 
   // Smooth scroll to results
   setTimeout(()=>section.scrollIntoView({behavior:'smooth',block:'start'}), 80);
+  } catch(e) { console.error('runAtlas error:', e); alert('Error: ' + e.message); }
 }
 
 function buildBubbleMap(userGrowth, userGfs, ogrL, ogrH, cat) {
