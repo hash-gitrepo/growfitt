@@ -284,11 +284,11 @@ input[type=number]::-webkit-inner-spin-button{opacity:0.3;}
         <div class="slider-field">
           <div class="field-label">LTM Growth rate <span style="color:var(--red);">*</span></div>
           <div class="slider-val-row">
-            <span><span class="slider-cur" id="disp-growth">—</span><span class="slider-unit">%</span></span>
+            <span><span class="slider-cur" id="disp-growth" style="font-size:14px;color:var(--text-dim);">Drag to set</span><span class="slider-unit" id="unit-growth"></span></span>
             <span class="slider-range">0% – 150%</span>
           </div>
           <input type="range" id="f-growth" min="0" max="150" step="1" value="0"
-            oninput="updateSlider('f-growth','disp-growth',this.value,'%',false)">
+            oninput="updateSlider('f-growth','disp-growth',this.value,'%',false,'unit-growth')">
           <div class="field-hint">Year-over-year revenue growth</div>
         </div>
 
@@ -613,9 +613,10 @@ function updateSlider(sliderId, dispId, rawVal, unit, optional, unitId, divisor)
     // First interaction: activate the slider
     if (slider.classList.contains('unset')) {
       slider.classList.remove('unset');
-      if (unitId) document.getElementById(unitId).textContent = unit;
     }
   }
+  // Always update unit display
+  if (unitId) document.getElementById(unitId).textContent = unit;
 
   // Update display
   disp.textContent = val;
@@ -713,7 +714,7 @@ function runAtlas() {
 
   // Smooth scroll to results
   setTimeout(()=>section.scrollIntoView({behavior:'smooth',block:'start'}), 80);
-  } catch(e) { console.error('runAtlas error:', e); alert('Error: ' + e.message); }
+  } catch(e) { console.error('GrowFitt Atlas error:', e); }
 }
 
 function buildBubbleMap(userGrowth, userGfs, ogrL, ogrH, cat) {
