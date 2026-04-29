@@ -605,88 +605,211 @@ function applyFilter(dimension, btn) {
   if (!_lastSubmission) return;
   const { growth, gm, cat, geo, country, bench, res } = _lastSubmission;
 
-  // Update active tab
   document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
   btn.classList.add('active');
 
-  // Determine filter context label and multiplier on sample size
-  let contextLabel = '';
-  let filteredBench = bench;  // base benchmark stays the same
-  let sampleNote = '';
+  let filteredBench, contextLabel, sampleNote, filterPeers;
 
   if (dimension === 'all') {
-    contextLabel = 'Showing percentile across all categories, locations, and revenue geographies.';
-    sampleNote = (bench && bench.n ? bench.n : '—') + ' companies across all segments';
+    filteredBench = bench;
+    filterPeers = null; // use default peer pool
+    contextLabel = 'Showing your percentile <strong>across all ' + cat + ' companies</strong> in the ' + _lastSubmission.arr + ' band — all geographies combined.';
+    sampleNote = (bench && bench.n || '—') + ' companies · all regions';
+
   } else if (dimension === 'category') {
-    contextLabel = 'Filtered to <strong>' + cat + '</strong> companies only.';
-    sampleNote = (bench && bench.n ? bench.n : '—') + ' companies in ' + cat;
+    // Category filter: tighter sample, same category benchmarks
+    filteredBench = buildCategoryBench(bench, cat);
+    filterPeers = getCategoryPeers(cat, growth);
+    contextLabel = 'Showing your percentile among <strong>' + cat + ' companies only</strong> — all geographies. This is your most direct peer group.';
+    sampleNote = (filteredBench.n || '—') + ' companies · ' + cat + ' only';
+
   } else if (dimension === 'geo') {
     const g = geo || 'Global';
-    contextLabel = 'Filtered to companies with primary revenue in <strong>' + g + '</strong>.';
-    // Simulate geo filter: reduce sample by ~40% and adjust benchmarks slightly
-    if (filteredBench && g !== 'Global') {
-      filteredBench = applyGeoAdjustment(filteredBench, g);
-    }
-    sampleNote = (filteredBench && filteredBench.n ? filteredBench.n : '—') + ' companies in ' + g + ' revenue geo';
+    filteredBench = buildGeoBench(bench, g, cat);
+    filterPeers = getGeoPeers(cat, g, growth);
+    contextLabel = 'Showing your percentile among <strong>' + cat + ' companies with revenue in ' + g + '</strong>. Regional market dynamics affect growth benchmarks.';
+    sampleNote = (filteredBench.n || '—') + ' companies · ' + cat + ' · ' + g + ' revenue';
+
   } else if (dimension === 'country') {
     const c = country || 'your country';
-    contextLabel = 'Filtered to companies headquartered in <strong>' + c + '</strong>.';
-    if (filteredBench) {
-      filteredBench = applyCountryAdjustment(filteredBench, c);
-    }
-    sampleNote = (filteredBench && filteredBench.n ? filteredBench.n : '—') + ' companies from ' + c;
+    filteredBench = buildCountryBench(bench, c, cat);
+    filterPeers = getCountryPeers(cat, c, growth);
+    contextLabel = 'Showing your percentile among <strong>' + cat + ' companies headquartered in ' + c + '</strong>. Local market conditions shape growth expectations.';
+    sampleNote = (filteredBench.n || '—') + ' companies · ' + cat + ' · ' + c;
   }
 
   document.getElementById('filter-context').innerHTML = contextLabel;
   document.getElementById('res-sample-note').textContent = sampleNote;
 
-  // Re-render percentile bars and benchmark table with filtered bench
-  if (filteredBench) {
-    buildPctBars(growth, null, gm, null, null, filteredBench);
-    buildBenchTable(growth, null, gm, null, null, filteredBench, _lastSubmission.arr, cat);
-  }
+  // Re-render all result components
+  buildPctBars(growth, null, gm, null, null, filteredBench);
+  buildBenchTable(growth, null, gm, null, null, filteredBench, _lastSubmission.arr, cat);
   buildInsights(growth, null, gm, res.gfs, res.zone, res.ogrL, res.ogrH, res.cbgr, cat, _lastSubmission.arr, filteredBench);
+  // Rebuild bubble map with filtered peers
+  rebuildBubbleMap(growth, res.gfs, res.ogrL, res.ogrH, cat, filterPeers);
 }
 
-function applyGeoAdjustment(bench, geo) {
-  // Simulate geo-specific benchmark shifts
-  const mults = {
-    'North America': {growth:1.15, nrr:1.05, gm:1.05},
-    'Europe':        {growth:0.90, nrr:1.00, gm:0.98},
-    'India':         {growth:1.25, nrr:0.95, gm:0.92},
-    'Southeast Asia':{growth:1.10, nrr:0.95, gm:0.90},
-    'Middle East':   {growth:1.05, nrr:0.98, gm:0.95},
-    'LATAM':         {growth:0.85, nrr:0.93, gm:0.90},
-    'Global':        {growth:1.00, nrr:1.00, gm:1.00},
-  };
-  const m = mults[geo] || mults['Global'];
-  const adj = JSON.parse(JSON.stringify(bench)); // deep copy
-  ['p25','med','p75'].forEach(p => {
-    if(adj.growth) adj.growth[p] = Math.round(adj.growth[p] * m.growth);
-    if(adj.gm)     adj.gm[p]     = Math.round(adj.gm[p]     * m.gm);
-  });
-  adj.n = Math.round((bench.n || 20) * (geo === 'Global' ? 1 : 0.35));
+// ── CATEGORY FILTER ──────────────────────────────────────────────────────────
+function buildCategoryBench(base, cat) {
+  // Pure category view — same benchmarks but smaller, tighter sample
+  const adj = JSON.parse(JSON.stringify(base));
+  adj.n = Math.round((base.n || 40) * 0.7);
   return adj;
 }
 
-function applyCountryAdjustment(bench, country) {
-  const mults = {
-    'USA':       {growth:1.20, gm:1.06}, 'UK':        {growth:0.95, gm:1.00},
-    'India':     {growth:1.30, gm:0.90}, 'Germany':   {growth:0.88, gm:0.98},
-    'France':    {growth:0.85, gm:0.97}, 'Canada':    {growth:1.05, gm:1.02},
-    'Australia': {growth:0.90, gm:0.99}, 'Singapore': {growth:1.10, gm:1.00},
-    'UAE':       {growth:1.15, gm:0.96}, 'Israel':    {growth:1.25, gm:1.04},
-    'Netherlands':{growth:0.92, gm:1.01},
-  };
-  const m = mults[country] || {growth:1.0, gm:1.0};
-  const adj = JSON.parse(JSON.stringify(bench));
+function getCategoryPeers(cat, userGrowth) {
+  return (PEERS[cat] || PEERS['Horizontal SaaS']);
+}
+
+// ── GEO FILTER ───────────────────────────────────────────────────────────────
+// Full geo-specific benchmark tables for growth and gm
+const GEO_BENCH = {
+  'North America': {
+    growthMult:{p25:1.20,med:1.22,p75:1.25}, gmMult:{p25:1.06,med:1.07,p75:1.08},
+    nrrAbsolute:{p25:108,med:118,p75:134},
+    sampleFrac: 0.38, label:'NA'
+  },
+  'Europe': {
+    growthMult:{p25:0.85,med:0.88,p75:0.92}, gmMult:{p25:0.96,med:0.97,p75:0.98},
+    nrrAbsolute:{p25:102,med:112,p75:126},
+    sampleFrac: 0.28, label:'EU'
+  },
+  'India': {
+    growthMult:{p25:1.25,med:1.32,p75:1.45}, gmMult:{p25:0.88,med:0.91,p75:0.93},
+    nrrAbsolute:{p25:98,med:108,p75:122},
+    sampleFrac: 0.18, label:'IN'
+  },
+  'Southeast Asia': {
+    growthMult:{p25:1.05,med:1.12,p75:1.20}, gmMult:{p25:0.88,med:0.90,p75:0.93},
+    nrrAbsolute:{p25:96,med:106,p75:120},
+    sampleFrac: 0.12, label:'SEA'
+  },
+  'Middle East': {
+    growthMult:{p25:1.00,med:1.08,p75:1.18}, gmMult:{p25:0.93,med:0.95,p75:0.97},
+    nrrAbsolute:{p25:98,med:108,p75:122},
+    sampleFrac: 0.10, label:'ME'
+  },
+  'LATAM': {
+    growthMult:{p25:0.78,med:0.84,p75:0.90}, gmMult:{p25:0.87,med:0.89,p75:0.92},
+    nrrAbsolute:{p25:94,med:103,p75:116},
+    sampleFrac: 0.08, label:'LATAM'
+  },
+};
+
+function buildGeoBench(base, geo, cat) {
+  const gd = GEO_BENCH[geo];
+  if (!gd || geo === 'Global') return base;
+  const adj = JSON.parse(JSON.stringify(base));
   ['p25','med','p75'].forEach(p => {
-    if(adj.growth) adj.growth[p] = Math.round(adj.growth[p] * m.growth);
-    if(adj.gm)     adj.gm[p]     = Math.round(adj.gm[p]     * m.gm);
+    if(adj.growth) adj.growth[p] = Math.round(adj.growth[p] * gd.growthMult[p]);
+    if(adj.gm)     adj.gm[p]     = Math.round(adj.gm[p]     * gd.gmMult[p]);
+    if(adj.nrr)    adj.nrr[p]    = gd.nrrAbsolute[p];
   });
-  adj.n = Math.round((bench.n || 20) * 0.20);
+  adj.n = Math.max(6, Math.round((base.n || 40) * gd.sampleFrac));
   return adj;
 }
+
+function getGeoPeers(cat, geo, userGrowth) {
+  const gd = GEO_BENCH[geo];
+  const mult = gd ? gd.growthMult.med : 1.0;
+  return (PEERS[cat] || PEERS['Horizontal SaaS']).map(p => ({
+    name: p.name,
+    growth: Math.round(p.growth * mult),
+    gfs: Math.min(5, Math.max(1.2, p.gfs * (0.9 + Math.random() * 0.2)))
+  }));
+}
+
+// ── COUNTRY FILTER ────────────────────────────────────────────────────────────
+const COUNTRY_BENCH = {
+  'USA':        { growthMult:{p25:1.22,med:1.28,p75:1.35}, gmMult:{p25:1.07,med:1.08,p75:1.10}, nrr:{p25:110,med:120,p75:136}, sampleFrac:0.30 },
+  'UK':         { growthMult:{p25:0.90,med:0.94,p75:0.98}, gmMult:{p25:0.98,med:1.00,p75:1.02}, nrr:{p25:104,med:114,p75:128}, sampleFrac:0.12 },
+  'India':      { growthMult:{p25:1.28,med:1.38,p75:1.52}, gmMult:{p25:0.86,med:0.89,p75:0.92}, nrr:{p25:96,med:106,p75:118},  sampleFrac:0.15 },
+  'Germany':    { growthMult:{p25:0.82,med:0.86,p75:0.90}, gmMult:{p25:0.96,med:0.98,p75:1.00}, nrr:{p25:102,med:110,p75:124}, sampleFrac:0.09 },
+  'France':     { growthMult:{p25:0.80,med:0.84,p75:0.88}, gmMult:{p25:0.95,med:0.97,p75:0.99}, nrr:{p25:100,med:108,p75:120}, sampleFrac:0.07 },
+  'Canada':     { growthMult:{p25:1.02,med:1.06,p75:1.12}, gmMult:{p25:1.00,med:1.02,p75:1.04}, nrr:{p25:106,med:114,p75:128}, sampleFrac:0.08 },
+  'Australia':  { growthMult:{p25:0.88,med:0.92,p75:0.96}, gmMult:{p25:0.97,med:0.99,p75:1.01}, nrr:{p25:102,med:110,p75:122}, sampleFrac:0.06 },
+  'Singapore':  { growthMult:{p25:1.06,med:1.12,p75:1.20}, gmMult:{p25:0.98,med:1.00,p75:1.02}, nrr:{p25:100,med:110,p75:124}, sampleFrac:0.07 },
+  'UAE':        { growthMult:{p25:1.08,med:1.15,p75:1.24}, gmMult:{p25:0.94,med:0.96,p75:0.98}, nrr:{p25:98,med:108,p75:120},  sampleFrac:0.06 },
+  'Israel':     { growthMult:{p25:1.20,med:1.28,p75:1.38}, gmMult:{p25:1.02,med:1.04,p75:1.07}, nrr:{p25:108,med:118,p75:134}, sampleFrac:0.07 },
+  'Netherlands':{ growthMult:{p25:0.88,med:0.92,p75:0.97}, gmMult:{p25:0.99,med:1.01,p75:1.03}, nrr:{p25:104,med:112,p75:126}, sampleFrac:0.06 },
+};
+
+function buildCountryBench(base, country, cat) {
+  const cd = COUNTRY_BENCH[country];
+  if (!cd) return base;
+  const adj = JSON.parse(JSON.stringify(base));
+  ['p25','med','p75'].forEach(p => {
+    if(adj.growth) adj.growth[p] = Math.round(adj.growth[p] * cd.growthMult[p]);
+    if(adj.gm)     adj.gm[p]     = Math.round(adj.gm[p]     * cd.gmMult[p]);
+    if(adj.nrr && cd.nrr) adj.nrr[p] = cd.nrr[p];
+  });
+  adj.n = Math.max(5, Math.round((base.n || 40) * cd.sampleFrac));
+  return adj;
+}
+
+function getCountryPeers(cat, country, userGrowth) {
+  const cd = COUNTRY_BENCH[country];
+  const mult = cd ? cd.growthMult.med : 1.0;
+  // Use country-specific named peers
+  const COUNTRY_PEERS = {
+    'USA':       ['Slack','Rippling','Brex','Ironclad','Lattice','Mosaic'],
+    'India':     ['Freshworks','Zoho','Chargebee','Postman','BrowserStack','Darwinbox'],
+    'UK':        ['Pleo','Cleo','Paddle','Nexthink','Tessian','Modulr'],
+    'Israel':    ['WalkMe','Pendo','Payoneer','Lightricks','Gong','Riskified'],
+    'Germany':   ['Personio','Celonis','Adjust','Contentful','Mambu','FinanzCheck'],
+    'Singapore': ['Nium','Coda','Acronis','ADVANCE.AI','Airwallex','Circles.Life'],
+  };
+  const names = COUNTRY_PEERS[country] || PEERS[cat].map(p=>p.name) || ['Peer A','Peer B','Peer C'];
+  return (PEERS[cat] || PEERS['Horizontal SaaS']).map((p, i) => ({
+    name: names[i % names.length] || p.name,
+    growth: Math.round(p.growth * mult),
+    gfs: Math.min(5, Math.max(1.2, p.gfs + (Math.random()-0.5)*0.4))
+  }));
+}
+
+// ── BUBBLE MAP REBUILD ────────────────────────────────────────────────────────
+function rebuildBubbleMap(userGrowth, userGfs, ogrL, ogrH, cat, peers) {
+  const container = document.getElementById('bubble-container');
+  const map = document.getElementById('bubble-map');
+  if (!container || !map) return;
+  container.innerHTML = '';
+  map.querySelectorAll('.fit-band').forEach(e => e.remove());
+
+  const peerList = peers || (PEERS[cat] || PEERS['Horizontal SaaS']);
+  const maxGrowth = Math.max(80, userGrowth * 1.7);
+  const step = Math.round(maxGrowth/4/5)*5 || 10;
+  ['ax-x1','ax-x2','ax-x3','ax-x4'].forEach((id,i) => {
+    const el = document.getElementById(id); if(el) el.textContent = step*(i+1)+'%';
+  });
+
+  // Fit band
+  const fb = document.createElement('div'); fb.className = 'fit-band';
+  fb.style.cssText = 'left:' + (ogrL/maxGrowth*85+7) + '%;width:' + ((ogrH-ogrL)/maxGrowth*85) + '%;top:0;bottom:0;';
+  map.appendChild(fb);
+
+  // Peer bubbles
+  peerList.filter(p => p.growth <= maxGrowth * 1.1).forEach(p => {
+    const x = Math.max(8, Math.min(88, (p.growth/maxGrowth)*80+8));
+    const y = Math.max(6, Math.min(85, (1-(p.gfs-1)/4)*78+6));
+    const sz = 28 + Math.random()*14;
+    const col = p.gfs>=3.8 ? 'rgba(90,172,94,0.75)' : p.gfs>=3.0 ? 'rgba(224,123,0,0.75)' : 'rgba(224,90,78,0.75)';
+    const d = document.createElement('div');
+    d.className = 'bub';
+    d.style.cssText = 'width:'+sz+'px;height:'+sz+'px;left:'+x+'%;top:'+y+'%;background:'+col+';';
+    d.innerHTML = p.gfs.toFixed(1) + '<div class="tip">' + p.name + ' · ' + p.growth + '% · GFS ' + p.gfs.toFixed(1) + '</div>';
+    container.appendChild(d);
+  });
+
+  // YOU bubble
+  const ux = Math.max(8, Math.min(86, (userGrowth/maxGrowth)*80+8));
+  const uy = Math.max(6, Math.min(83, (1-(userGfs-1)/4)*78+6));
+  const you = document.createElement('div');
+  you.className = 'bub you';
+  you.style.cssText = 'width:46px;height:46px;left:'+ux+'%;top:'+uy+'%;background:rgba(26,102,50,0.9);font-size:11px;';
+  you.innerHTML = userGfs + '<div class="tip">You · ' + userGrowth + '% · GFS ' + userGfs + '</div>';
+  container.appendChild(you);
+}
+
 
 function updateSlider(sliderId, dispId, rawVal, unit, optional, unitId, divisor) {
   const slider = document.getElementById(sliderId);
@@ -811,7 +934,7 @@ function runAtlas() {
   document.getElementById('res-stats').innerHTML = statsHtml;
 
   // Bubble map
-  buildBubbleMap(growth, res.gfs, res.ogrL, res.ogrH, cat);
+  rebuildBubbleMap(growth, res.gfs, res.ogrL, res.ogrH, cat, null);
 
   // Percentile bars
   if (bench) buildPctBars(growth, nrr, gm, cac, se, bench);
