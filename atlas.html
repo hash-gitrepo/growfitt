@@ -604,28 +604,28 @@ function estimateGFS(growth, nrr, gm, se, stage, cat) {
 function updateSlider(sliderId, dispId, rawVal, unit, optional, unitId, divisor) {
   const slider = document.getElementById(sliderId);
   const disp   = document.getElementById(dispId);
-  const val    = divisor ? (parseInt(rawVal) / divisor).toFixed(1) : rawVal;
+  const numVal = parseFloat(rawVal);
+  const val    = divisor ? (numVal / divisor).toFixed(1) : Math.round(numVal);
   const min    = parseFloat(slider.min);
   const max    = parseFloat(slider.max);
-  const pct    = ((rawVal - min) / (max - min) * 100).toFixed(1);
+  const pct    = ((numVal - min) / (max - min) * 100).toFixed(1) + '%';
 
-  if (optional) {
-    // First interaction: activate the slider
-    if (slider.classList.contains('unset')) {
-      slider.classList.remove('unset');
-    }
+  // Activate optional slider on first touch
+  if (optional && slider.classList.contains('unset')) {
+    slider.classList.remove('unset');
   }
-  // Always update unit display
+
+  // Always update unit label
   if (unitId) document.getElementById(unitId).textContent = unit;
 
-  // Update display
+  // Update value display
   disp.textContent = val;
-  disp.classList.remove('dim');
+  disp.className = 'slider-cur';
   disp.style.color = 'var(--green-light)';
   disp.style.fontSize = '22px';
 
-  // Update track fill
-  slider.style.setProperty('--pct', pct + '%');
+  // Set track fill directly on element background (most reliable cross-browser)
+  slider.style.background = 'linear-gradient(to right,#3aaf66 0%,#3aaf66 ' + pct + ',#1f2b21 ' + pct + ',#1f2b21 100%)';
 }
 
 // Reset optional slider back to unset state
@@ -643,8 +643,14 @@ function resetSlider(sliderId, dispId, unitId) {
 
 // Init growth slider fill on load
 document.addEventListener('DOMContentLoaded', function() {
+  // Unset optional sliders — all-dark background
+  ['f-nrr','f-gm','f-cac','f-se'].forEach(function(id) {
+    const el = document.getElementById(id);
+    if (el) el.style.background = '#1f2b21';
+  });
+  // Growth starts empty
   const g = document.getElementById('f-growth');
-  if (g) g.style.setProperty('--pct', '0%');
+  if (g) g.style.background = '#1f2b21';
 });
 
 
@@ -713,8 +719,17 @@ function runAtlas() {
   buildInsights(growth, nrr, gm, res.gfs, res.zone, res.ogrL, res.ogrH, res.cbgr, cat, arr, bench);
 
   // Smooth scroll to results
-  setTimeout(()=>section.scrollIntoView({behavior:'smooth',block:'start'}), 80);
-  } catch(e) { console.error('GrowFitt Atlas error:', e); }
+  section.scrollIntoView({behavior:'smooth',block:'start'});
+  } catch(e) {
+    console.error('GrowFitt Atlas error:', e);
+    // Show error in results section so user knows what happened
+    const section = document.getElementById('results-section');
+    if (section) {
+      section.classList.add('show');
+      section.innerHTML = '<div style="padding:40px;text-align:center;"><div style="font-size:16px;color:var(--red);margin-bottom:8px;">Something went wrong calculating your benchmark.</div><div style="font-size:13px;color:var(--text-dim);">Error: ' + e.message + '</div><div style="font-size:12px;color:var(--text-dim);margin-top:8px;">Please try refreshing the page.</div></div>';
+      section.scrollIntoView({behavior:'smooth',block:'start'});
+    }
+  }
 }
 
 function buildBubbleMap(userGrowth, userGfs, ogrL, ogrH, cat) {
