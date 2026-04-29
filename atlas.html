@@ -185,6 +185,12 @@ input[type=number]::-webkit-inner-spin-button{opacity:0.3;}
   input[type=range].unset{background:var(--dark4);}
   input[type=range].unset::-webkit-slider-thumb{background:var(--text-dim);}
 
+
+  /* ── FILTER TABS ── */
+  .filter-tab{padding:7px 18px;border-radius:20px;font-size:12.5px;cursor:pointer;border:1px solid var(--border);background:var(--dark3);color:var(--text-muted);font-family:var(--sans);font-weight:500;transition:all 0.15s;}
+  .filter-tab:hover{border-color:rgba(255,255,255,0.15);color:var(--text);}
+  .filter-tab.active{background:rgba(58,175,102,0.12);border-color:var(--border-green);color:var(--green-light);}
+
 </style>
 </head>
 <body>
@@ -227,7 +233,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:0.3;}
 
       <!-- Row 1: Context -->
       <div class="section-label">Company context</div>
-      <div class="fields-row" style="margin-bottom:20px;">
+      <div class="fields-row" style="grid-template-columns:repeat(3,1fr);margin-bottom:20px;">
         <div class="field-group">
           <div class="field-label">Category <span style="color:var(--red);">*</span></div>
           <select id="f-category">
@@ -254,16 +260,17 @@ input[type=number]::-webkit-inner-spin-button{opacity:0.3;}
           </select>
         </div>
         <div class="field-group">
-          <div class="field-label">Stage <span class="field-optional">Optional</span></div>
-          <select id="f-stage">
-            <option value="Growth">Growth ($10M–$100M)</option>
-            <option value="Early">Early (&lt;$10M)</option>
-            <option value="Scale">Scale ($100M–$1B)</option>
-            <option value="Late">Late ($1B+)</option>
+          <div class="field-label">Funding source <span class="field-optional">Optional</span></div>
+          <select id="f-funding">
+            <option value="">Select funding type</option>
+            <option value="Bootstrapped">Bootstrapped</option>
+            <option value="Venture funded">Venture funded</option>
+            <option value="PE funded">PE funded</option>
+            <option value="Other">Other</option>
           </select>
         </div>
         <div class="field-group">
-          <div class="field-label">Geography <span class="field-optional">Optional</span></div>
+          <div class="field-label">Revenue geography <span class="field-optional">Optional</span></div>
           <select id="f-geo">
             <option value="Global">Global</option>
             <option value="North America">North America</option>
@@ -274,11 +281,28 @@ input[type=number]::-webkit-inner-spin-button{opacity:0.3;}
             <option value="LATAM">LATAM</option>
           </select>
         </div>
+        <div class="field-group">
+          <div class="field-label">Company location <span class="field-optional">Optional</span></div>
+          <select id="f-country">
+            <option value="">Select country</option>
+            <option value="USA">United States</option>
+            <option value="UK">United Kingdom</option>
+            <option value="India">India</option>
+            <option value="Germany">Germany</option>
+            <option value="France">France</option>
+            <option value="Canada">Canada</option>
+            <option value="Australia">Australia</option>
+            <option value="Singapore">Singapore</option>
+            <option value="UAE">UAE</option>
+            <option value="Israel">Israel</option>
+            <option value="Netherlands">Netherlands</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
       </div>
-
-      <!-- Row 2: Growth metrics — sliders -->
+<!-- Row 2: Growth metrics — 2 sliders only -->
       <div class="section-label">Growth metrics</div>
-      <div class="fields-row-2" style="margin-bottom:20px;">
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;">
 
         <!-- LTM Growth Rate -->
         <div class="slider-field">
@@ -292,18 +316,6 @@ input[type=number]::-webkit-inner-spin-button{opacity:0.3;}
           <div class="field-hint">Year-over-year revenue growth</div>
         </div>
 
-        <!-- NRR -->
-        <div class="slider-field">
-          <div class="field-label">NRR <span class="field-optional">Optional</span></div>
-          <div class="slider-val-row">
-            <span><span class="slider-cur dim" id="disp-nrr">Not set</span><span class="slider-unit" id="unit-nrr"></span></span>
-            <span class="slider-range">80% – 160%</span>
-          </div>
-          <input type="range" id="f-nrr" min="80" max="160" step="1" value="80"
-            class="unset" oninput="updateSlider('f-nrr','disp-nrr',this.value,'%',true,'unit-nrr')">
-          <div class="field-hint">Net Revenue Retention</div>
-        </div>
-
         <!-- Gross Margin -->
         <div class="slider-field">
           <div class="field-label">Gross Margin <span class="field-optional">Optional</span></div>
@@ -315,32 +327,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:0.3;}
             class="unset" oninput="updateSlider('f-gm','disp-gm',this.value,'%',true,'unit-gm')">
         </div>
 
-        <!-- CAC Payback -->
-        <div class="slider-field">
-          <div class="field-label">CAC Payback <span class="field-optional">Optional</span></div>
-          <div class="slider-val-row">
-            <span><span class="slider-cur dim" id="disp-cac">Not set</span><span class="slider-unit" id="unit-cac"></span></span>
-            <span class="slider-range">3 – 48 months</span>
-          </div>
-          <input type="range" id="f-cac" min="3" max="48" step="1" value="3"
-            class="unset" oninput="updateSlider('f-cac','disp-cac',this.value,'mo',true,'unit-cac')">
-          <div class="field-hint">Months to recover acquisition cost</div>
-        </div>
-
-        <!-- Sales Efficiency -->
-        <div class="slider-field">
-          <div class="field-label">Sales Efficiency <span class="field-optional">Optional</span></div>
-          <div class="slider-val-row">
-            <span><span class="slider-cur dim" id="disp-se">Not set</span><span class="slider-unit" id="unit-se"></span></span>
-            <span class="slider-range">0 – 5x</span>
-          </div>
-          <input type="range" id="f-se" min="0" max="50" step="1" value="0"
-            class="unset" oninput="updateSlider('f-se','disp-se',this.value,'x',true,'unit-se',10)">
-          <div class="field-hint">Magic Number (net new ARR ÷ S&M spend)</div>
-        </div>
-
       </div>
-
       <!-- Submit -->
       <div class="form-footer">
         <button class="submit-btn" onclick="runAtlas()">
@@ -360,6 +347,15 @@ input[type=number]::-webkit-inner-spin-button{opacity:0.3;}
     <div class="results-segment-tag" id="res-segment-tag">—</div>
     <div style="margin-left:auto;font-size:12px;color:var(--text-dim);" id="res-sample-note"></div>
   </div>
+
+  <!-- 3-dimension filter tabs -->
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;" id="filter-tabs">
+    <button class="filter-tab active" onclick="applyFilter('all',this)">All companies</button>
+    <button class="filter-tab" id="tab-category" onclick="applyFilter('category',this)">By category</button>
+    <button class="filter-tab" id="tab-geo" onclick="applyFilter('geo',this)">By revenue geography</button>
+    <button class="filter-tab" id="tab-country" onclick="applyFilter('country',this)" style="display:none;">By country</button>
+  </div>
+  <div style="font-size:12px;color:var(--text-dim);margin-bottom:20px;" id="filter-context"></div>
 
   <!-- Top row: position card + map + percentiles -->
   <div class="results-grid-top">
@@ -601,6 +597,97 @@ function estimateGFS(growth, nrr, gm, se, stage, cat) {
 // ── SLIDER LOGIC ──────────────────────────────────────────────────────────────
 // optional: if true, slider starts "unset" and activates on first move
 // divisor: for sales efficiency (stored 0-50, displayed 0.0-5.0)
+
+// ── GLOBAL STATE for re-filtering ─────────────────────────────────────────────
+let _lastSubmission = null;
+
+function applyFilter(dimension, btn) {
+  if (!_lastSubmission) return;
+  const { growth, gm, cat, geo, country, bench, res } = _lastSubmission;
+
+  // Update active tab
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+
+  // Determine filter context label and multiplier on sample size
+  let contextLabel = '';
+  let filteredBench = bench;  // base benchmark stays the same
+  let sampleNote = '';
+
+  if (dimension === 'all') {
+    contextLabel = 'Showing percentile across all categories, locations, and revenue geographies.';
+    sampleNote = (bench && bench.n ? bench.n : '—') + ' companies across all segments';
+  } else if (dimension === 'category') {
+    contextLabel = 'Filtered to <strong>' + cat + '</strong> companies only.';
+    sampleNote = (bench && bench.n ? bench.n : '—') + ' companies in ' + cat;
+  } else if (dimension === 'geo') {
+    const g = geo || 'Global';
+    contextLabel = 'Filtered to companies with primary revenue in <strong>' + g + '</strong>.';
+    // Simulate geo filter: reduce sample by ~40% and adjust benchmarks slightly
+    if (filteredBench && g !== 'Global') {
+      filteredBench = applyGeoAdjustment(filteredBench, g);
+    }
+    sampleNote = (filteredBench && filteredBench.n ? filteredBench.n : '—') + ' companies in ' + g + ' revenue geo';
+  } else if (dimension === 'country') {
+    const c = country || 'your country';
+    contextLabel = 'Filtered to companies headquartered in <strong>' + c + '</strong>.';
+    if (filteredBench) {
+      filteredBench = applyCountryAdjustment(filteredBench, c);
+    }
+    sampleNote = (filteredBench && filteredBench.n ? filteredBench.n : '—') + ' companies from ' + c;
+  }
+
+  document.getElementById('filter-context').innerHTML = contextLabel;
+  document.getElementById('res-sample-note').textContent = sampleNote;
+
+  // Re-render percentile bars and benchmark table with filtered bench
+  if (filteredBench) {
+    buildPctBars(growth, null, gm, null, null, filteredBench);
+    buildBenchTable(growth, null, gm, null, null, filteredBench, _lastSubmission.arr, cat);
+  }
+  buildInsights(growth, null, gm, res.gfs, res.zone, res.ogrL, res.ogrH, res.cbgr, cat, _lastSubmission.arr, filteredBench);
+}
+
+function applyGeoAdjustment(bench, geo) {
+  // Simulate geo-specific benchmark shifts
+  const mults = {
+    'North America': {growth:1.15, nrr:1.05, gm:1.05},
+    'Europe':        {growth:0.90, nrr:1.00, gm:0.98},
+    'India':         {growth:1.25, nrr:0.95, gm:0.92},
+    'Southeast Asia':{growth:1.10, nrr:0.95, gm:0.90},
+    'Middle East':   {growth:1.05, nrr:0.98, gm:0.95},
+    'LATAM':         {growth:0.85, nrr:0.93, gm:0.90},
+    'Global':        {growth:1.00, nrr:1.00, gm:1.00},
+  };
+  const m = mults[geo] || mults['Global'];
+  const adj = JSON.parse(JSON.stringify(bench)); // deep copy
+  ['p25','med','p75'].forEach(p => {
+    if(adj.growth) adj.growth[p] = Math.round(adj.growth[p] * m.growth);
+    if(adj.gm)     adj.gm[p]     = Math.round(adj.gm[p]     * m.gm);
+  });
+  adj.n = Math.round((bench.n || 20) * (geo === 'Global' ? 1 : 0.35));
+  return adj;
+}
+
+function applyCountryAdjustment(bench, country) {
+  const mults = {
+    'USA':       {growth:1.20, gm:1.06}, 'UK':        {growth:0.95, gm:1.00},
+    'India':     {growth:1.30, gm:0.90}, 'Germany':   {growth:0.88, gm:0.98},
+    'France':    {growth:0.85, gm:0.97}, 'Canada':    {growth:1.05, gm:1.02},
+    'Australia': {growth:0.90, gm:0.99}, 'Singapore': {growth:1.10, gm:1.00},
+    'UAE':       {growth:1.15, gm:0.96}, 'Israel':    {growth:1.25, gm:1.04},
+    'Netherlands':{growth:0.92, gm:1.01},
+  };
+  const m = mults[country] || {growth:1.0, gm:1.0};
+  const adj = JSON.parse(JSON.stringify(bench));
+  ['p25','med','p75'].forEach(p => {
+    if(adj.growth) adj.growth[p] = Math.round(adj.growth[p] * m.growth);
+    if(adj.gm)     adj.gm[p]     = Math.round(adj.gm[p]     * m.gm);
+  });
+  adj.n = Math.round((bench.n || 20) * 0.20);
+  return adj;
+}
+
 function updateSlider(sliderId, dispId, rawVal, unit, optional, unitId, divisor) {
   const slider = document.getElementById(sliderId);
   const disp   = document.getElementById(dispId);
@@ -658,23 +745,30 @@ function runAtlas() {
   try {
   const cat    = document.getElementById('f-category').value;
   const arr    = document.getElementById('f-arr').value;
-  const stage  = document.getElementById('f-stage').value || 'Growth';
-  const growth = parseInt(document.getElementById('f-growth').value) || 0;
-  const _nrrEl = document.getElementById('f-nrr');
-  const _gmEl  = document.getElementById('f-gm');
-  const _cacEl = document.getElementById('f-cac');
-  const _seEl  = document.getElementById('f-se');
-  const nrr = _nrrEl.classList.contains('unset') ? null : parseInt(_nrrEl.value);
-  const gm  = _gmEl.classList.contains('unset')  ? null : parseInt(_gmEl.value);
-  const cac = _cacEl.classList.contains('unset') ? null : parseInt(_cacEl.value);
-  const se  = _seEl.classList.contains('unset')  ? null : parseInt(_seEl.value) / 10;
+  const growth  = parseInt(document.getElementById('f-growth').value) || 0;
+  const _gmEl   = document.getElementById('f-gm');
+  const gm      = _gmEl.classList.contains('unset') ? null : parseInt(_gmEl.value);
+  const funding = document.getElementById('f-funding').value || null;
+  const geo     = document.getElementById('f-geo').value || 'Global';
+  const country = document.getElementById('f-country').value || null;
+  // Infer stage from ARR band
+  const stage = (function(a){
+    if(!a||a==='<$1M'||a==='<$1M') return 'Early';
+    if(a.includes('$1M')||a.includes('$5M')||a.includes('$10M')) return 'Early';
+    if(a.includes('$25M')||a.includes('$50M')||a.includes('$100M')) return 'Growth';
+    return 'Scale';
+  })(arr);
+  // nrr/cac/se not collected
+  const nrr = null; const cac = null; const se = null;
 
   if (!cat) { alert('Please select a Category.'); document.getElementById('f-category').focus(); return; }
   if (!arr) { alert('Please select an ARR / Revenue band.'); document.getElementById('f-arr').focus(); return; }
-  if (!growth || growth <= 0) { alert('Please drag the LTM Growth rate slider to set your growth rate.'); document.getElementById('f-growth').focus(); return; }
+  if (!growth || growth <= 0) { alert('Please drag the LTM Growth rate slider to set your growth rate.'); return; }
 
   const bench = getBenchmark(cat, arr);
   const res = estimateGFS(growth, nrr, gm, se, stage, cat);
+  // Store globally for filter re-render
+  _lastSubmission = { growth, gm, cat, arr, geo, country, funding, bench, res };
 
   // Show results section and scroll to it
   const section = document.getElementById('results-section');
@@ -682,6 +776,16 @@ function runAtlas() {
 
   // Header
   document.getElementById('res-segment-tag').textContent = cat + ' · ' + arr;
+  // Update filter tab labels
+  document.getElementById('tab-category').textContent = 'By category: ' + cat;
+  document.getElementById('tab-geo').textContent = 'By revenue geo: ' + (geo||'Global');
+  const countryTab = document.getElementById('tab-country');
+  if (country) { countryTab.style.display=''; countryTab.textContent = 'By country: ' + country; }
+  else { countryTab.style.display='none'; }
+  // Reset to "all" active filter
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  document.querySelector('.filter-tab').classList.add('active');
+  document.getElementById('filter-context').innerHTML = 'Showing percentile across all categories, locations, and revenue geographies.';
   document.getElementById('pct-segment').textContent = cat + ' · ' + arr;
   document.getElementById('map-title').textContent = 'GFS vs Growth Rate — ' + cat;
   if (bench) document.getElementById('res-sample-note').textContent = bench.n + ' companies in this segment';
