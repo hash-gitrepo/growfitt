@@ -752,6 +752,114 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 
+
+// ── GFS ESTIMATE (proxy model for Atlas — not the full server-side model) ─────
+function estimateGFS(growth, nrr, gm, se, stage, cat) {
+  const bgr  = STAGE_BGR[stage] || 0.55;
+  const mult = CAT_MULT[cat]   || 1.0;
+  const cbgr = bgr * mult;
+  const g = growth / 100;
+  const n = (nrr || 110) / 100;
+  const GRS = g < 0.1 ? 1 : g < 0.2 ? 2 : g < 0.3 ? 3 : g < 0.4 ? 4 : 5;
+  const NRS = n < 0.90 ? 1 : n < 1.01 ? 1 : n < 1.05 ? 2 : n < 1.15 ? 3 : n < 1.25 ? 4 : 5;
+  const GMS = (gm||70) < 50 ? 1 : (gm||70) < 60 ? 2 : (gm||70) < 68 ? 3 : (gm||70) < 76 ? 4 : 5;
+  let ES = GMS;
+  if (se > 0) { const SES = se<0.5?1:se<0.9?2:se<1.0?3:se<1.5?3:se<3.0?4:5; ES=(GMS+SES)/2; }
+  const GQS = 0.60*GRS + 0.40*2.5;
+  const RS  = 0.60*NRS + 0.40*3.0;
+  let adj = 0.30*GQS + 0.40*RS + 0.30*ES;
+  if (GQS<3) adj*=0.92; if (RS<3) adj*=0.92; if (ES<3) adj*=0.92;
+  adj = Math.min(5, Math.max(1.2, adj));
+  let mL,mH,interp;
+  if(adj<2.5){mL=0.5;mH=0.7;interp='Fragile';}
+  else if(adj<3.0){mL=0.7;mH=0.9;interp='Fragile';}
+  else if(adj<3.8){mL=0.9;mH=1.1;interp='Average';}
+  else if(adj<4.5){mL=1.1;mH=1.35;interp='Strong';}
+  else{mL=1.4;mH=1.75;interp='Elite';}
+  const ogrL = +(cbgr*mL*100).toFixed(0);
+  const ogrH = +(cbgr*mH*100).toFixed(0);
+  const zone = growth < ogrL ? 'Under' : growth <= ogrH ? 'Fit' : 'Over';
+  return { gfs: +adj.toFixed(2), zone, ogrL, ogrH, cbgr: +(cbgr*100).toFixed(0), interp };
+}
+
+// ── FILTER ENGINE ─────────────────────────────────────────────────────────────
+let _lastSubmission = null;
+
+function applyFilter(dimension, btn) {
+  if (!_lastSubmission) return;
+  const { growth, gm, cat, geo, country, bench, res } = _lastSubmission;
+  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  let filteredBench, contextLabel, sampleNote, filterPeers;
+
+  if (dimension === 'all') {
+    filteredBench = bench; filterPeers = null;
+    contextLabel = 'Showing your percentile across all <strong>' + cat + '</strong> companies in this band.';
+    sampleNote = (bench && bench.n || '—') + ' companies · all regions';
+  } else if (dimension === 'category') {
+    filteredBench = bench ? Object.assign({}, bench, {n: Math.round((bench.n||10)*0.7)}) : bench;
+    filterPeers = (PEERS[cat] || []);
+    contextLabel = 'Filtered to <strong>' + cat + '</strong> companies only — your most direct peer group.';
+    sampleNote = (filteredBench && filteredBench.n || '—') + ' companies · ' + cat;
+  } else if (dimension === 'geo') {
+    const g = geo || 'Global';
+    filteredBench = buildGeoBench(bench, g, cat);
+    filterPeers = getGeoPeers(cat, g, growth);
+    contextLabel = 'Filtered to <strong>' + cat + '</strong> companies with revenue in <strong>' + g + '</strong>.';
+    sampleNote = (filteredBench && filteredBench.n || '—') + ' companies · ' + cat + ' · ' + g;
+  } else if (dimension === 'country') {
+    const c = country || 'your country';
+    filteredBench = buildGeoBench(bench, geo || 'Global', cat);
+    filterPeers = getCountryPeers(cat, c, growth);
+    contextLabel = 'Filtered to <strong>' + cat + '</strong> companies in <strong>' + c + '</strong>.';
+    sampleNote = (filteredBench && filteredBench.n || '—') + ' companies · ' + c;
+  }
+
+  document.getElementById('filter-context').innerHTML = contextLabel;
+  document.getElementById('res-sample-note').textContent = sampleNote;
+  if (filteredBench) {
+    buildPctBars(growth, null, gm, null, null, filteredBench);
+    buildBenchTable(growth, null, gm, null, null, filteredBench, _lastSubmission.arr, cat);
+  }
+  buildInsights(growth, null, gm, res.gfs, res.zone, res.ogrL, res.ogrH, res.cbgr, cat, _lastSubmission.arr, filteredBench);
+  rebuildBubbleMap(growth, res.gfs, res.ogrL, res.ogrH, cat, filterPeers);
+}
+
+function buildGeoBench(base, geo, cat) {
+  const gd = GEO_BENCH[geo];
+  if (!gd || geo === 'Global') return base;
+  const adj = JSON.parse(JSON.stringify(base || {n:10,growth:{p25:10,med:15,p75:25},gm:{p25:65,med:72,p75:80}}));
+  ['p25','med','p75'].forEach(p => {
+    if(adj.growth) adj.growth[p] = Math.round(adj.growth[p] * gd.growthMult[p]);
+    if(adj.gm)     adj.gm[p]     = Math.round(adj.gm[p]     * gd.gmMult[p]);
+  });
+  adj.n = Math.max(5, Math.round((base && base.n || 10) * gd.sampleFrac));
+  return adj;
+}
+
+function applyGeoAdjustment(base, geo) { return buildGeoBench(base, geo, ''); }
+function applyCountryAdjustment(base, country) {
+  const cb = COUNTRY_BENCH[country];
+  if (!cb) return base;
+  const adj = JSON.parse(JSON.stringify(base || {n:5,growth:{p25:10,med:15,p75:25},gm:{p25:65,med:72,p75:80}}));
+  ['p25','med','p75'].forEach(p => {
+    if(adj.growth) adj.growth[p] = Math.round(adj.growth[p] * cb.growthMult[p]);
+    if(adj.gm)     adj.gm[p]     = Math.round(adj.gm[p]     * cb.gmMult[p]);
+  });
+  adj.n = Math.max(3, Math.round((base && base.n || 10) * cb.sampleFrac));
+  return adj;
+}
+
+function getGeoPeers(cat, geo, userGrowth) {
+  const gd = GEO_BENCH[geo];
+  const mult = gd ? gd.growthMult.med : 1.0;
+  return (PEERS[cat] || PEERS['Horizontal SaaS'] || []).map(p => ({
+    name: p.name, growth: Math.round(p.growth * mult),
+    gfs: Math.min(5, Math.max(1.2, p.gfs * (0.9 + Math.random()*0.2)))
+  }));
+}
+
+
 function runAtlas() {
   try {
   const cat    = document.getElementById('f-category').value;
