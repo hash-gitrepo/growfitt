@@ -212,7 +212,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:0.3;}
   <h1 class="hero-title">How are companies like<br><em>yours</em> actually growing?</h1>
   <p class="hero-sub">Contextual benchmarks by category, revenue band, stage, and geography. Not generic SaaS averages. Enter your metrics and see exactly where you stand.</p>
   <div class="hero-stats">
-    <div><div class="hero-stat-num">847</div><div class="hero-stat-label">Companies in Atlas</div></div>
+    <div><div class="hero-stat-num">167</div><div class="hero-stat-label">Public companies (10-K)</div></div>
     <div><div class="hero-stat-num">6</div><div class="hero-stat-label">Categories</div></div>
     <div><div class="hero-stat-num">12</div><div class="hero-stat-label">Geographies</div></div>
     <div><div class="hero-stat-num">100%</div><div class="hero-stat-label">Anonymised</div></div>
@@ -226,6 +226,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:0.3;}
       <div>
         <h2>Your company profile</h2>
         <p style="margin-top:3px;">Fill in what you know. Only Category, ARR band, and Growth rate are required.</p>
+        <p style="margin-top:4px;font-size:11px;color:var(--text-dim);">Benchmarks from 167 public SaaS company 10-K filings (NASDAQ/NYSE, FY2025) via SEC EDGAR XBRL.</p>
       </div>
       <div style="font-size:11px;color:var(--text-dim);text-align:right;"><span style="color:var(--red);">*</span> Required &nbsp;·&nbsp; All other fields optional</div>
     </div>
@@ -345,7 +346,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:0.3;}
   <div class="results-header">
     <h2>Your benchmark position</h2>
     <div class="results-segment-tag" id="res-segment-tag">—</div>
-    <div style="margin-left:auto;font-size:12px;color:var(--text-dim);" id="res-sample-note"></div>
+    <div style="margin-left:auto;font-size:11px;color:var(--text-dim);" id="res-sample-note"></div>
   </div>
 
   <!-- 3-dimension filter tabs -->
@@ -426,7 +427,7 @@ input[type=number]::-webkit-inner-spin-button{opacity:0.3;}
   <div class="trust-item"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>No company-level disclosure</div>
   <div class="trust-item"><svg viewBox="0 0 24 24"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg>Revenue bands, not exact figures</div>
   <div class="trust-item"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>Min. 8 companies per segment</div>
-  <div class="trust-item" style="margin-left:auto;"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>847 companies contributing data</div>
+  <div class="trust-item" style="margin-left:auto;"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z"/></svg>167 NASDAQ/NYSE companies · FY2025 10-K data</div>
 </div>
 
 <script>
@@ -434,305 +435,132 @@ input[type=number]::-webkit-inner-spin-button{opacity:0.3;}
 // ── FULL BENCHMARK DATA — all 6 categories × all ARR bands ───────────────────
 // Calibrated against publicly available SaaS benchmarks (Bessemer, OpenView, KeyBanc)
 // Growth rates, NRR, GM, CAC, and Sales Efficiency vary by category velocity and stage
+// ── GROWFITT ATLAS BENCHMARK DATA ─────────────────────────────────────────────
+// Generated: 2026-05-02
+// Source: SEC EDGAR 10-K XBRL · 167 NASDAQ/NYSE SaaS companies · FY2024/2025
+// Metrics: Revenue YoY Growth %, Gross Margin %, NRR proxy (deferred revenue)
+// Minimum 3 companies per benchmark cell · Revenue bands: <$5M to $1B+
+
 const BENCHMARKS = {
   'Infra / Dev / AI': {
-    '<$1M':      { growth:{p25:60,med:110,p75:180}, nrr:{p25:95,med:110,p75:140},  gm:{p25:55,med:68,p75:80},  cac:{p25:4,med:8,p75:16},   se:{p25:0.6,med:1.0,p75:2.0}, n:28 },
-    '$1M–$5M':   { growth:{p25:70,med:120,p75:200}, nrr:{p25:100,med:118,p75:145}, gm:{p25:60,med:72,p75:82},  cac:{p25:5,med:10,p75:18},  se:{p25:0.8,med:1.3,p75:2.4}, n:44 },
-    '$5M–$10M':  { growth:{p25:55,med:90,p75:150},  nrr:{p25:105,med:122,p75:148}, gm:{p25:63,med:74,p75:83},  cac:{p25:6,med:12,p75:20},  se:{p25:0.9,med:1.4,p75:2.6}, n:52 },
-    '$10M–$25M': { growth:{p25:45,med:68,p75:110},  nrr:{p25:110,med:125,p75:148}, gm:{p25:68,med:76,p75:84},  cac:{p25:8,med:14,p75:22},  se:{p25:1.0,med:1.6,p75:2.8}, n:62 },
-    '$25M–$50M': { growth:{p25:35,med:55,p75:90},   nrr:{p25:112,med:128,p75:150}, gm:{p25:70,med:78,p75:86},  cac:{p25:9,med:15,p75:24},  se:{p25:1.1,med:1.7,p75:3.0}, n:48 },
-    '$50M–$100M':{ growth:{p25:28,med:44,p75:72},   nrr:{p25:115,med:130,p75:152}, gm:{p25:72,med:80,p75:88},  cac:{p25:10,med:17,p75:26}, se:{p25:1.2,med:1.8,p75:3.2}, n:35 },
-    '$100M+':    { growth:{p25:20,med:32,p75:55},   nrr:{p25:118,med:132,p75:155}, gm:{p25:74,med:82,p75:90},  cac:{p25:10,med:18,p75:28}, se:{p25:1.3,med:2.0,p75:3.5}, n:22 },
+    '$500M–1B': { n:3, growth:{p25:7,med:13,p75:32}, gm:{p25:75,med:80,p75:86}, nrr:{p25:124,med:138,p75:143} },
+    '$1B+': { n:12, growth:{p25:13,med:21,p75:29}, gm:{p25:67,med:74,p75:80}, nrr:{p25:105,med:118,p75:122} },
   },
   'Security': {
-    '<$1M':      { growth:{p25:45,med:80,p75:140},  nrr:{p25:95,med:108,p75:128},  gm:{p25:58,med:68,p75:78},  cac:{p25:6,med:12,p75:22},  se:{p25:0.5,med:0.9,p75:1.7}, n:18 },
-    '$1M–$5M':   { growth:{p25:50,med:80,p75:130},  nrr:{p25:100,med:112,p75:132}, gm:{p25:62,med:70,p75:80},  cac:{p25:8,med:14,p75:24},  se:{p25:0.6,med:1.0,p75:1.9}, n:30 },
-    '$5M–$10M':  { growth:{p25:38,med:60,p75:100},  nrr:{p25:104,med:116,p75:136}, gm:{p25:64,med:72,p75:81},  cac:{p25:9,med:16,p75:26},  se:{p25:0.7,med:1.1,p75:2.0}, n:36 },
-    '$10M–$25M': { growth:{p25:30,med:46,p75:74},   nrr:{p25:108,med:120,p75:140}, gm:{p25:66,med:74,p75:82},  cac:{p25:10,med:18,p75:28}, se:{p25:0.9,med:1.4,p75:2.4}, n:44 },
-    '$25M–$50M': { growth:{p25:24,med:38,p75:60},   nrr:{p25:110,med:122,p75:142}, gm:{p25:68,med:75,p75:83},  cac:{p25:11,med:19,p75:30}, se:{p25:0.9,med:1.4,p75:2.5}, n:38 },
-    '$50M–$100M':{ growth:{p25:18,med:28,p75:46},   nrr:{p25:112,med:124,p75:144}, gm:{p25:70,med:77,p75:84},  cac:{p25:12,med:20,p75:32}, se:{p25:1.0,med:1.5,p75:2.6}, n:29 },
-    '$100M+':    { growth:{p25:12,med:20,p75:34},   nrr:{p25:114,med:126,p75:146}, gm:{p25:72,med:79,p75:86},  cac:{p25:12,med:21,p75:34}, se:{p25:1.0,med:1.6,p75:2.8}, n:19 },
+    '$500M–1B': { n:4, growth:{p25:8,med:11,p75:12}, gm:{p25:76,med:78,p75:80}, nrr:{p25:105,med:108,p75:118} },
+    '$1B+': { n:3, growth:{p25:22,med:22,p75:23}, gm:{p25:74,med:75,p75:76}, nrr:{p25:121,med:125,p75:125} },
   },
   'Horizontal SaaS': {
-    '<$1M':      { growth:{p25:35,med:65,p75:120},  nrr:{p25:92,med:102,p75:116},  gm:{p25:52,med:64,p75:74},  cac:{p25:6,med:12,p75:22},  se:{p25:0.5,med:0.9,p75:1.6}, n:88 },
-    '$1M–$5M':   { growth:{p25:40,med:65,p75:110},  nrr:{p25:98,med:108,p75:122},  gm:{p25:58,med:68,p75:76},  cac:{p25:8,med:15,p75:24},  se:{p25:0.7,med:1.1,p75:1.8}, n:78 },
-    '$5M–$10M':  { growth:{p25:35,med:55,p75:90},   nrr:{p25:100,med:110,p75:126}, gm:{p25:60,med:70,p75:78},  cac:{p25:9,med:16,p75:24},  se:{p25:0.8,med:1.2,p75:2.0}, n:65 },
-    '$10M–$25M': { growth:{p25:28,med:42,p75:70},   nrr:{p25:102,med:112,p75:128}, gm:{p25:62,med:71,p75:79},  cac:{p25:10,med:16,p75:25}, se:{p25:0.8,med:1.2,p75:2.0}, n:72 },
-    '$25M–$50M': { growth:{p25:22,med:34,p75:54},   nrr:{p25:104,med:114,p75:130}, gm:{p25:64,med:72,p75:80},  cac:{p25:11,med:17,p75:26}, se:{p25:0.9,med:1.3,p75:2.1}, n:54 },
-    '$50M–$100M':{ growth:{p25:18,med:27,p75:44},   nrr:{p25:106,med:116,p75:132}, gm:{p25:66,med:74,p75:82},  cac:{p25:12,med:18,p75:28}, se:{p25:0.9,med:1.4,p75:2.2}, n:41 },
-    '$100M+':    { growth:{p25:12,med:19,p75:32},   nrr:{p25:108,med:118,p75:134}, gm:{p25:68,med:76,p75:84},  cac:{p25:12,med:19,p75:30}, se:{p25:1.0,med:1.5,p75:2.3}, n:28 },
+    '$5M–25M': { n:16, growth:{p25:-19,med:-9,p75:0}, gm:{p25:50,med:70,p75:84}, nrr:{p25:96,med:102,p75:132} },
+    '$25M–50M': { n:6, growth:{p25:-23,med:-9,p75:9}, gm:{p25:52,med:57,p75:63}, nrr:{p25:58,med:99,p75:115} },
+    '$50M–100M': { n:5, growth:{p25:6,med:8,p75:12}, gm:{p25:49,med:58,p75:70}, nrr:{p25:121,med:135,p75:139} },
+    '$100M–250M': { n:15, growth:{p25:-2,med:2,p75:18}, gm:{p25:52,med:71,p75:74}, nrr:{p25:100,med:101,p75:111} },
+    '$250M–500M': { n:16, growth:{p25:0,med:10,p75:26}, gm:{p25:62,med:74,p75:78}, nrr:{p25:98,med:109,p75:118} },
+    '$500M–1B': { n:30, growth:{p25:6,med:13,p75:19}, gm:{p25:65,med:71,p75:78}, nrr:{p25:103,med:111,p75:119} },
+    '$1B+': { n:37, growth:{p25:7,med:12,p75:19}, gm:{p25:59,med:74,p75:80}, nrr:{p25:103,med:111,p75:128} },
   },
   'Vertical SaaS': {
-    '<$1M':      { growth:{p25:30,med:55,p75:100},  nrr:{p25:90,med:102,p75:118},  gm:{p25:52,med:62,p75:72},  cac:{p25:7,med:13,p75:24},  se:{p25:0.5,med:0.8,p75:1.5}, n:42 },
-    '$1M–$5M':   { growth:{p25:34,med:55,p75:90},   nrr:{p25:96,med:108,p75:124},  gm:{p25:56,med:66,p75:76},  cac:{p25:9,med:16,p75:26},  se:{p25:0.6,med:1.0,p75:1.7}, n:58 },
-    '$5M–$10M':  { growth:{p25:28,med:44,p75:74},   nrr:{p25:100,med:112,p75:128}, gm:{p25:60,med:70,p75:78},  cac:{p25:10,med:18,p75:28}, se:{p25:0.7,med:1.1,p75:1.8}, n:52 },
-    '$10M–$25M': { growth:{p25:24,med:36,p75:58},   nrr:{p25:102,med:114,p75:132}, gm:{p25:62,med:72,p75:80},  cac:{p25:12,med:20,p75:30}, se:{p25:0.8,med:1.2,p75:1.9}, n:48 },
-    '$25M–$50M': { growth:{p25:20,med:30,p75:50},   nrr:{p25:104,med:116,p75:134}, gm:{p25:64,med:74,p75:82},  cac:{p25:13,med:21,p75:32}, se:{p25:0.8,med:1.2,p75:2.0}, n:36 },
-    '$50M–$100M':{ growth:{p25:16,med:24,p75:40},   nrr:{p25:106,med:118,p75:136}, gm:{p25:66,med:76,p75:84},  cac:{p25:14,med:22,p75:34}, se:{p25:0.9,med:1.3,p75:2.1}, n:26 },
-    '$100M+':    { growth:{p25:11,med:17,p75:28},   nrr:{p25:108,med:120,p75:138}, gm:{p25:68,med:78,p75:86},  cac:{p25:14,med:23,p75:36}, se:{p25:0.9,med:1.4,p75:2.2}, n:16 },
-  },
-  'HR SaaS': {
-    '<$1M':      { growth:{p25:28,med:48,p75:90},   nrr:{p25:90,med:100,p75:114},  gm:{p25:54,med:64,p75:72},  cac:{p25:8,med:15,p75:26},  se:{p25:0.5,med:0.8,p75:1.4}, n:32 },
-    '$1M–$5M':   { growth:{p25:30,med:50,p75:85},   nrr:{p25:95,med:106,p75:120},  gm:{p25:58,med:66,p75:74},  cac:{p25:10,med:18,p75:28}, se:{p25:0.6,med:0.9,p75:1.6}, n:46 },
-    '$5M–$10M':  { growth:{p25:26,med:40,p75:68},   nrr:{p25:98,med:108,p75:124},  gm:{p25:60,med:68,p75:76},  cac:{p25:11,med:19,p75:30}, se:{p25:0.7,med:1.0,p75:1.7}, n:40 },
-    '$10M–$25M': { growth:{p25:22,med:34,p75:55},   nrr:{p25:100,med:110,p75:126}, gm:{p25:62,med:70,p75:78},  cac:{p25:13,med:21,p75:32}, se:{p25:0.7,med:1.1,p75:1.8}, n:38 },
-    '$25M–$50M': { growth:{p25:18,med:28,p75:46},   nrr:{p25:102,med:112,p75:128}, gm:{p25:64,med:72,p75:80},  cac:{p25:14,med:22,p75:34}, se:{p25:0.8,med:1.2,p75:1.9}, n:30 },
-    '$50M–$100M':{ growth:{p25:14,med:22,p75:36},   nrr:{p25:104,med:114,p75:130}, gm:{p25:66,med:74,p75:82},  cac:{p25:15,med:24,p75:36}, se:{p25:0.8,med:1.2,p75:2.0}, n:22 },
-    '$100M+':    { growth:{p25:10,med:16,p75:26},   nrr:{p25:106,med:116,p75:132}, gm:{p25:68,med:76,p75:84},  cac:{p25:15,med:25,p75:38}, se:{p25:0.9,med:1.3,p75:2.1}, n:14 },
+    '$1B+': { n:4, growth:{p25:11,med:16,p75:18}, gm:{p25:62,med:69,p75:76}, nrr:{p25:99,med:110,p75:117} },
   },
   'DevTools': {
-    '<$1M':      { growth:{p25:50,med:90,p75:160},  nrr:{p25:95,med:112,p75:138},  gm:{p25:62,med:74,p75:84},  cac:{p25:4,med:8,p75:16},   se:{p25:0.7,med:1.2,p75:2.2}, n:36 },
-    '$1M–$5M':   { growth:{p25:55,med:95,p75:160},  nrr:{p25:100,med:118,p75:142}, gm:{p25:66,med:76,p75:86},  cac:{p25:5,med:10,p75:18},  se:{p25:0.8,med:1.4,p75:2.5}, n:44 },
-    '$5M–$10M':  { growth:{p25:45,med:75,p75:130},  nrr:{p25:104,med:122,p75:146}, gm:{p25:68,med:78,p75:87},  cac:{p25:6,med:11,p75:19},  se:{p25:0.9,med:1.5,p75:2.7}, n:40 },
-    '$10M–$25M': { growth:{p25:38,med:60,p75:100},  nrr:{p25:108,med:126,p75:150}, gm:{p25:70,med:79,p75:88},  cac:{p25:7,med:13,p75:21},  se:{p25:1.0,med:1.6,p75:2.9}, n:36 },
-    '$25M–$50M': { growth:{p25:30,med:50,p75:82},   nrr:{p25:110,med:128,p75:152}, gm:{p25:72,med:80,p75:89},  cac:{p25:8,med:14,p75:22},  se:{p25:1.1,med:1.7,p75:3.0}, n:28 },
-    '$50M–$100M':{ growth:{p25:24,med:38,p75:64},   nrr:{p25:112,med:130,p75:154}, gm:{p25:74,med:82,p75:90},  cac:{p25:9,med:15,p75:24},  se:{p25:1.2,med:1.8,p75:3.2}, n:20 },
-    '$100M+':    { growth:{p25:16,med:26,p75:44},   nrr:{p25:114,med:132,p75:156}, gm:{p25:76,med:84,p75:91},  cac:{p25:9,med:16,p75:25},  se:{p25:1.3,med:1.9,p75:3.4}, n:13 },
+    '$500M–1B': { n:3, growth:{p25:22,med:24,p75:25}, gm:{p25:82,med:87,p75:89}, nrr:{p25:119,med:123,p75:124} },
   },
 };
 
-// ── NAMED PEER COMPANIES per category (used for richer bubble map) ─────────────
-// These are fictional but calibrated — used as background data points only
 const PEERS = {
   'Infra / Dev / AI': [
-    {name:'Nexara',    growth:82, gfs:4.4}, {name:'Vaultex',  growth:55, gfs:3.8},
-    {name:'Stackr',   growth:110,gfs:4.1}, {name:'Dataloom', growth:38, gfs:3.2},
-    {name:'Nodecast', growth:65, gfs:3.9}, {name:'Kernelco', growth:28, gfs:2.8},
-    {name:'Edgelux',  growth:92, gfs:4.6}, {name:'Clustra',  growth:44, gfs:3.5},
-    {name:'Fluxnode', growth:130,gfs:3.1}, {name:'Prismware',growth:20, gfs:3.7},
-    {name:'Bitspan',  growth:72, gfs:4.2}, {name:'Corepath', growth:16, gfs:2.5},
+    {name:'TWILIO INC',growth:13,gfs:1.3},
+    {name:'Snowflake Inc.',growth:29,gfs:2.1},
+    {name:'Datadog, Inc.',growth:27,gfs:2.7},
+    {name:'MongoDB, Inc.',growth:22,gfs:2.2},
+    {name:'CLARIVATE PLC',growth:-4,gfs:1.3},
+    {name:'Reddit, Inc.',growth:69,gfs:4.3},
+    {name:'Cloudflare, Inc.',growth:29,gfs:2.5},
+    {name:'Dynatrace, Inc.',growth:18,gfs:2.5},
+    {name:'VERISIGN INC/CA',growth:6,gfs:2.6},
+    {name:'Samsara Inc.',growth:29,gfs:2.6},
+    {name:'Elastic N.V.',growth:17,gfs:2.1},
+    {name:'Five9, Inc.',growth:10,gfs:1.3},
   ],
   'Security': [
-    {name:'Sentinel9', growth:52, gfs:4.0}, {name:'VaultAI',  growth:34, gfs:3.4},
-    {name:'Shieldco',  growth:72, gfs:4.3}, {name:'Threatiq', growth:22, gfs:2.9},
-    {name:'Guardrail', growth:46, gfs:3.8}, {name:'Cryptex',  growth:18, gfs:3.1},
-    {name:'Perimeter', growth:62, gfs:4.1}, {name:'Auditron', growth:28, gfs:2.6},
-    {name:'Cipherlab', growth:38, gfs:3.6}, {name:'Ironveil', growth:14, gfs:3.3},
+    {name:'CrowdStrike Holdings, Inc.',growth:21,gfs:2.3},
+    {name:'Zscaler, Inc.',growth:23,gfs:2.4},
+    {name:'SentinelOne, Inc.',growth:21,gfs:2.3},
+    {name:'Tenable Holdings, Inc.',growth:11,gfs:2.2},
+    {name:'Rapid7, Inc.',growth:1,gfs:1.6},
+    {name:'QUALYS, INC.',growth:10,gfs:2.4},
+    {name:'VARONIS SYSTEMS INC',growth:13,gfs:2.3},
   ],
   'Horizontal SaaS': [
-    {name:'Flowsync',  growth:48, gfs:3.9}, {name:'Gridcraft',growth:28, gfs:3.4},
-    {name:'Operio',    growth:62, gfs:3.2}, {name:'Taskweave', growth:18, gfs:3.6},
-    {name:'Hubform',   growth:55, gfs:2.8}, {name:'Planwise',  growth:34, gfs:4.1},
-    {name:'Dashify',   growth:42, gfs:3.0}, {name:'Collab+',   growth:24, gfs:3.7},
-    {name:'Notionex',  growth:70, gfs:2.6}, {name:'Fieldbase', growth:15, gfs:3.5},
-    {name:'Portali',   growth:38, gfs:3.8}, {name:'Workloop',  growth:52, gfs:2.9},
+    {name:'ServiceNow, Inc.',growth:20,gfs:2.4},
+    {name:'SHOPIFY INC.',growth:30,gfs:1.8},
+    {name:'Autodesk, Inc.',growth:17,gfs:3.0},
+    {name:'SYNOPSYS INC',growth:15,gfs:2.2},
+    {name:'SS&C Technologies Holdings Inc',growth:6,gfs:1.2},
+    {name:'TAKE TWO INTERACTIVE SOFTWARE INC',growth:5,gfs:1.2},
+    {name:'OPEN TEXT CORP',growth:-10,gfs:1.6},
+    {name:'Palantir Technologies Inc.',growth:56,gfs:3.5},
+    {name:'Gen Digital Inc.',growth:3,gfs:2.1},
+    {name:'HUBSPOT INC',growth:19,gfs:2.7},
+    {name:'Verisk Analytics, Inc.',growth:6,gfs:1.7},
+    {name:'Okta, Inc.',growth:11,gfs:2.2},
   ],
   'Vertical SaaS': [
-    {name:'Cliniqal',  growth:38, gfs:4.0}, {name:'Agrobase',  growth:24, gfs:3.5},
-    {name:'Legalio',   growth:44, gfs:3.7}, {name:'Proptech+', growth:18, gfs:3.2},
-    {name:'Edustack',  growth:52, gfs:3.0}, {name:'Retailink', growth:14, gfs:3.6},
-    {name:'Medtrack',  growth:30, gfs:4.1}, {name:'Finovert',  growth:36, gfs:2.7},
-    {name:'Constrico', growth:22, gfs:3.4}, {name:'Fleetware', growth:28, gfs:3.8},
+    {name:'VEEVA SYSTEMS INC',growth:16,gfs:2.2},
+    {name:'PROCORE TECHNOLOGIES, INC.',growth:14,gfs:2.3},
+    {name:'Guidewire Software, Inc.',growth:22,gfs:1.7},
+    {name:'BLACKBAUD INC',growth:-2,gfs:1.2},
+    {name:'ServiceTitan, Inc.',growth:24,gfs:2.1},
+    {name:'LEGALZOOM.COM, INC.',growth:10,gfs:1.6},
+    {name:'Yext, Inc.',growth:6,gfs:1.9},
+    {name:'SEMrush Holdings, Inc.',growth:17,gfs:2.5},
   ],
   'HR SaaS': [
-    {name:'Peopleco',  growth:36, gfs:3.8}, {name:'Hireflow',  growth:22, gfs:3.3},
-    {name:'Talentiq',  growth:48, gfs:3.1}, {name:'Onboardly', growth:16, gfs:3.7},
-    {name:'Staffbase',  growth:30, gfs:4.0}, {name:'Paylogic', growth:12, gfs:3.5},
-    {name:'Engageio',  growth:44, gfs:2.8}, {name:'Culturely', growth:26, gfs:3.6},
-    {name:'Wrkforcex', growth:18, gfs:3.2}, {name:'Learnex',   growth:38, gfs:2.9},
+    {name:'Paycom Software, Inc.',growth:8,gfs:2.4},
+    {name:'Paylocity Holding Corp',growth:14,gfs:1.7},
   ],
   'DevTools': [
-    {name:'Codeweave', growth:95, gfs:4.5}, {name:'Buildfast', growth:60, gfs:3.9},
-    {name:'Pipestack', growth:130,gfs:4.2}, {name:'Deployio',  growth:44, gfs:3.5},
-    {name:'Testloom',  growth:78, gfs:4.1}, {name:'Gitcraft',  growth:32, gfs:3.7},
-    {name:'Debuglabs', growth:110,gfs:3.3}, {name:'Apiweave',  growth:24, gfs:4.0},
-    {name:'Lintex',    growth:55, gfs:3.8}, {name:'Monitorly', growth:88, gfs:2.9},
+    {name:'Atlassian Corp',growth:19,gfs:2.6},
+    {name:'DOCUSIGN, INC.',growth:8,gfs:2.2},
+    {name:'Gitlab Inc.',growth:25,gfs:3.0},
+    {name:'Doximity, Inc.',growth:20,gfs:3.0},
+    {name:'JFrog Ltd',growth:24,gfs:2.4},
+    {name:'TruBridge, Inc.',growth:1,gfs:1.2},
+    {name:'INNOVATIVE SOLUTIONS & SUPPORT INC',growth:78,gfs:3.0},
+    {name:'Glimpse Group, Inc.',growth:19,gfs:1.9},
   ],
 };
 
-// Category multipliers for CBGR
-const CAT_MULT = {'Infra / Dev / AI':1.30,'Security':1.10,'Horizontal SaaS':0.80,'Vertical SaaS':0.90,'HR SaaS':0.85,'DevTools':1.20};
-const STAGE_BGR = {'Early':0.80,'Growth':0.55,'Scale':0.35,'Late':0.25};
-
-
-// ── HELPER FUNCTIONS ──────────────────────────────────────────────────────────
-function getBenchmark(cat, arr) {
-  const catData = BENCHMARKS[cat];
-  if (!catData) return BENCHMARKS['Horizontal SaaS'][arr] || BENCHMARKS['Horizontal SaaS']['$10M–$25M'];
-  if (catData[arr]) return catData[arr];
-  const bands = ['<$1M','$1M–$5M','$5M–$10M','$10M–$25M','$25M–$50M','$50M–$100M','$100M+'];
-  const ti = bands.indexOf(arr);
-  for (let d = 1; d < bands.length; d++) {
-    if (ti+d < bands.length && catData[bands[ti+d]]) return catData[bands[ti+d]];
-    if (ti-d >= 0 && catData[bands[ti-d]]) return catData[bands[ti-d]];
-  }
-  return null;
-}
-
-function pct(val, p25, med, p75) {
-  if (val <= p25) return Math.max(1, Math.round(25 * val / p25));
-  if (val <= med) return Math.round(25 + 25 * (val-p25) / (med-p25));
-  if (val <= p75) return Math.round(50 + 25 * (val-med) / (p75-med));
-  return Math.min(99, Math.round(75 + 24 * (val-p75) / (p75*0.5)));
-}
-
-function estimateGFS(growth, nrr, gm, se, stage, cat) {
-  const bgr = STAGE_BGR[stage] || 0.55;
-  const mult = CAT_MULT[cat] || 1.0;
-  const cbgr = bgr * mult;
-  const g = growth/100, n = (nrr||110)/100;
-  const GRS = g<0.1?1:g<0.2?2:g<0.3?3:g<0.4?4:5;
-  const NRS = n<0.90?1:n<1.01?1:n<1.05?2:n<1.15?3:n<1.25?4:5;
-  const GMS = (gm||70)<50?1:(gm||70)<60?2:(gm||70)<68?3:(gm||70)<76?4:5;
-  let ES = GMS;
-  if (se > 0) { const SES = se<0.5?1:se<0.9?2:se<1.0?3:se<1.5?3:se<3.0?4:5; ES = (GMS+SES)/2; }
-  const GQS = 0.60*GRS + 0.40*2.5;
-  const RS = 0.60*NRS + 0.40*3.0;
-  let adj = 0.30*GQS + 0.40*RS + 0.30*ES;
-  if (GQS<3) adj*=0.92; if (RS<3) adj*=0.92; if (ES<3) adj*=0.92;
-  adj = Math.min(5, Math.max(1.2, adj));
-  let mL,mH,interp;
-  if(adj<2.5){mL=0.5;mH=0.7;interp='Fragile';}
-  else if(adj<3.0){mL=0.7;mH=0.9;interp='Fragile';}
-  else if(adj<3.8){mL=0.9;mH=1.1;interp='Average';}
-  else if(adj<4.5){mL=1.1;mH=1.35;interp='Strong';}
-  else{mL=1.4;mH=1.75;interp='Elite';}
-  const ogrL=+(cbgr*mL*100).toFixed(0), ogrH=+(cbgr*mH*100).toFixed(0);
-  const zone = growth<ogrL?'Under':growth<=ogrH?'Fit':'Over';
-  return { gfs:+adj.toFixed(2), zone, ogrL, ogrH, cbgr:+(cbgr*100).toFixed(0), interp };
-}
-
-// ── RUN ATLAS ─────────────────────────────────────────────────────────────────
-
-// ── SLIDER LOGIC ──────────────────────────────────────────────────────────────
-// optional: if true, slider starts "unset" and activates on first move
-// divisor: for sales efficiency (stored 0-50, displayed 0.0-5.0)
-
-// ── GLOBAL STATE for re-filtering ─────────────────────────────────────────────
-let _lastSubmission = null;
-
-function applyFilter(dimension, btn) {
-  if (!_lastSubmission) return;
-  const { growth, gm, cat, geo, country, bench, res } = _lastSubmission;
-
-  document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
-  btn.classList.add('active');
-
-  let filteredBench, contextLabel, sampleNote, filterPeers;
-
-  if (dimension === 'all') {
-    filteredBench = bench;
-    filterPeers = null; // use default peer pool
-    contextLabel = 'Showing your percentile <strong>across all ' + cat + ' companies</strong> in the ' + _lastSubmission.arr + ' band — all geographies combined.';
-    sampleNote = (bench && bench.n || '—') + ' companies · all regions';
-
-  } else if (dimension === 'category') {
-    // Category filter: tighter sample, same category benchmarks
-    filteredBench = buildCategoryBench(bench, cat);
-    filterPeers = getCategoryPeers(cat, growth);
-    contextLabel = 'Showing your percentile among <strong>' + cat + ' companies only</strong> — all geographies. This is your most direct peer group.';
-    sampleNote = (filteredBench.n || '—') + ' companies · ' + cat + ' only';
-
-  } else if (dimension === 'geo') {
-    const g = geo || 'Global';
-    filteredBench = buildGeoBench(bench, g, cat);
-    filterPeers = getGeoPeers(cat, g, growth);
-    contextLabel = 'Showing your percentile among <strong>' + cat + ' companies with revenue in ' + g + '</strong>. Regional market dynamics affect growth benchmarks.';
-    sampleNote = (filteredBench.n || '—') + ' companies · ' + cat + ' · ' + g + ' revenue';
-
-  } else if (dimension === 'country') {
-    const c = country || 'your country';
-    filteredBench = buildCountryBench(bench, c, cat);
-    filterPeers = getCountryPeers(cat, c, growth);
-    contextLabel = 'Showing your percentile among <strong>' + cat + ' companies headquartered in ' + c + '</strong>. Local market conditions shape growth expectations.';
-    sampleNote = (filteredBench.n || '—') + ' companies · ' + cat + ' · ' + c;
-  }
-
-  document.getElementById('filter-context').innerHTML = contextLabel;
-  document.getElementById('res-sample-note').textContent = sampleNote;
-
-  // Re-render all result components
-  buildPctBars(growth, null, gm, null, null, filteredBench);
-  buildBenchTable(growth, null, gm, null, null, filteredBench, _lastSubmission.arr, cat);
-  buildInsights(growth, null, gm, res.gfs, res.zone, res.ogrL, res.ogrH, res.cbgr, cat, _lastSubmission.arr, filteredBench);
-  // Rebuild bubble map with filtered peers
-  rebuildBubbleMap(growth, res.gfs, res.ogrL, res.ogrH, cat, filterPeers);
-}
-
-// ── CATEGORY FILTER ──────────────────────────────────────────────────────────
-function buildCategoryBench(base, cat) {
-  // Pure category view — same benchmarks but smaller, tighter sample
-  const adj = JSON.parse(JSON.stringify(base));
-  adj.n = Math.round((base.n || 40) * 0.7);
-  return adj;
-}
-
-function getCategoryPeers(cat, userGrowth) {
-  return (PEERS[cat] || PEERS['Horizontal SaaS']);
-}
-
-// ── GEO FILTER ───────────────────────────────────────────────────────────────
-// Full geo-specific benchmark tables for growth and gm
 const GEO_BENCH = {
   'North America': {
-    growthMult:{p25:1.20,med:1.22,p75:1.25}, gmMult:{p25:1.06,med:1.07,p75:1.08},
-    nrrAbsolute:{p25:108,med:118,p75:134},
-    sampleFrac: 0.38, label:'NA'
+    growthMult:{p25:0.92,med:1.0,p75:1.08},
+    gmMult:{p25:0.98,med:1.01,p75:1.04},
+    nrrAbsolute:{p25:100,med:108,p75:122},
+    sampleFrac:0.96, label:'NOR',
   },
-  'Europe': {
-    growthMult:{p25:0.85,med:0.88,p75:0.92}, gmMult:{p25:0.96,med:0.97,p75:0.98},
-    nrrAbsolute:{p25:102,med:112,p75:126},
-    sampleFrac: 0.28, label:'EU'
-  },
-  'India': {
-    growthMult:{p25:1.25,med:1.32,p75:1.45}, gmMult:{p25:0.88,med:0.91,p75:0.93},
-    nrrAbsolute:{p25:98,med:108,p75:122},
-    sampleFrac: 0.18, label:'IN'
-  },
-  'Southeast Asia': {
-    growthMult:{p25:1.05,med:1.12,p75:1.20}, gmMult:{p25:0.88,med:0.90,p75:0.93},
-    nrrAbsolute:{p25:96,med:106,p75:120},
-    sampleFrac: 0.12, label:'SEA'
-  },
-  'Middle East': {
-    growthMult:{p25:1.00,med:1.08,p75:1.18}, gmMult:{p25:0.93,med:0.95,p75:0.97},
-    nrrAbsolute:{p25:98,med:108,p75:122},
-    sampleFrac: 0.10, label:'ME'
-  },
-  'LATAM': {
-    growthMult:{p25:0.78,med:0.84,p75:0.90}, gmMult:{p25:0.87,med:0.89,p75:0.92},
-    nrrAbsolute:{p25:94,med:103,p75:116},
-    sampleFrac: 0.08, label:'LATAM'
+  'Asia Pacific': {
+    growthMult:{p25:0.76,med:0.83,p75:0.9},
+    gmMult:{p25:0.98,med:1.01,p75:1.04},
+    nrrAbsolute:{p25:100,med:108,p75:122},
+    sampleFrac:0.02, label:'ASI',
   },
 };
 
-function buildGeoBench(base, geo, cat) {
-  const gd = GEO_BENCH[geo];
-  if (!gd || geo === 'Global') return base;
-  const adj = JSON.parse(JSON.stringify(base));
-  ['p25','med','p75'].forEach(p => {
-    if(adj.growth) adj.growth[p] = Math.round(adj.growth[p] * gd.growthMult[p]);
-    if(adj.gm)     adj.gm[p]     = Math.round(adj.gm[p]     * gd.gmMult[p]);
-    if(adj.nrr)    adj.nrr[p]    = gd.nrrAbsolute[p];
-  });
-  adj.n = Math.max(6, Math.round((base.n || 40) * gd.sampleFrac));
-  return adj;
-}
-
-function getGeoPeers(cat, geo, userGrowth) {
-  const gd = GEO_BENCH[geo];
-  const mult = gd ? gd.growthMult.med : 1.0;
-  return (PEERS[cat] || PEERS['Horizontal SaaS']).map(p => ({
-    name: p.name,
-    growth: Math.round(p.growth * mult),
-    gfs: Math.min(5, Math.max(1.2, p.gfs * (0.9 + Math.random() * 0.2)))
-  }));
-}
-
-// ── COUNTRY FILTER ────────────────────────────────────────────────────────────
 const COUNTRY_BENCH = {
-  'USA':        { growthMult:{p25:1.22,med:1.28,p75:1.35}, gmMult:{p25:1.07,med:1.08,p75:1.10}, nrr:{p25:110,med:120,p75:136}, sampleFrac:0.30 },
-  'UK':         { growthMult:{p25:0.90,med:0.94,p75:0.98}, gmMult:{p25:0.98,med:1.00,p75:1.02}, nrr:{p25:104,med:114,p75:128}, sampleFrac:0.12 },
-  'India':      { growthMult:{p25:1.28,med:1.38,p75:1.52}, gmMult:{p25:0.86,med:0.89,p75:0.92}, nrr:{p25:96,med:106,p75:118},  sampleFrac:0.15 },
-  'Germany':    { growthMult:{p25:0.82,med:0.86,p75:0.90}, gmMult:{p25:0.96,med:0.98,p75:1.00}, nrr:{p25:102,med:110,p75:124}, sampleFrac:0.09 },
-  'France':     { growthMult:{p25:0.80,med:0.84,p75:0.88}, gmMult:{p25:0.95,med:0.97,p75:0.99}, nrr:{p25:100,med:108,p75:120}, sampleFrac:0.07 },
-  'Canada':     { growthMult:{p25:1.02,med:1.06,p75:1.12}, gmMult:{p25:1.00,med:1.02,p75:1.04}, nrr:{p25:106,med:114,p75:128}, sampleFrac:0.08 },
-  'Australia':  { growthMult:{p25:0.88,med:0.92,p75:0.96}, gmMult:{p25:0.97,med:0.99,p75:1.01}, nrr:{p25:102,med:110,p75:122}, sampleFrac:0.06 },
-  'Singapore':  { growthMult:{p25:1.06,med:1.12,p75:1.20}, gmMult:{p25:0.98,med:1.00,p75:1.02}, nrr:{p25:100,med:110,p75:124}, sampleFrac:0.07 },
-  'UAE':        { growthMult:{p25:1.08,med:1.15,p75:1.24}, gmMult:{p25:0.94,med:0.96,p75:0.98}, nrr:{p25:98,med:108,p75:120},  sampleFrac:0.06 },
-  'Israel':     { growthMult:{p25:1.20,med:1.28,p75:1.38}, gmMult:{p25:1.02,med:1.04,p75:1.07}, nrr:{p25:108,med:118,p75:134}, sampleFrac:0.07 },
-  'Netherlands':{ growthMult:{p25:0.88,med:0.92,p75:0.97}, gmMult:{p25:0.99,med:1.01,p75:1.03}, nrr:{p25:104,med:112,p75:126}, sampleFrac:0.06 },
+  'Australia': {
+    growthMult:{p25:0.21,med:0.23,p75:0.25},
+    gmMult:{p25:0.96,med:0.99,p75:1.02},
+    nrr:{p25:100,med:108,p75:122},
+    sampleFrac:0.02,
+  },
+  'USA': {
+    growthMult:{p25:0.92,med:1.0,p75:1.08},
+    gmMult:{p25:0.98,med:1.01,p75:1.04},
+    nrr:{p25:100,med:108,p75:122},
+    sampleFrac:0.96,
+  },
 };
+
 
 function buildCountryBench(base, country, cat) {
   const cd = COUNTRY_BENCH[country];
@@ -1019,7 +847,7 @@ function buildBenchTable(growth, nrr, gm, cac, se, bench, arr, cat) {
   if(gm&&bench.gm)   rows+='<tr><td>Gross margin</td><td>'+bench.gm.p25+'%</td><td>'+bench.gm.med+'%</td><td>'+bench.gm.p75+'%</td><td class="'+cls(gm,bench.gm.p25,bench.gm.p75,true)+'">'+gm+'% <span class="you-tag">YOU</span></td></tr>';
   if(cac&&bench.cac) rows+='<tr><td>CAC payback</td><td>'+bench.cac.p25+'mo</td><td>'+bench.cac.med+'mo</td><td>'+bench.cac.p75+'mo</td><td class="'+cls(cac,bench.cac.p25,bench.cac.p75,false)+'">'+cac+'mo <span class="you-tag">YOU</span></td></tr>';
   if(se&&bench.se)   rows+='<tr><td>Sales efficiency</td><td>'+bench.se.p25+'x</td><td>'+bench.se.med+'x</td><td>'+bench.se.p75+'x</td><td class="'+cls(se,bench.se.p25,bench.se.p75,true)+'">'+se.toFixed(1)+'x <span class="you-tag">YOU</span></td></tr>';
-  document.getElementById('bench-table-wrap').innerHTML='<table class="btable"><thead><tr><th>Metric</th><th>P25</th><th>Median</th><th>P75</th><th>You</th></tr></thead><tbody>'+rows+'</tbody></table><div style="margin-top:10px;font-size:11px;color:var(--text-dim);">Based on '+(bench&&bench.n||'—')+' companies in '+cat+' · '+arr+'</div>';
+  document.getElementById('bench-table-wrap').innerHTML='<table class="btable"><thead><tr><th>Metric</th><th>P25</th><th>Median</th><th>P75</th><th>You</th></tr></thead><tbody>'+rows+'</tbody></table><div style="margin-top:10px;font-size:11px;color:var(--text-dim);">Based on '+(bench&&bench.n||'—')+' companies in '+cat+' · '+arr+' · Source: SEC EDGAR 10-K filings FY2024/2025</div>';
 }
 
 function buildInsights(growth, nrr, gm, gfs, zone, ogrL, ogrH, cbgr, cat, arr, bench) {
