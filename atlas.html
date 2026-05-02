@@ -561,6 +561,66 @@ const COUNTRY_BENCH = {
   },
 };
 
+// ── HELPER FUNCTIONS ──────────────────────────────────────────────────────────
+// Band order for fallback lookup (new finer bands from EDGAR data)
+const BAND_ORDER = ['<$5M','$5M–25M','$25M–50M','$50M–100M',
+                    '$100M–250M','$250M–500M','$500M–1B','$1B+'];
+
+// Map user-selected ARR band (old labels) to new EDGAR bands
+const BAND_MAP = {
+  '<$1M':        '<$5M',
+  '$1M–$5M': '<$5M',
+  '$5M–$10M':'$5M–25M',
+  '$10M–$25M':'$5M–25M',
+  '$25M–$50M':'$25M–50M',
+  '$50M–$100M':'$50M–100M',
+  '$100M+':      '$100M–250M',
+  // already-correct new labels pass through
+  '<$5M':        '<$5M',
+  '$5M–25M':'$5M–25M',
+  '$25M–50M':'$25M–50M',
+  '$50M–100M':'$50M–100M',
+  '$100M–250M':'$100M–250M',
+  '$250M–500M':'$250M–500M',
+  '$500M–1B':'$500M–1B',
+  '$1B+':        '$1B+',
+};
+
+function getBenchmark(cat, arrInput) {
+  const catData = BENCHMARKS[cat];
+  // Map user dropdown value to our EDGAR band
+  const arr = BAND_MAP[arrInput] || arrInput;
+
+  if (!catData) {
+    // Category not found — fall back to Horizontal SaaS
+    return getBenchmark('Horizontal SaaS', arrInput);
+  }
+  if (catData[arr]) return catData[arr];
+
+  // Exact band not found — find nearest available band
+  const available = BAND_ORDER.filter(b => catData[b]);
+  if (available.length === 0) return null;
+
+  // Find closest band by index
+  const targetIdx = BAND_ORDER.indexOf(arr);
+  let best = available[0];
+  let bestDist = Math.abs(BAND_ORDER.indexOf(best) - targetIdx);
+  for (const b of available) {
+    const d = Math.abs(BAND_ORDER.indexOf(b) - targetIdx);
+    if (d < bestDist) { best = b; bestDist = d; }
+  }
+  return catData[best];
+}
+
+function pct(val, p25, med, p75) {
+  if (val === null || val === undefined) return 50;
+  if (val <= p25) return Math.max(1, Math.round(25 * val / p25));
+  if (val <= med) return Math.round(25 + 25 * (val - p25) / (med - p25));
+  if (val <= p75) return Math.round(50 + 25 * (val - med) / (p75 - med));
+  return Math.min(99, Math.round(75 + 24 * (val - p75) / (p75 * 0.5)));
+}
+
+
 
 function buildCountryBench(base, country, cat) {
   const cd = COUNTRY_BENCH[country];
