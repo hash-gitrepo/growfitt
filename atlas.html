@@ -561,6 +561,26 @@ const COUNTRY_BENCH = {
   },
 };
 
+// ── SCORING CONSTANTS ─────────────────────────────────────────────────────────
+// Stage benchmark growth rates (used by estimateGFS)
+const STAGE_BGR = {
+  'Early':  0.80,   // <$10M ARR
+  'Growth': 0.55,   // $10M–$100M
+  'Scale':  0.35,   // $100M–$1B
+  'Late':   0.25,   // $1B+
+};
+
+// Category multipliers for CBGR (Category-Adjusted Benchmark Growth Rate)
+const CAT_MULT = {
+  'Infra / Dev / AI': 1.30,
+  'Security':         1.10,
+  'Horizontal SaaS':  0.80,
+  'Vertical SaaS':    0.90,
+  'HR SaaS':          0.85,
+  'DevTools':         1.20,
+};
+
+
 // ── HELPER FUNCTIONS ──────────────────────────────────────────────────────────
 // Band order for fallback lookup (new finer bands from EDGAR data)
 const BAND_ORDER = ['<$5M','$5M–25M','$25M–50M','$50M–100M',
