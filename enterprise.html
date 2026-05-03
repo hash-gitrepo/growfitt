@@ -9,15 +9,20 @@
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
 :root{
-  --green:#1a6632;--green-mid:#2d8a4e;--green-light:#3aaf66;--green-pale:#e7f4ea;
-  --dark:#0a0f0b;--dark2:#111a13;--dark3:#182019;--dark4:#1f2b21;
-  --surface:#1c2b1e;--surface2:#243527;
-  --text:#edf2ec;--text-muted:#8fa98f;--text-dim:#4a5e4a;
-  --border:rgba(255,255,255,0.07);--border-green:rgba(58,175,102,0.25);
-  --red:#e05a4e;--red-bg:rgba(224,90,78,0.12);--red-border:rgba(224,90,78,0.3);
-  --orange:#e07b00;--orange-bg:rgba(224,123,0,0.12);
-  --yellow:#c8a600;--yellow-bg:rgba(200,166,0,0.1);
-  --blue:#3a8fd9;--blue-bg:rgba(58,143,217,0.12);
+  /* Brand accent — kept for logo/nav only */
+  --green:#1a7a40;--green-mid:#2d9a58;--green-light:#2ea85a;--green-pale:#e8f5ed;
+  /* Page surfaces — white/light grey */
+  --dark:#f4f5f7;--dark2:#ffffff;--dark3:#eef0f2;--dark4:#e2e5e8;
+  --surface:#f8f9fa;--surface2:#eef0f2;
+  /* Typography — dark on light */
+  --text:#111827;--text-muted:#4b5563;--text-dim:#9ca3af;
+  /* Borders */
+  --border:rgba(0,0,0,0.08);--border-green:rgba(46,168,90,0.3);
+  /* Status colours — vivid against white */
+  --red:#d93025;--red-bg:rgba(217,48,37,0.08);--red-border:rgba(217,48,37,0.25);
+  --orange:#d97706;--orange-bg:rgba(217,119,6,0.08);
+  --yellow:#ca8a04;--yellow-bg:rgba(202,138,4,0.08);
+  --blue:#1d6fb8;--blue-bg:rgba(29,111,184,0.08);
   --serif:'DM Serif Display',Georgia,serif;
   --mono:'DM Mono',monospace;
   --sans:'Open Sans',system-ui,sans-serif;
@@ -31,12 +36,12 @@ body{font-family:var(--sans);background:var(--dark);color:var(--text);min-height
 .layout{display:grid;grid-template-columns:var(--sidebar-w) 1fr;grid-template-rows:var(--nav-h) 1fr;min-height:100vh;}
 
 /* ── TOPNAV ── */
-.topnav{grid-column:1/-1;background:var(--dark2);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:16px;position:sticky;top:0;z-index:100;}
+.topnav{grid-column:1/-1;background:#ffffff;border-bottom:1px solid rgba(0,0,0,0.08);display:flex;align-items:center;padding:0 24px;gap:16px;position:sticky;top:0;z-index:100;}
 .topnav-logo{font-family:var(--serif);font-size:20px;color:var(--text);letter-spacing:-0.3px;display:flex;align-items:center;gap:8px;}
-.topnav-logo span{color:var(--green-light);}
-.topnav-badge{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;padding:3px 8px;background:rgba(58,175,102,0.15);border:1px solid var(--border-green);border-radius:4px;color:var(--green-light);}
+.topnav-logo span{color:var(--green);}
+.topnav-badge{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;padding:3px 8px;background:rgba(46,168,90,0.08);border:1px solid rgba(46,168,90,0.25);border-radius:4px;color:var(--green);}
 .topnav-company{margin-left:auto;display:flex;align-items:center;gap:10px;}
-.company-pill{display:flex;align-items:center;gap:8px;padding:6px 14px;background:var(--surface);border:1px solid var(--border);border-radius:20px;font-size:13px;}
+.company-pill{display:flex;align-items:center;gap:8px;padding:6px 14px;background:#f4f5f7;border:1px solid rgba(0,0,0,0.08);border-radius:20px;font-size:13px;}
 .company-dot{width:8px;height:8px;border-radius:50%;background:var(--red);flex-shrink:0;}
 .company-dot.fit{background:var(--green-light);}
 .company-dot.over{background:var(--red);}
@@ -46,18 +51,18 @@ body{font-family:var(--sans);background:var(--dark);color:var(--text);min-height
 .topnav-avatar{width:32px;height:32px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;}
 
 /* ── SIDEBAR ── */
-.sidebar{background:var(--dark2);border-right:1px solid var(--border);padding:20px 12px;display:flex;flex-direction:column;gap:4px;overflow-y:auto;}
+.sidebar{background:#ffffff;border-right:1px solid rgba(0,0,0,0.07);padding:20px 12px;display:flex;flex-direction:column;gap:4px;overflow-y:auto;}
 .sidebar-section{font-size:9px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text-dim);padding:8px 12px 4px;margin-top:8px;}
 .nav-item{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--text-muted);transition:all 0.15s;border:1px solid transparent;user-select:none;}
 .nav-item:hover{background:var(--surface);color:var(--text);}
-.nav-item.active{background:rgba(58,175,102,0.12);border-color:var(--border-green);color:var(--green-light);}
+.nav-item.active{background:rgba(58,175,102,0.12);border-color:var(--border-green);color:var(--green);}
 .nav-item svg{width:16px;height:16px;stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;}
 .nav-item .nav-badge{margin-left:auto;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;background:var(--red-bg);color:var(--red);border:1px solid var(--red-border);}
 
 /* ── MAIN CONTENT ── */
-.main{overflow-y:auto;padding:32px;background:var(--dark);}
+.main{overflow-y:auto;padding:32px;background:#f0f2f4;}
 .screen{display:none;animation:fadeIn 0.3s ease;}
-.screen.active{display:block;}
+.screen.active{display:block;background:#f0f2f4;}
 @keyframes fadeIn{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
 
 /* ── SCREEN HEADER ── */
@@ -226,6 +231,12 @@ body{font-family:var(--sans);background:var(--dark);color:var(--text);min-height
   .q-bar{width:100%;min-height:4px;border-radius:3px 3px 0 0;transition:height 0.4s ease;border:none;}
   .q-label{font-size:9px;color:var(--text-dim);white-space:nowrap;font-family:'Open Sans',sans-serif;}
 
+
+/* Quarter tabs on dark topnav */
+.q-tab{padding:5px 12px;border-radius:5px;font-size:11px;cursor:pointer;border:1px solid rgba(0,0,0,0.1);color:var(--text-muted);background:transparent;transition:all 0.15s;font-family:var(--mono);}
+.q-tab.active{background:rgba(46,168,90,0.08);border-color:rgba(46,168,90,0.3);color:var(--green);}
+/* Nav section label */
+.nav-section{font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);padding:4px 12px;margin:14px 0 4px;}
 </style>
 </head>
 <body>
@@ -297,107 +308,172 @@ body{font-family:var(--sans);background:var(--dark);color:var(--text);min-height
     <!-- SCREEN 1: SYSTEM STATE                            -->
     <!-- ────────────────────────────────────────────────── -->
     <div class="screen active" id="s1">
-      <div class="screen-header">
-        <div class="screen-num">Screen 01 / System State</div>
-        <h1 class="screen-title">Are you inside your optimal growth range?</h1>
-        <p class="screen-sub">Your Growth Fitness Score measures whether the system can sustain the pace you're growing at — not just whether you're growing.</p>
-        <div class="screen-narration">Most teams track growth. Very few know if their system can sustain it.</div>
+
+  <!-- ═══ HEADER BAR ═══════════════════════════════════════════════════════ -->
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border);">
+    <div>
+      <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;">System State Analysis</div>
+      <div style="font-size:20px;font-weight:700;color:var(--text);letter-spacing:-0.3px;">Growth Fitness Overview</div>
+    </div>
+    <div id="q-zone-banner" style="display:flex;align-items:center;gap:10px;padding:8px 16px;border-radius:6px;background:rgba(224,90,78,0.1);border:1px solid rgba(224,90,78,0.3);">
+      <div style="width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 6px var(--red);flex-shrink:0;"></div>
+      <div>
+        <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);">System Status</div>
+        <div id="q-zone-label" style="font-size:12px;font-weight:700;color:var(--red);margin-top:1px;">OVER ZONE — System under strain</div>
       </div>
+    </div>
+  </div>
 
-      <div class="grid-2-1" style="margin-bottom:16px;">
-        <!-- Speedometer card -->
-        <div class="card">
-          <div class="card-title">Growth Fitness Score</div>
-          <div class="speedo-wrap">
-            <canvas class="speedo-canvas" id="speedo" width="280" height="160"></canvas>
-            <div class="speedo-score">
-              <div class="speedo-num" id="q-gfs">2.9</div>
-              <div class="speedo-label" id="q-gfs-label">/ 5.00 · Fragile</div>
-              <div class="speedo-zone" id="q-speedo-zone">OVER ZONE — System under strain</div>
-            </div>
-          </div>
+  <!-- ═══ ROW 1: GFS SCORE + 5 KPI CARDS ═══════════════════════════════════ -->
+  <div style="display:grid;grid-template-columns:185px 1fr 1fr 1fr 210px;gap:10px;margin-bottom:12px;align-items:start;">
 
-          <div class="ogr-bar-wrap" style="margin-top:24px;">
-            <div class="ogr-bar-label">
-              <span>Optimal Growth Range (CBGR-adjusted)</span>
-              <span style="color:var(--text-muted);" id="q-ogr-label">32% — 38%</span>
-            </div>
-            <div class="ogr-track">
-              <!-- Fit zone: 32–38% on a 0–60% scale -->
-              <div class="ogr-fit-range" style="left:53.3%;width:10%;"></div>
-              <!-- Needle at 45% -->
-              <div class="ogr-needle" style="left:75%;"></div>
-            </div>
-            <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-dim);font-family:var(--mono);margin-bottom:10px;">
-              <span>0%</span><span>15%</span><span>30%</span><span>45%</span><span>60%</span>
-            </div>
-            <div class="ogr-legend">
-              <div class="ogr-legend-item"><div class="ogr-legend-dot" style="background:rgba(58,175,102,0.4);"></div><span id="q-ogr-legend">Fit zone (32–38%)</span></div>
-              <div class="ogr-legend-item"><div class="ogr-legend-dot" style="background:var(--red);"></div><span id="q-growth-legend">Actual (45%)</span></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Right column: quick stats -->
-        <div style="display:flex;flex-direction:column;gap:12px;">
-          <div class="metric-tile">
-            <div class="m-label">Actual Growth</div>
-            <div class="m-val red" id="q-growth-val">45%</div>
-            <div class="m-sub">LTM revenue growth</div>
-            <div class="m-delta down" id="q-growth-delta">↑ 7pp above OGR ceiling</div>
-          </div>
-          <div class="metric-tile">
-            <div class="m-label">OGR Range</div>
-            <div class="m-val" style="font-size:22px;color:var(--text);" id="q-ogr-tile">32–38%</div>
-            <div class="m-sub">CBGR-adjusted · Horizontal SaaS</div>
-          </div>
-          <div class="metric-tile">
-            <div class="m-label">GFS Trend</div>
-            <div class="m-val warn" style="font-size:22px;" id="q-gfs-trend-val">2.9 ↓</div>
-            <div class="m-sub" id="q-gfs-trend-sub">Was 3.2 last quarter</div>
-            <div class="quarter-row" style="margin-top:8px;" id="q-gfs-bars"></div>
-          </div>
-        </div>
+    <!-- GFS SCORE — primary metric -->
+    <div style="background:#ffffff;border:1px solid rgba(0,0,0,0.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.06);padding:16px;display:flex;flex-direction:column;align-items:center;position:relative;overflow:hidden;min-width:0;">
+      <div style="position:absolute;inset:0;background:radial-gradient(circle at 50% 110%, rgba(217,48,37,0.08) 0%, transparent 70%);pointer-events:none;"></div>
+      <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px;align-self:flex-start;">GFS Score</div>
+      <div id="q-gfs" style="font-family:var(--serif);font-size:64px;letter-spacing:-3px;line-height:1;color:var(--text);font-weight:400;">2.9</div>
+      <div style="font-size:11px;color:var(--text-dim);margin-top:2px;font-family:var(--mono);">/ 5.00</div>
+      <div style="margin-top:10px;padding:3px 10px;border-radius:4px;background:rgba(224,90,78,0.15);border:1px solid rgba(224,90,78,0.3);">
+        <div id="q-gfs-label" style="font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--red);">Fragile</div>
       </div>
+    </div>
 
-      <!-- Inference banner -->
-      <div class="card" style="background:rgba(224,90,78,0.06);border-color:var(--red-border);">
-        <div style="display:flex;align-items:flex-start;gap:14px;">
-          <div style="font-size:24px;">⚠️</div>
-          <div>
-            <div style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:6px;">System Inference</div>
-            <p style="font-size:13.5px;color:var(--text-muted);line-height:1.65;max-width:700px;"><span id="q-inference-text">Elevation Software is growing at <strong style="color:var(--red);">45%</strong>, but the system fitness score of <strong style="color:var(--red);">2.9</strong> means the system can only sustainably support <strong style="color:var(--text);">32–38%</strong> growth.</span> The gap is being bridged by burning efficiency and compressing retention — both of which will degrade further unless addressed in the next 1–2 quarters.</p>
-            <div style="margin-top:12px;font-size:13px;color:var(--text-dim);font-style:italic;">"Growth is not the problem. The way they are achieving it is."</div>
-          </div>
+    <!-- Actual Growth -->
+    <div style="background:#ffffff;border:1px solid rgba(0,0,0,0.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.06);padding:16px;position:relative;overflow:hidden;min-width:0;">
+      <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;">Actual Growth</div>
+      <div id="q-growth-val" style="font-size:36px;font-weight:700;color:var(--text);letter-spacing:-1px;line-height:1;">45%</div>
+      <div style="margin-top:6px;font-size:11px;font-weight:600;color:var(--red);" id="q-growth-delta">↑ 7pp above OGR ceiling</div>
+      <div style="position:absolute;bottom:14px;right:14px;font-size:9px;color:var(--text-dim);">LTM YoY</div>
+    </div>
+
+    <!-- OGR -->
+    <div style="background:#ffffff;border:1px solid rgba(0,0,0,0.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.06);padding:16px;position:relative;overflow:hidden;min-width:0;">
+      <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;">Optimal Growth Range</div>
+      <div id="q-ogr-tile" style="font-size:28px;font-weight:700;color:var(--text);letter-spacing:-0.5px;line-height:1;">32–38%</div>
+      <div style="margin-top:6px;font-size:11px;color:var(--text-dim);" id="q-ogr-label">CBGR-adjusted · Horizontal SaaS</div>
+      <div style="position:absolute;bottom:14px;right:14px;font-size:9px;color:var(--text-dim);">Target range</div>
+    </div>
+
+    <!-- NRR -->
+    <div style="background:#ffffff;border:1px solid rgba(0,0,0,0.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.06);padding:16px;position:relative;overflow:hidden;min-width:0;">
+      <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;">Net Revenue Retention</div>
+      <div id="q-nrr" style="font-size:36px;font-weight:700;color:var(--text);letter-spacing:-1px;line-height:1;">108%</div>
+      <div style="margin-top:6px;font-size:11px;font-weight:600;color:var(--red);" id="q-nrr-delta">↓ 7pp QoQ</div>
+      <div style="position:absolute;bottom:14px;right:14px;font-size:9px;color:var(--text-dim);" id="q-nrr-sub" style="font-size:10px;color:var(--text-dim);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">Was 115%</div>
+    </div>
+
+    <!-- GFS Trend -->
+    <div style="background:#ffffff;border:1px solid rgba(0,0,0,0.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.06);padding:14px;overflow:hidden;min-width:0;max-height:180px;">
+      <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:4px;">GFS TREND</div>
+      <div id="q-gfs-trend-val" style="font-size:26px;font-weight:700;color:var(--text);line-height:1.1;">2.9 ↓</div>
+      <div style="font-size:10px;color:var(--text-dim);margin-top:2px;margin-bottom:6px;" id="q-gfs-trend-sub">Was 3.2 · Q4 2025</div>
+      <canvas id="q-gfs-spark" width="180" height="50" style="width:180px;height:50px;max-width:100%;max-height:50px;display:block;"></canvas>
+    </div>
+
+  </div>
+
+  <!-- ═══ ROW 2: GFS DIAL + OGR BAR + CAC/SE ══════════════════════════════ -->
+  <div style="display:grid;grid-template-columns:220px 1fr 180px 180px;gap:12px;margin-bottom:14px;">
+
+    <!-- GFS DIAL -->
+    <div style="background:#ffffff;border:1px solid rgba(0,0,0,0.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.06);padding:14px 12px;display:flex;flex-direction:column;align-items:center;">
+      <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);align-self:flex-start;margin-bottom:6px;">Score Distribution</div>
+      <canvas id="speedo" width="196" height="130" style="width:196px;height:130px;"></canvas>
+    </div>
+
+    <!-- OGR BAR — full width -->
+    <div style="background:#ffffff;border:1px solid rgba(0,0,0,0.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.06);padding:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px;">
+        <div>
+          <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:3px;">Optimal Growth Range</div>
+          <div style="font-size:13px;font-weight:600;color:var(--text);">Position vs. CBGR-adjusted target</div>
         </div>
+        <div id="q-ogr-label2" style="font-size:16px;font-weight:700;color:var(--text);letter-spacing:-0.3px;">32% — 38%</div>
       </div>
+      <!-- Segmented bar -->
+      <div style="position:relative;height:28px;border-radius:6px;overflow:hidden;display:flex;margin-bottom:10px;">
+        <div id="q-ogr-under" style="width:53.3%;background:rgba(217,119,6,0.12);display:flex;align-items:center;padding-left:8px;">
+          <span style="font-size:9px;font-weight:600;letter-spacing:1px;color:rgba(224,123,0,0.8);text-transform:uppercase;">Under</span>
+        </div>
+        <div id="q-ogr-fit" style="width:10%;background:rgba(46,168,90,0.25);border-left:2px solid rgba(46,168,90,0.7);border-right:2px solid rgba(46,168,90,0.7);display:flex;align-items:center;justify-content:center;">
+          <span style="font-size:9px;font-weight:700;color:rgba(58,175,102,0.95);text-transform:uppercase;white-space:nowrap;">Fit</span>
+        </div>
+        <div id="q-ogr-over" style="flex:1;background:rgba(217,48,37,0.10);display:flex;align-items:center;justify-content:flex-end;padding-right:8px;">
+          <span style="font-size:9px;font-weight:600;letter-spacing:1px;color:rgba(224,90,78,0.8);text-transform:uppercase;">Over</span>
+        </div>
+        <div id="q-ogr-needle" style="position:absolute;top:0;bottom:0;left:75%;width:3px;background:var(--red);transform:translateX(-50%);box-shadow:0 0 8px rgba(224,90,78,0.8);"></div>
+      </div>
+      <!-- Scale -->
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-dim);font-family:var(--mono);margin-bottom:8px;">
+        <span>0%</span><span>15%</span><span>30%</span><span>45%</span><span>60%</span>
+      </div>
+      <div style="display:flex;gap:14px;font-size:10px;color:var(--text-dim);">
+        <span style="display:flex;align-items:center;gap:5px;"><span style="width:8px;height:8px;border-radius:2px;background:rgba(224,123,0,0.5);display:inline-block;"></span><span id="q-ogr-legend">Fit zone 32–38%</span></span>
+        <span style="display:flex;align-items:center;gap:5px;"><span style="width:8px;height:8px;border-radius:50%;background:var(--red);display:inline-block;box-shadow:0 0 4px var(--red);"></span><span id="q-growth-legend">Actual 45%</span></span>
+      </div>
+    </div>
 
-      <!-- KPI row -->
-      <div class="grid-3" style="margin-top:16px;">
-        <div class="metric-tile">
-          <div class="m-label">Net Revenue Retention</div>
-          <div class="m-val warn" id="q-nrr">108%</div>
-          <div class="m-sub" id="q-nrr-sub">Was 115% · Declining</div>
-          <div class="m-delta down" id="q-nrr-delta">↓ 7pp QoQ</div>
+    <!-- CAC Payback -->
+    <div style="background:#ffffff;border:1px solid rgba(0,0,0,0.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.06);padding:16px;">
+      <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;">CAC Payback</div>
+      <div id="q-cac" style="font-size:36px;font-weight:700;color:var(--text);letter-spacing:-1px;line-height:1;">22mo</div>
+      <div style="margin-top:6px;font-size:11px;font-weight:600;color:var(--red);" id="q-cac-delta">↑ 6 months QoQ</div>
+      <div style="font-size:10px;color:var(--text-dim);margin-top:2px;" id="q-cac-sub" style="font-size:10px;color:var(--text-dim);margin-top:2px;white-space:nowrap;">Was 16mo · Rising</div>
+      <canvas id="q-cac-spark" width="160" height="36" style="width:160px;height:36px;margin-top:10px;display:block;"></canvas>
+    </div>
+
+    <!-- Sales Efficiency -->
+    <div style="background:#ffffff;border:1px solid rgba(0,0,0,0.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.06);padding:16px;">
+      <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);margin-bottom:10px;">Sales Efficiency</div>
+      <div id="q-se" style="font-size:36px;font-weight:700;color:var(--text);letter-spacing:-1px;line-height:1;">0.70x</div>
+      <div style="margin-top:6px;font-size:11px;font-weight:600;color:var(--red);" id="q-se-delta">↓ 0.30x QoQ</div>
+      <div style="font-size:10px;color:var(--text-dim);margin-top:2px;">Magic Number · Below 1.0x</div>
+      <canvas id="q-se-spark" width="160" height="36" style="width:160px;height:36px;margin-top:10px;display:block;"></canvas>
+    </div>
+
+  </div>
+
+  <!-- ═══ ROW 3: SUBSYSTEM BARS + INFERENCE ════════════════════════════════ -->
+  <div style="display:grid;grid-template-columns:1fr 340px;gap:12px;">
+
+    <!-- NRR sparkline card (full width left) -->
+    <div style="background:#ffffff;border:1px solid rgba(0,0,0,0.08);border-radius:8px;box-shadow:0 1px 3px rgba(0,0,0,0.06);padding:16px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-dim);">NRR Trend — Last 4 Quarters</div>
+        <div style="font-size:11px;font-weight:600;color:var(--orange);">108% · Declining</div>
+      </div>
+      <!-- SVG sparkline — no canvas sizing issues -->
+      <svg id="q-nrr-spark" viewBox="0 0 400 80" preserveAspectRatio="none"
+           style="width:100%;height:80px;display:block;overflow:visible;"></svg>
+
+    </div>
+
+    <!-- INFERENCE PANEL -->
+    <div style="background:#fff5f4;border:1px solid rgba(217,48,37,0.2);border-radius:8px;padding:16px;display:flex;flex-direction:column;box-shadow:0 1px 3px rgba(0,0,0,0.06);">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:10px;border-bottom:1px solid rgba(224,90,78,0.15);">
+        <div style="width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0;"></div>
+        <div style="font-size:9px;letter-spacing:1.5px;text-transform:uppercase;color:var(--red);font-weight:700;">System Inference</div>
+      </div>
+      <div id="q-inference-text" style="font-size:12px;color:var(--text-muted);line-height:1.7;flex:1;">
+        Growing at <strong style="color:var(--red);">45%</strong> but GFS of <strong style="color:var(--red);">2.9</strong> can only sustain <strong style="color:var(--text);">32–38%</strong> — the gap is bridged by burning efficiency and compressing retention. Address within 1–2 quarters.
+      </div>
+      <div style="margin-top:12px;padding-top:10px;border-top:1px solid rgba(224,90,78,0.15);display:flex;flex-direction:column;gap:6px;">
+        <div style="display:flex;justify-content:space-between;font-size:10px;">
+          <span style="color:var(--text-dim);">Burn Multiple</span>
+          <span style="color:var(--red);font-weight:600;" id="q-burn">2.4x</span>
         </div>
-        <div class="metric-tile">
-          <div class="m-label">CAC Payback</div>
-          <div class="m-val warn" id="q-cac">22mo</div>
-          <div class="m-sub" id="q-cac-sub">Was 16mo · Rising</div>
-          <div class="m-delta down" id="q-cac-delta">↑ 6 months QoQ</div>
-        </div>
-        <div class="metric-tile">
-          <div class="m-label">Sales Efficiency</div>
-          <div class="m-val warn" id="q-se">0.7x</div>
-          <div class="m-sub">Magic Number · Below 1.0x</div>
-          <div class="m-delta down" id="q-se-delta">↓ 0.3x QoQ</div>
+        <div style="display:flex;justify-content:space-between;font-size:10px;">
+          <span style="color:var(--text-dim);">GFS vs Prior</span>
+          <span style="color:var(--red);font-weight:600;">2.9 vs 3.2 · ↓0.3</span>
         </div>
       </div>
     </div>
 
-    <!-- ────────────────────────────────────────────────── -->
-    <!-- SCREEN 2: CONSTRAINT DETECTION                    -->
-    <!-- ────────────────────────────────────────────────── -->
+  </div>
+
+</div>
+
+
     <div class="screen" id="s2">
       <div class="screen-header">
         <div class="screen-num">Screen 02 / Constraint Detection</div>
@@ -839,6 +915,9 @@ const QUARTER_DATA = {
     cac: 22,   cacPrev: 16,   cacDelta: +6,
     se:  0.7,  sePrev: 1.0,   seDelta: -0.3,
     burn: 2.4, burnDelta: '+60% above efficient range',
+    nrrTrend: [122, 118, 115, 108],
+    cacTrend: [14, 16, 18, 22],
+    seTrend: [1.2, 1.0, 0.85, 0.70],
     // Subsystem scores
     gqs: 3.4, gqsWidth: 68, gqsClass: 'ok',   gqsDesc: 'Inbound mix improving, deal quality stable. Pipeline is holding.',              gqsTrend: 'Stable',      gqsTrendCol: 'var(--green-light)',
     rs:  3.1, rsWidth:  62, rsClass:  'warn',  rsDesc:  'NRR declining 7pp QoQ. Expansion velocity has slowed materially.',              rsTrend:  'Declining ↓', rsTrendCol:  'var(--orange)',
@@ -886,6 +965,9 @@ const QUARTER_DATA = {
     salesCycleTrend: [{v:39,l:"Q4'24"},{v:40,l:"Q1'25"},{v:42,l:"Q2'25"},{v:48,l:"Q3'25"},{v:51,l:"Q4'25"}],
     winRateTrend:    [{v:37,l:"Q4'24"},{v:36,l:"Q1'25"},{v:34,l:"Q2'25"},{v:32,l:"Q3'25"},{v:31,l:"Q4'25"}],
     inference: 'Elevation Software is growing at <strong style="color:var(--orange);">42%</strong>, slightly above the optimal range of <strong style="color:var(--text);">33–40%</strong>. Efficiency is showing early deterioration — CAC payback has risen to 18 months and sales efficiency dropped to 0.85x. Action is needed before the system crosses into Fragile territory.',
+    nrrTrend: [118, 115, 110, 115],
+    cacTrend: [14, 15, 15, 18],
+    seTrend:  [1.2, 1.0, 0.9, 1.0],
   },
 
   'Q3 2025': {
@@ -915,6 +997,9 @@ const QUARTER_DATA = {
     salesCycleTrend: [{v:39,l:"Q4'24"},{v:40,l:"Q1'25"},{v:42,l:"Q2'25"},{v:44,l:"Q3'25"}],
     winRateTrend:    [{v:37,l:"Q4'24"},{v:36,l:"Q1'25"},{v:34,l:"Q2'25"},{v:34,l:"Q3'25"}],
     inference: 'Elevation Software is growing at <strong style="color:var(--green-light);">38%</strong>, within the optimal range of <strong style="color:var(--text);">34–42%</strong>. System fitness is solid at <strong style="color:var(--orange);">3.2</strong>. However, efficiency is starting to soften — CAC payback and burn multiple are creeping upward. Early action to tighten ICP and improve expansion motions will prevent deterioration.',
+    nrrTrend: [128, 122, 118, 118],
+    cacTrend: [12, 13, 14, 16],
+    seTrend:  [1.3, 1.2, 1.1, 1.1],
   },
 };
 
@@ -965,6 +1050,179 @@ function renderRawBars(containerId, data, maxVal, lowerIsBetter) {
   }).join('');
 }
 
+function drawNRRChart(svgId, values) {
+  var svg = document.getElementById(svgId);
+  if (!svg || !values || values.length < 2) return;
+
+  // Clear
+  while (svg.firstChild) svg.removeChild(svg.firstChild);
+
+  var W = 400, H = 80;
+  var labelH = 18, padX = 10, padTop = 6;
+  var chartH = H - labelH - padTop;
+
+  var mn = Math.min.apply(null, values);
+  var mx = Math.max.apply(null, values);
+  var rng = mx - mn || 1;
+
+  var pts = values.map(function(v, i) {
+    return {
+      x: padX + (i / (values.length - 1)) * (W - padX * 2),
+      y: padTop + chartH - ((v - mn) / rng) * chartH
+    };
+  });
+
+  // Declining NRR → red; improving → green
+  var col = values[values.length-1] < values[0] ? '#d93025' : '#2ea85a';
+
+  // Gradient fill
+  var ns = 'http://www.w3.org/2000/svg';
+  var defs = document.createElementNS(ns, 'defs');
+  var grad = document.createElementNS(ns, 'linearGradient');
+  grad.setAttribute('id', svgId + '-g');
+  grad.setAttribute('x1','0'); grad.setAttribute('y1','0');
+  grad.setAttribute('x2','0'); grad.setAttribute('y2','1');
+  var s1 = document.createElementNS(ns, 'stop');
+  s1.setAttribute('offset','0%'); s1.setAttribute('stop-color', col); s1.setAttribute('stop-opacity','0.20');
+  var s2 = document.createElementNS(ns, 'stop');
+  s2.setAttribute('offset','100%'); s2.setAttribute('stop-color', col); s2.setAttribute('stop-opacity','0.01');
+  grad.appendChild(s1); grad.appendChild(s2); defs.appendChild(grad); svg.appendChild(defs);
+
+  // Area polygon
+  var areaPoints = (padX + ',' + (padTop + chartH));
+  pts.forEach(function(p) { areaPoints += ' ' + p.x.toFixed(1) + ',' + p.y.toFixed(1); });
+  areaPoints += ' ' + pts[pts.length-1].x.toFixed(1) + ',' + (padTop + chartH);
+  var area = document.createElementNS(ns, 'polygon');
+  area.setAttribute('points', areaPoints);
+  area.setAttribute('fill', 'url(#' + svgId + '-g)');
+  svg.appendChild(area);
+
+  // Line
+  var d = pts.map(function(p, i) { return (i===0?'M':'L') + p.x.toFixed(1) + ' ' + p.y.toFixed(1); }).join(' ');
+  var line = document.createElementNS(ns, 'path');
+  line.setAttribute('d', d);
+  line.setAttribute('stroke', col);
+  line.setAttribute('stroke-width', '2');
+  line.setAttribute('fill', 'none');
+  line.setAttribute('stroke-linejoin', 'round');
+  line.setAttribute('stroke-linecap', 'round');
+  svg.appendChild(line);
+
+  // Endpoint dot
+  var lp = pts[pts.length-1];
+  var dot = document.createElementNS(ns, 'circle');
+  dot.setAttribute('cx', lp.x.toFixed(1)); dot.setAttribute('cy', lp.y.toFixed(1));
+  dot.setAttribute('r', '4'); dot.setAttribute('fill', col);
+  svg.appendChild(dot);
+  var dotInner = document.createElementNS(ns, 'circle');
+  dotInner.setAttribute('cx', lp.x.toFixed(1)); dotInner.setAttribute('cy', lp.y.toFixed(1));
+  dotInner.setAttribute('r', '2'); dotInner.setAttribute('fill', '#fff');
+  svg.appendChild(dotInner);
+
+  // Quarter labels
+  var qlabels = ["Q2 '25", "Q3 '25", "Q4 '25", "Q1 '26"].slice(-values.length);
+  var labelY = H - 3;
+  pts.forEach(function(p, i) {
+    if (!qlabels[i]) return;
+    var t = document.createElementNS(ns, 'text');
+    t.setAttribute('x', p.x.toFixed(1));
+    t.setAttribute('y', labelY);
+    t.setAttribute('text-anchor', 'middle');
+    t.setAttribute('font-size', '9');
+    t.setAttribute('font-family', 'Open Sans, sans-serif');
+    t.setAttribute('font-weight', '600');
+    t.setAttribute('fill', '#9ca3af');
+    t.textContent = qlabels[i];
+    svg.appendChild(t);
+  });
+
+  // Value labels at each point
+  values.forEach(function(v, i) {
+    var t = document.createElementNS(ns, 'text');
+    t.setAttribute('x', pts[i].x.toFixed(1));
+    t.setAttribute('y', (pts[i].y - 6).toFixed(1));
+    t.setAttribute('text-anchor', 'middle');
+    t.setAttribute('font-size', '10');
+    t.setAttribute('font-family', 'Open Sans, sans-serif');
+    t.setAttribute('font-weight', '700');
+    t.setAttribute('fill', col);
+    t.textContent = v + '%';
+    svg.appendChild(t);
+  });
+}
+
+function drawSparkline(canvasId, values, colorUp, colorDown, invert) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas || !values || values.length < 2) return;
+  const ctx = canvas.getContext('2d');
+  const dpr = window.devicePixelRatio || 1;
+  const cssW = parseInt(canvas.getAttribute('width'))  || 200;
+  const cssH = parseInt(canvas.getAttribute('height')) || 60;
+  canvas.width  = Math.round(cssW * dpr);
+  canvas.height = Math.round(cssH * dpr);
+  canvas.style.width  = cssW + 'px';
+  canvas.style.height = cssH + 'px';
+  canvas.style.maxWidth = '100%';    // never overflow parent card
+  canvas.style.maxHeight = cssH + 'px';  // never grow taller than attribute
+  ctx.scale(dpr, dpr);
+  const W = cssW, H = cssH;
+  ctx.clearRect(0, 0, W, H);
+
+  const last  = values[values.length - 1];
+  const first = values[0];
+  const up    = invert ? last < first : last > first;
+  const col   = up ? (colorUp || '#2ea85a') : (colorDown || '#d93025');
+
+  const labelH = 16, padX = 8, padTop = 4;
+  const chartH = H - labelH - padTop;
+  const mn = Math.min.apply(null, values);
+  const mx = Math.max.apply(null, values);
+  const rng = mx - mn || 1;
+
+  const pts = values.map(function(v, i) {
+    return {
+      x: padX + (i / (values.length - 1)) * (W - padX * 2),
+      y: padTop + chartH - ((v - mn) / rng) * chartH
+    };
+  });
+
+  // Gradient fill
+  var grad = ctx.createLinearGradient(0, padTop, 0, padTop + chartH);
+  grad.addColorStop(0, col + '30');
+  grad.addColorStop(1, col + '00');
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, padTop + chartH);
+  pts.forEach(function(p) { ctx.lineTo(p.x, p.y); });
+  ctx.lineTo(pts[pts.length-1].x, padTop + chartH);
+  ctx.closePath();
+  ctx.fillStyle = grad;
+  ctx.fill();
+
+  // Line
+  ctx.beginPath();
+  pts.forEach(function(p, i) { i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y); });
+  ctx.strokeStyle = col;
+  ctx.lineWidth = 2;
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+  ctx.stroke();
+
+  // Dot at last point
+  var lp = pts[pts.length - 1];
+  ctx.beginPath(); ctx.arc(lp.x, lp.y, 3.5, 0, 6.283); ctx.fillStyle = col; ctx.fill();
+  ctx.beginPath(); ctx.arc(lp.x, lp.y, 1.5, 0, 6.283); ctx.fillStyle = '#fff'; ctx.fill();
+
+  // Quarter labels
+  var qlabels = ["Q2 '25", "Q3 '25", "Q4 '25", "Q1 '26"].slice(-values.length);
+  ctx.fillStyle = '#9ca3af';
+  ctx.font = '600 9px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'bottom';
+  pts.forEach(function(p, i) {
+    if (qlabels[i]) ctx.fillText(qlabels[i], p.x, H - 1);
+  });
+}
+
 function renderQuarter(qKey) {
   const q = QUARTER_DATA[qKey];
   if (!q) return;
@@ -976,47 +1234,83 @@ function renderQuarter(qKey) {
 
   // ── Screen 1: System State ──
   set('q-gfs', q.gfs.toFixed(1));
-  set('q-gfs-label', `/ 5.00 · ${q.gfsInterpretation}`);
-  const speedoZoneText = q.zone === 'over' ? 'OVER ZONE — System under strain' : q.zone === 'fit' ? 'FIT ZONE — Growing sustainably' : 'UNDER ZONE — Below optimal pace';
-  set('q-speedo-zone', speedoZoneText);
-  const speedoEl = document.getElementById('q-speedo-zone');
-  if (speedoEl) { speedoEl.className = 'speedo-zone ' + (q.zone === 'fit' ? 'fit' : q.zone === 'under' ? 'under' : ''); }
+  set('q-gfs-label', q.gfsInterpretation);
+  // Badge colour by zone
+  const badgeEl = document.getElementById('q-gfs-badge');
+  if (badgeEl) {
+    const bc = q.zone === 'fit' ? {bg:'rgba(46,168,90,0.08)',border:'rgba(46,168,90,0.25)',color:'var(--green)'}
+      : q.zone === 'under' ? {bg:'rgba(217,119,6,0.08)',border:'rgba(217,119,6,0.25)',color:'var(--orange)'}
+      : {bg:'rgba(217,48,37,0.08)',border:'rgba(217,48,37,0.25)',color:'var(--red)'};
+    badgeEl.style.background = bc.bg; badgeEl.style.borderColor = bc.border;
+    const labelEl2 = document.getElementById('q-gfs-label');
+    if (labelEl2) labelEl2.style.color = bc.color;
+  }
+  const zc = q.zone === 'fit' ? {bg:'rgba(58,175,102,0.1)',border:'rgba(58,175,102,0.3)',color:'var(--green-light)',dot:'#3aaf66',text:'FIT ZONE — Growing sustainably'}
+    : q.zone === 'under' ? {bg:'rgba(224,123,0,0.1)',border:'rgba(224,123,0,0.3)',color:'var(--orange)',dot:'#e07b00',text:'UNDER ZONE — Below optimal pace'}
+    : {bg:'rgba(224,90,78,0.1)',border:'rgba(224,90,78,0.3)',color:'var(--red)',dot:'#e05a4e',text:'OVER ZONE — System under strain'};
+  const bannerEl = document.getElementById('q-zone-banner');
+  if (bannerEl) { bannerEl.style.background = zc.bg; bannerEl.style.borderColor = zc.border; }
+  const labelEl = document.getElementById('q-zone-label');
+  if (labelEl) { labelEl.textContent = zc.text; labelEl.style.color = zc.color; }
+  const dotEl = bannerEl ? bannerEl.querySelector('div[style*="border-radius:50%"]') : null;
+  if (dotEl) { dotEl.style.background = zc.dot; dotEl.style.boxShadow = '0 0 6px ' + zc.dot; }
+  // GFS number colour by zone
+  // GFS number stays neutral — zone banner carries the status colour
+  const gfsEl = document.getElementById('q-gfs');
+  if (gfsEl) gfsEl.style.color = 'var(--text)';
 
   set('q-ogr-label', `${q.ogrLow}% — ${q.ogrHigh}%`);
   set('q-ogr-legend', `Fit zone (${q.ogrLow}–${q.ogrHigh}%)`);
   set('q-growth-legend', `Actual (${q.growth}%)`);
 
-  // OGR bar needle + fit zone
-  const ogrFit = document.querySelector('.ogr-fit-range');
-  const ogrNeedle = document.querySelector('.ogr-needle');
-  if (ogrFit) { ogrFit.style.left = q.ogrFitLeft; ogrFit.style.width = q.ogrFitWidth; }
-  if (ogrNeedle) { ogrNeedle.style.left = q.ogrNeedle; ogrNeedle.style.background = q.zone === 'fit' ? 'var(--green-light)' : 'var(--red)'; }
+  // OGR bar — flex segmented design (% of 60% scale)
+  const maxG = 60;
+  const underPct   = (q.ogrLow  / maxG * 100).toFixed(1) + '%';
+  const fitPct     = ((q.ogrHigh - q.ogrLow) / maxG * 100).toFixed(1) + '%';
+  const needlePct2 = (Math.min(q.growth, maxG) / maxG * 100).toFixed(1) + '%';
+  const nc = q.zone === 'fit' ? 'var(--green-light)' : q.zone === 'under' ? 'var(--orange)' : 'var(--red)';
+  const eu = document.getElementById('q-ogr-under');
+  const ef = document.getElementById('q-ogr-fit');
+  const en = document.getElementById('q-ogr-needle');
+  if (eu) eu.style.width = underPct;
+  if (ef) ef.style.width = fitPct;
+  if (en) { en.style.left = needlePct2; en.style.background = nc; en.style.boxShadow = '0 0 8px ' + nc; }
+  set('q-ogr-legend', 'Fit zone ' + q.ogrLow + '–' + q.ogrHigh + '%');
+  set('q-growth-legend', 'Actual ' + q.growth + '%');
+  set('q-burn', q.burn + 'x · ' + q.burnDelta);
 
-  const growthCol = q.zone === 'fit' ? 'var(--green-light)' : q.zone === 'over' ? 'var(--red)' : 'var(--orange)';
-  set('q-growth-val', `<span style="color:${growthCol}">${q.growth}%</span>`);
+  // Growth value — neutral; delta carries the status colour
+  set('q-growth-val', `<span style="color:var(--text);font-size:36px;font-weight:700;letter-spacing:-1px;">${q.growth}%</span>`);
   const growthAbove = q.growth - q.ogrHigh;
   const growthBelow = q.ogrLow - q.growth;
-  set('q-growth-delta', q.zone === 'over' ? `↑ ${growthAbove}pp above OGR ceiling` : q.zone === 'fit' ? '✓ Within optimal range' : `↓ ${growthBelow}pp below OGR floor`);
+  const deltaCol = q.zone === 'fit' ? 'var(--green)' : q.zone === 'over' ? 'var(--red)' : 'var(--orange)';
+  const deltaText = q.zone === 'over' ? `↑ ${growthAbove}pp above ceiling` : q.zone === 'fit' ? '✓ In optimal range' : `↓ ${growthBelow}pp below floor`;
+  set('q-growth-delta', `<span style="color:${deltaCol};font-size:11px;font-weight:600;white-space:nowrap;">${deltaText}</span>`);
   set('q-ogr-tile', `${q.ogrLow}–${q.ogrHigh}%`);
   const prevGfs = q.gfsTrendData.length >= 2 ? q.gfsTrendData[q.gfsTrendData.length-2].v : '-';
   const gfsDirArr = q.gfs < prevGfs ? '↓' : q.gfs > prevGfs ? '↑' : '→';
-  const gfsDirCol = q.gfs < prevGfs ? 'var(--red)' : q.gfs > prevGfs ? 'var(--green-light)' : 'var(--orange)';
-  set('q-gfs-trend-val', `<span style="color:${gfsDirCol}">${q.gfs.toFixed(1)} ${gfsDirArr}</span>`);
-  set('q-gfs-trend-sub', `Was ${prevGfs} last quarter`);
-  renderGFSBars('q-gfs-bars', q.gfsTrendData);
+  const gfsDirCol = q.gfs < prevGfs ? 'var(--red)' : q.gfs > prevGfs ? 'var(--green)' : 'var(--orange)';
+  set('q-gfs-trend-val', `<span style="color:var(--text);font-size:28px;font-weight:700;">${q.gfs.toFixed(1)} <span style="color:${gfsDirCol};font-size:24px;">${gfsDirArr}</span></span>`);
+  set('q-gfs-trend-sub', `Was ${prevGfs} · ${q.label || ''}`);
+  drawSparkline('q-gfs-spark', q.gfsTrendData.map(d=>d.v), '#3aaf66', '#e05a4e', false);
 
   // NRR / CAC / SE tiles
-  const nrrCol = q.nrr >= 120 ? 'var(--green-light)' : q.nrr >= 110 ? 'var(--orange)' : 'var(--red)';
-  set('q-nrr', `<span style="color:${nrrCol}">${q.nrr}%</span>`);
+  const nrrDeltaCol = q.nrrDelta < 0 ? 'var(--red)' : 'var(--green)';
+  set('q-nrr', `<span style="color:var(--text);font-size:36px;font-weight:700;letter-spacing:-1px;">${q.nrr}%</span>`);
   set('q-nrr-sub', `Was ${q.nrrPrev}% · ${q.nrrDelta < 0 ? 'Declining' : 'Improving'}`);
-  set('q-nrr-delta', `${q.nrrDelta < 0 ? '↓' : '↑'} ${Math.abs(q.nrrDelta)}pp QoQ`);
-  const cacCol = q.cac <= 14 ? 'var(--green-light)' : q.cac <= 20 ? 'var(--orange)' : 'var(--red)';
-  set('q-cac', `<span style="color:${cacCol}">${q.cac}mo</span>`);
+  set('q-nrr-delta', `<span style="color:${nrrDeltaCol};font-size:11px;font-weight:600;white-space:nowrap;">${q.nrrDelta < 0 ? '↓' : '↑'} ${Math.abs(q.nrrDelta)}pp QoQ</span>`);
+  const cacDeltaCol = q.cacDelta > 0 ? 'var(--red)' : 'var(--green)';
+  set('q-cac', `<span style="color:var(--text);font-size:36px;font-weight:700;letter-spacing:-1px;">${q.cac}mo</span>`);
   set('q-cac-sub', `Was ${q.cacPrev}mo · ${q.cacDelta > 0 ? 'Rising' : 'Improving'}`);
-  set('q-cac-delta', `${q.cacDelta > 0 ? '↑' : '↓'} ${Math.abs(q.cacDelta)} months QoQ`);
-  const seCol = q.se >= 1.0 ? 'var(--green-light)' : q.se >= 0.8 ? 'var(--orange)' : 'var(--red)';
-  set('q-se', `<span style="color:${seCol}">${q.se.toFixed(2)}x</span>`);
-  set('q-se-delta', `${q.seDelta < 0 ? '↓' : '↑'} ${Math.abs(q.seDelta).toFixed(2)}x QoQ`);
+  set('q-cac-delta', `<span style="color:${cacDeltaCol};font-size:11px;font-weight:600;white-space:nowrap;">${q.cacDelta > 0 ? '↑' : '↓'} ${Math.abs(q.cacDelta)}mo QoQ</span>`);
+  const seDeltaCol = q.seDelta < 0 ? 'var(--red)' : 'var(--green)';
+  set('q-se', `<span style="color:var(--text);font-size:36px;font-weight:700;letter-spacing:-1px;">${q.se.toFixed(2)}x</span>`);
+  set('q-se-delta', `<span style="color:${seDeltaCol};font-size:11px;font-weight:600;white-space:nowrap;">${q.seDelta < 0 ? '↓' : '↑'} ${Math.abs(q.seDelta).toFixed(2)}x QoQ</span>`);
+
+  // Canvas sparklines — NRR / CAC / SE
+  if (q.nrrTrend) drawNRRChart('q-nrr-spark', q.nrrTrend);
+  if (q.cacTrend) drawSparkline('q-cac-spark', q.cacTrend, '#e05a4e', '#3aaf66', true);
+  if (q.seTrend)  drawSparkline('q-se-spark',  q.seTrend,  '#3aaf66', '#e05a4e', false);
 
   // Inference
   set('q-inference-text', q.inference);
@@ -1074,9 +1368,16 @@ function showScreen(id, el) {
   document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   el.classList.add('active');
+  // Redraw all canvases after screen switch
+  const qKey = (document.getElementById('quarter-select') || {}).value || 'Q1 2026';
+  const q = QUARTER_DATA[qKey];
+  if (!q) return;
   if (id === 's1') {
-    const q = QUARTER_DATA[document.getElementById('quarter-select').value] || QUARTER_DATA['Q1 2026'];
     drawSpeedometer(q.needlePct, q.zone);
+    drawSparkline('q-gfs-spark', q.gfsTrendData.map(d=>d.v), '#3aaf66', '#e05a4e', false);
+    if (q.nrrTrend) drawNRRChart('q-nrr-spark', q.nrrTrend);
+    if (q.cacTrend) drawSparkline('q-cac-spark', q.cacTrend, '#e05a4e', '#3aaf66', true);
+    if (q.seTrend)  drawSparkline('q-se-spark',  q.seTrend,  '#3aaf66', '#e05a4e', false);
   }
 }
 
@@ -1087,49 +1388,76 @@ function drawSpeedometer(needlePct, zone) {
   const canvas = document.getElementById('speedo');
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
-  const cx = W / 2, cy = H - 20, r = H - 30;
+
+  // HiDPI fix — use HTML attributes directly
+  const dpr = window.devicePixelRatio || 1;
+  const cssW = parseInt(canvas.getAttribute('width'))  || 196;
+  const cssH = parseInt(canvas.getAttribute('height')) || 130;
+  canvas.width  = Math.round(cssW * dpr);
+  canvas.height = Math.round(cssH * dpr);
+  canvas.style.width  = cssW + 'px';
+  canvas.style.height = cssH + 'px';
+  ctx.scale(dpr, dpr);
+  const W = cssW, H = cssH;
+
+  const cx = W / 2;
+  const cy = H - 10;
+  const r  = Math.min(cx - 8, cy - 8);
+  const trackW = 20;
+  const start = Math.PI, range = Math.PI;
 
   ctx.clearRect(0, 0, W, H);
 
-  // Track segments: Under / Fit / Over
-  const start = Math.PI;
-  const end = 2 * Math.PI;
-  const range = end - start;
+  // ── 3 zone arcs ──────────────────────────────────────────────────────────
+  const fitS = 0.48, fitE = 0.62;
 
-  // Under zone (0–32%)
+  // UNDER — orange
   ctx.beginPath();
-  ctx.arc(cx, cy, r, start, start + range * 0.53);
-  ctx.strokeStyle = 'rgba(224,123,0,0.35)';
-  ctx.lineWidth = 16; ctx.lineCap = 'butt'; ctx.stroke();
+  ctx.arc(cx, cy, r, start, start + range * fitS);
+  ctx.strokeStyle = '#e07b00'; ctx.lineWidth = trackW; ctx.lineCap = 'butt'; ctx.stroke();
 
-  // Fit zone (32–38%)
+  // FIT — green (slightly thicker)
   ctx.beginPath();
-  ctx.arc(cx, cy, r, start + range * 0.53, start + range * 0.63);
-  ctx.strokeStyle = 'rgba(58,175,102,0.5)';
-  ctx.lineWidth = 16; ctx.stroke();
+  ctx.arc(cx, cy, r, start + range * fitS, start + range * fitE);
+  ctx.strokeStyle = '#2ea85a'; ctx.lineWidth = trackW + 4; ctx.stroke();
 
-  // Over zone (38–60%)
+  // OVER — red
   ctx.beginPath();
-  ctx.arc(cx, cy, r, start + range * 0.63, end);
-  ctx.strokeStyle = 'rgba(224,90,78,0.35)';
-  ctx.lineWidth = 16; ctx.stroke();
+  ctx.arc(cx, cy, r, start + range * fitE, start + range);
+  ctx.strokeStyle = '#d93025'; ctx.lineWidth = trackW; ctx.stroke();
 
-  // Track outline
-  ctx.beginPath();
-  ctx.arc(cx, cy, r, start, end);
-  ctx.strokeStyle = 'rgba(255,255,255,0.04)';
-  ctx.lineWidth = 18; ctx.stroke();
+  // ── Zone labels inside the arc ────────────────────────────────────────────
+  ctx.font = 'bold 9px "Open Sans", sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#ffffff';
 
-  // Needle position passed in from quarter data
+  // UNDER — midpoint of under zone (0 to fitS = 24% in)
+  const uA = start + range * 0.24;
+  ctx.fillText('UNDER', cx + Math.cos(uA) * r, cy + Math.sin(uA) * r);
+
+  // FIT — midpoint of fit zone
+  const fA = start + range * 0.55;
+  ctx.fillText('FIT', cx + Math.cos(fA) * r, cy + Math.sin(fA) * r);
+
+  // OVER — midpoint of over zone (fitE to 1.0 = 81%)
+  const oA = start + range * 0.81;
+  ctx.fillText('OVER', cx + Math.cos(oA) * r, cy + Math.sin(oA) * r);
+
+  ctx.textBaseline = 'alphabetic';
+
+  // ── Needle ────────────────────────────────────────────────────────────────
+  const needleColor = zone === 'under' ? '#e07b00' : zone === 'fit' ? '#2ea85a' : '#d93025';
   const needleAngle = start + range * needlePct;
+  const needleLen = r - trackW / 2 - 4;
+
   ctx.save();
   ctx.translate(cx, cy);
   ctx.rotate(needleAngle);
   ctx.beginPath();
-  ctx.moveTo(0, 0);
-  ctx.lineTo(r - 8, 0);
-  ctx.strokeStyle = zone === 'fit' ? '#3aaf66' : '#e05a4e';
+  ctx.moveTo(-6, 0);
+  ctx.lineTo(needleLen, 0);
+  ctx.strokeStyle = needleColor;
   ctx.lineWidth = 2.5;
   ctx.lineCap = 'round';
   ctx.stroke();
@@ -1137,125 +1465,28 @@ function drawSpeedometer(needlePct, zone) {
 
   // Hub
   ctx.beginPath();
-  ctx.arc(cx, cy, 6, 0, Math.PI * 2);
-  ctx.fillStyle = zone === 'fit' ? '#3aaf66' : '#e05a4e';
-  ctx.fill();
-
-  // Labels drawn last so they appear above the arc
-  ctx.fillStyle = 'rgba(200,220,200,0.85)';
-  ctx.font = 'bold 10px Open Sans, sans-serif';
-  ctx.textAlign = 'left';  ctx.fillText('UNDER', 8, cy - r * 0.28 + 8);
-  ctx.textAlign = 'right'; ctx.fillText('OVER', W - 8, cy - r * 0.28 + 8);
-  // FIT label — drawn in green, centered above the arc
-  ctx.fillStyle = 'rgba(58,175,102,0.9)';
-  ctx.textAlign = 'center';
-  ctx.fillText('FIT', cx, cy - r - 6);
+  ctx.arc(cx, cy, 7, 0, Math.PI * 2);
+  ctx.fillStyle = needleColor; ctx.fill();
+  ctx.beginPath();
+  ctx.arc(cx, cy, 3, 0, Math.PI * 2);
+  ctx.fillStyle = '#ffffff'; ctx.fill();
 }
 
-window.addEventListener('load', function() { renderQuarter('Q1 2026'); });
 
-// ── SIMULATION ──────────────────────────────────────────
-const BASE = { wr:26, sc:62, nrr:108, ib:35, gr:45 };
-
-function runSim() {
-  const wr = +document.getElementById('sl-wr').value;
-  const sc = +document.getElementById('sl-sc').value;
-  const nrr = +document.getElementById('sl-nrr').value;
-  const ib = +document.getElementById('sl-ib').value;
-  const gr = +document.getElementById('sl-gr').value;
-
-  document.getElementById('sv-wr').textContent = wr + '%';
-  document.getElementById('sv-sc').textContent = sc + 'd';
-  document.getElementById('sv-nrr').textContent = nrr + '%';
-  document.getElementById('sv-ib').textContent = ib + '%';
-  document.getElementById('sv-gr').textContent = gr + '%';
-
-  // Update slider fill
-  ['wr','sc','nrr','ib','gr'].forEach(k => {
-    const sl = document.getElementById('sl-'+k);
-    const pct = (sl.value - sl.min) / (sl.max - sl.min) * 100;
-    sl.style.setProperty('--pct', pct + '%');
-  });
-
-  // Simple proxy model
-  const wrImpact   = (wr - 26) / 24 * 0.5;
-  const scImpact   = (62 - sc) / 32 * 0.4;
-  const nrrImpact  = (nrr - 108) / 32 * 0.4;
-  const ibImpact   = (ib - 35) / 35 * 0.2;
-  const grImpact   = (45 - gr) / 20 * 0.15;
-
-  const newGFS = Math.min(5, Math.max(1.5, 2.9 + wrImpact + scImpact + nrrImpact + ibImpact + grImpact));
-
-  // CAC proxy
-  const newCAC = Math.max(10, Math.round(22 * (BASE.wr / wr) * (sc / BASE.sc)));
-  // SE proxy
-  const newSE = Math.min(2.5, Math.max(0.3, (0.7 * (wr / BASE.wr) * (BASE.sc / sc)))).toFixed(1);
-  // OGR
-  const ogrLow = Math.round(32 * 1); const ogrHigh = Math.round(ogrLow + (newGFS - 2.5) * 4);
-
-  // Zone
-  let zone, zoneClass;
-  if (gr < ogrLow) { zone = 'UNDER'; zoneClass = 'under'; }
-  else if (gr <= ogrHigh) { zone = 'FIT'; zoneClass = 'fit'; }
-  else { zone = 'OVER'; zoneClass = 'over'; }
-
-  document.getElementById('sim-gfs').textContent = `GFS 2.9 → ${newGFS.toFixed(2)}`;
-
-  let detail = '';
-  if (newGFS >= 3.5) detail = 'System is recovering. Growth can be sustained at current rate.';
-  else if (newGFS >= 3.0) detail = 'System approaching sustainable range. Continue lever execution.';
-  else if (newGFS > 2.9) detail = 'Marginal improvement. Levers need more aggressive application.';
-  else detail = 'Adjust the levers to see how the system responds.';
-  document.getElementById('sim-detail').textContent = detail;
-
-  const zoneEl = document.getElementById('sim-zone-after');
-  zoneEl.textContent = zone;
-  zoneEl.className = 'sim-zone ' + zoneClass;
-
-  document.getElementById('sim-cac').textContent = newCAC + 'mo';
-  document.getElementById('sim-se').textContent = newSE + 'x';
-  document.getElementById('sim-ogr').textContent = ogrLow + '–' + ogrHigh + '%';
-}
-
-function resetSim() {
-  document.getElementById('sl-wr').value = 26;
-  document.getElementById('sl-sc').value = 62;
-  document.getElementById('sl-nrr').value = 108;
-  document.getElementById('sl-ib').value = 35;
-  document.getElementById('sl-gr').value = 45;
-  runSim();
-}
-
-function applyTarget() {
-  setPreset('full');
-}
-
-function setPreset(type) {
-  if (type === 'minimal') {
-    document.getElementById('sl-wr').value = 33;
-    document.getElementById('sl-sc').value = 48;
-    document.getElementById('sl-nrr').value = 110;
-    document.getElementById('sl-ib').value = 38;
-    document.getElementById('sl-gr').value = 45;
-  } else if (type === 'full') {
-    document.getElementById('sl-wr').value = 38;
-    document.getElementById('sl-sc').value = 40;
-    document.getElementById('sl-nrr').value = 118;
-    document.getElementById('sl-ib').value = 50;
-    document.getElementById('sl-gr').value = 38;
-  } else if (type === 'conservative') {
-    document.getElementById('sl-wr').value = 30;
-    document.getElementById('sl-sc').value = 55;
-    document.getElementById('sl-nrr').value = 112;
-    document.getElementById('sl-ib').value = 40;
-    document.getElementById('sl-gr').value = 32;
+// ── INIT ─────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  const sel = document.getElementById('quarter-select');
+  if (sel) {
+    sel.addEventListener('change', function() {
+      renderQuarter(this.value);
+    });
   }
-  runSim();
-}
 
-
-// Init
-runSim();
+  // Simple timeout — canvas drawing no longer depends on layout dimensions
+  setTimeout(function() {
+    renderQuarter('Q1 2026');
+  }, 0);
+});
 </script>
 </body>
 </html>
