@@ -4,33 +4,52 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Growth Fitness Score — GrowFitt</title>
-<link rel="icon" type="image/png" href="/GrowFittFavIcon_Small.png">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <style>
   *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
-  :root{
-    --green:#2e6b35;--green-mid:#3a8a44;--green-light:#e8f4e9;
-    --bg:#f7f8f6;--surface:#ffffff;--surface2:#f2f4f1;
-    --border:rgba(0,0,0,0.1);--border-strong:rgba(0,0,0,0.18);
-    --text:#1a1a18;--text-muted:#5a5c57;--text-hint:#8a8c87;
-    --danger:#c0392b;--danger-bg:#fdf0ef;
-    --warning:#b35c00;--warning-bg:#fef6ec;
-    --info:#185fa5;--info-bg:#e6f1fb;
-    --outlier:#7b3fbf;--outlier-bg:#f3eefe;
-    --laggard:#b35c00;--laggard-bg:#fef6ec;
-    --radius:12px;--radius-sm:8px;--radius-pill:24px;
+
+  /* ── BRAND COLOURS from GrowFitt logo ── */
+  :root {
+    --green:#2e6b35;         /* dark green from logo text */
+    --green-mid:#3a8a44;
+    --green-light:#e8f4e9;
+    --green-accent:#5aac5e;  /* bright green from logo gauge needle */
+    --grey:#4a5568;          /* grey from logo "Grow" text */
+    --bg:#f7f8f6; --surface:#ffffff; --surface2:#f2f4f1;
+    --border:rgba(0,0,0,0.1); --border-strong:rgba(0,0,0,0.18);
+    --text:#1a1a18; --text-muted:#5a5c57; --text-hint:#8a8c87;
+    --danger:#c0392b; --danger-bg:#fdf0ef;
+    --warning:#b35c00; --warning-bg:#fef6ec;
+    --info:#185fa5; --info-bg:#e6f1fb;
+    --outlier:#7b3fbf; --outlier-bg:#f3eefe;
+    --laggard:#b35c00; --laggard-bg:#fef6ec;
+    --radius:12px; --radius-sm:8px; --radius-pill:24px;
   }
   @media(prefers-color-scheme:dark){
-    :root{--bg:#141614;--surface:#1e211e;--surface2:#262926;--border:rgba(255,255,255,0.09);--border-strong:rgba(255,255,255,0.16);--text:#e8ebe5;--text-muted:#9aa097;--text-hint:#6a6e68;--danger-bg:#2a1614;--warning-bg:#261c0e;--info-bg:#0c2340;--green-light:#0e2217;--outlier-bg:#1e1030;--laggard-bg:#261c0e;}
+    :root{
+      --bg:#141614;--surface:#1e211e;--surface2:#262926;
+      --border:rgba(255,255,255,0.09);--border-strong:rgba(255,255,255,0.16);
+      --text:#e8ebe5;--text-muted:#9aa097;--text-hint:#6a6e68;
+      --danger-bg:#2a1614;--warning-bg:#261c0e;--info-bg:#0c2340;
+      --green-light:#0e2217;--outlier-bg:#1e1030;--laggard-bg:#261c0e;
+    }
   }
+
   body{font-family:-apple-system,'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;align-items:center;}
-  .topbar{width:100%;background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;height:68px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:10;}
-  .topbar-logo{height:52px;width:auto;display:block;}
+
+  /* ── TOPBAR ── */
+  .topbar{width:100%;background:var(--surface);border-bottom:1px solid var(--border);padding:0 20px;height:56px;display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:10;}
+  .topbar-logo{height:36px;width:auto;display:block;}
   .topbar-right{margin-left:auto;font-size:12px;color:var(--text-hint);}
+
+  /* ── LAYOUT ── */
   .main{width:100%;max-width:680px;padding:32px 16px 80px;}
   .progress-wrap{margin-bottom:28px;}
   .progress-label{display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);margin-bottom:6px;}
   .progress-track{height:3px;background:var(--border);border-radius:2px;overflow:hidden;}
   .progress-fill{height:100%;background:var(--green);border-radius:2px;transition:width 0.4s ease;}
+
+  /* ── CHAT ── */
   .chat-area{display:flex;flex-direction:column;gap:14px;margin-bottom:16px;}
   .msg{display:flex;gap:10px;align-items:flex-start;}
   .msg.user{flex-direction:row-reverse;}
@@ -42,9 +61,13 @@
   .bubble.user{background:var(--green);color:#fff;border-radius:14px 4px 14px 14px;}
   .bubble.hint{background:var(--warning-bg);color:var(--warning);border-radius:8px;font-size:12.5px;padding:7px 13px;max-width:88%;border:1px solid rgba(179,92,0,0.15);}
   .bubble.info-hint{background:var(--info-bg);color:var(--info);border-radius:8px;font-size:12.5px;padding:7px 13px;max-width:88%;border:1px solid rgba(24,95,165,0.15);}
+
+  /* ── QUICK REPLIES ── */
   .quick-replies{display:flex;flex-wrap:wrap;gap:7px;margin:4px 0 8px 40px;}
   .qr-btn{padding:7px 15px;font-size:13px;border:1px solid var(--border-strong);border-radius:var(--radius-pill);background:var(--surface);color:var(--text);cursor:pointer;font-family:inherit;transition:all 0.15s;line-height:1.3;}
   .qr-btn:hover{background:var(--green-light);border-color:var(--green);color:var(--green);}
+
+  /* ── SLIDERS ── */
   .slider-card{margin:4px 0 8px 40px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:18px 20px;max-width:92%;}
   .slider-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:14px;}
   .slider-val-display{font-size:32px;font-weight:700;color:var(--green);letter-spacing:-1px;line-height:1;}
@@ -55,17 +78,34 @@
   input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--green);border:3px solid var(--surface);box-shadow:0 1px 4px rgba(0,0,0,0.2);cursor:pointer;}
   .slider-confirm-btn{width:100%;padding:11px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;transition:opacity 0.15s;}
   .slider-confirm-btn:hover{opacity:0.88;}
+
+  /* ── TEXT INPUT ── */
+  .input-wrap{background:var(--surface);border:1px solid var(--border-strong);border-radius:var(--radius);display:flex;align-items:flex-end;gap:8px;padding:8px 8px 8px 14px;transition:border-color 0.15s;}
+  .input-wrap:focus-within{border-color:var(--green);}
+  .input-wrap textarea{flex:1;border:none;background:transparent;resize:none;font-size:14.5px;font-family:inherit;color:var(--text);line-height:1.5;min-height:26px;max-height:100px;overflow-y:auto;outline:none;}
+  .input-wrap textarea::placeholder{color:var(--text-hint);}
+  .send-btn{width:36px;height:36px;border-radius:50%;background:var(--green);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:opacity 0.15s;}
+  .send-btn:hover{opacity:0.85;}
+  .send-btn:disabled{opacity:0.3;cursor:not-allowed;}
+  .send-btn svg{width:15px;height:15px;fill:#fff;}
+
+  /* ── TYPING ── */
   .typing{display:flex;gap:5px;align-items:center;padding:4px 0;}
   .dot{width:7px;height:7px;border-radius:50%;background:var(--text-hint);animation:blink 1.2s infinite;}
   .dot:nth-child(2){animation-delay:0.2s;}
   .dot:nth-child(3){animation-delay:0.4s;}
   @keyframes blink{0%,80%,100%{opacity:0.25}40%{opacity:1}}
+
+  /* ── RESULT CARD ── */
   .result-card{border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;margin-top:4px;box-shadow:0 4px 24px rgba(0,0,0,0.07);}
   .result-header{background:var(--green);color:#fff;padding:20px 22px;}
   .result-header h2{font-size:17px;font-weight:600;margin-bottom:3px;letter-spacing:-0.3px;}
   .result-header p{font-size:12.5px;opacity:0.75;}
   .result-body{padding:20px 22px;background:var(--surface);}
+
+  /* ── GAUGE AREA ── */
   .gauge-section{display:flex;align-items:flex-start;gap:24px;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border);}
+  .score-block{}
   .score-num{font-size:44px;font-weight:700;color:var(--text);line-height:1;letter-spacing:-2px;}
   .score-denom{font-size:18px;color:var(--text-muted);font-weight:400;}
   .score-label{font-size:12px;color:var(--text-muted);margin-top:4px;}
@@ -73,6 +113,8 @@
   .zone-fit{background:var(--green-light);color:var(--green);}
   .zone-over{background:var(--danger-bg);color:var(--danger);}
   .zone-under{background:var(--warning-bg);color:var(--warning);}
+
+  /* ── ADJUSTED GFS COMPARISON ── */
   .gfs-comparison{display:flex;align-items:center;gap:10px;margin-top:12px;padding:10px 14px;border-radius:var(--radius-sm);border:1px solid var(--border);}
   .gfs-comparison.improved{background:rgba(46,107,53,0.06);border-color:rgba(46,107,53,0.2);}
   .gfs-comparison.declined{background:var(--danger-bg);border-color:rgba(192,57,43,0.2);}
@@ -84,9 +126,13 @@
   .gfs-adj-arrow.up{color:var(--green);}
   .gfs-adj-arrow.down{color:var(--danger);}
   .gfs-adj-note{font-size:11px;color:var(--text-muted);margin-top:4px;}
+
+  /* ── OUTLIER / LAGGARD FLAGS ── */
   .growth-flag{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:var(--radius-pill);font-size:12px;font-weight:600;margin-top:6px;}
   .growth-flag.outlier{background:var(--outlier-bg);color:var(--outlier);}
   .growth-flag.laggard{background:var(--laggard-bg);color:var(--laggard);}
+
+  /* ── METRICS ── */
   .metrics-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:18px;}
   .metric-tile{background:var(--surface2);border-radius:var(--radius-sm);padding:12px 14px;}
   .metric-tile .label{font-size:11px;color:var(--text-muted);margin-bottom:5px;}
@@ -94,6 +140,8 @@
   .metric-tile .sub{font-size:11px;color:var(--text-hint);margin-top:2px;}
   .section-title{font-size:12px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.6px;margin-bottom:12px;}
   .model-badge{display:inline-block;padding:2px 10px;border-radius:var(--radius-pill);font-size:11px;font-weight:600;background:var(--info-bg);color:var(--info);margin-left:8px;vertical-align:middle;text-transform:none;letter-spacing:0;}
+
+  /* ── BARS ── */
   .sub-scores{margin-bottom:20px;}
   .sub-row{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
   .sub-name{font-size:13px;color:var(--text-muted);width:160px;flex-shrink:0;}
@@ -103,618 +151,760 @@
   .sub-val{font-size:13px;font-weight:600;color:var(--text);width:32px;text-align:right;}
   .sub-flag{font-size:10px;padding:2px 7px;border-radius:4px;margin-left:4px;font-weight:600;}
   .sub-flag.low{background:var(--danger-bg);color:var(--danger);}
+
+  /* ── RECS ── */
   .recs{margin-bottom:20px;}
   .rec-item{font-size:13.5px;color:var(--text-muted);line-height:1.55;padding:10px 0;border-bottom:1px solid var(--border);display:flex;gap:10px;align-items:flex-start;}
   .rec-item:last-child{border-bottom:none;}
   .rec-arrow{color:var(--green);font-weight:700;flex-shrink:0;margin-top:1px;}
+
+  /* ── EMAIL ── */
+  .email-section{border-top:1px solid var(--border);padding-top:18px;}
+  .email-section .label{font-size:13px;font-weight:500;color:var(--text);margin-bottom:10px;}
+  .email-row{display:flex;gap:8px;}
+  .email-row input{flex:1;padding:10px 14px;font-size:14px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);font-family:inherit;background:var(--bg);color:var(--text);outline:none;transition:border-color 0.15s;}
+  .email-row input:focus{border-color:var(--green);}
+  .email-send{padding:10px 20px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);font-size:14px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap;transition:opacity 0.15s;min-width:120px;}
+  .email-send:hover{opacity:0.88;}
+  .email-send:disabled{opacity:0.35;cursor:not-allowed;}
   .sent-msg{font-size:13px;color:var(--green);margin-top:8px;}
   .err-msg{font-size:13px;color:var(--danger);margin-top:8px;}
   .restart-btn{margin-top:16px;padding:9px 20px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:transparent;color:var(--text-muted);font-size:13px;cursor:pointer;font-family:inherit;transition:all 0.15s;display:block;}
   .restart-btn:hover{background:var(--surface2);color:var(--text);}
-  @media(max-width:480px){.metrics-grid{grid-template-columns:repeat(2,1fr);}.gauge-section{flex-direction:column;align-items:flex-start;gap:16px;}.score-num{font-size:36px;}}
 
-  /* ── EMAIL GATE ── */
-  .gate-overlay{position:fixed;inset:0;background:var(--bg);z-index:200;display:flex;align-items:center;justify-content:center;padding:24px;}
-  .gate-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:40px;max-width:440px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,0.1);}
-  .gate-logo{height:48px;width:auto;display:block;margin:0 auto 24px;}
-  .gate-title{font-size:20px;font-weight:600;color:var(--text);text-align:center;margin-bottom:8px;letter-spacing:-0.3px;}
-  .gate-sub{font-size:13.5px;color:var(--text-muted);text-align:center;line-height:1.6;margin-bottom:28px;}
-  .gate-input{width:100%;padding:12px 16px;font-size:15px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-family:inherit;outline:none;transition:border-color 0.15s;margin-bottom:10px;text-align:center;letter-spacing:0.3px;}
-  .gate-input:focus{border-color:var(--green);}
-  .gate-input.otp-input{font-size:28px;font-weight:700;letter-spacing:12px;color:var(--green);font-family:monospace;text-align:center;}
-  .gate-input.error{border-color:var(--danger);}
-  .gate-btn{width:100%;padding:13px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:500;cursor:pointer;font-family:inherit;transition:all 0.2s;margin-top:4px;}
-  .gate-btn:hover{opacity:0.88;}
-  .gate-btn:disabled{opacity:0.4;cursor:not-allowed;}
-  .gate-err{font-size:13px;color:var(--danger);text-align:center;margin-top:8px;min-height:18px;}
-  .gate-note{font-size:12px;color:var(--text-hint);text-align:center;margin-top:14px;line-height:1.5;}
-  .gate-back{background:none;border:none;font-size:13px;color:var(--text-muted);cursor:pointer;font-family:inherit;text-decoration:underline;margin-top:10px;display:block;width:100%;text-align:center;}
-  .gate-back:hover{color:var(--text);}
-  .gate-spinner{display:inline-block;width:16px;height:16px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin 0.7s linear infinite;vertical-align:middle;margin-right:6px;}
-  @keyframes spin{to{transform:rotate(360deg);}}
-
-  .init-msg{margin:4px 0 8px 40px;padding:12px 16px;background:rgba(46,107,53,0.07);border:1px solid rgba(46,107,53,0.2);border-radius:var(--radius-sm);font-size:13px;color:var(--green);font-style:italic;max-width:92%;}
-  .report-sent-strip{display:flex;align-items:center;gap:10px;padding:12px 16px;background:rgba(46,107,53,0.07);border:1px solid rgba(46,107,53,0.2);border-radius:var(--radius-sm);margin-bottom:14px;font-size:13px;color:var(--green);}
-  .report-sent-strip svg{flex-shrink:0;width:16px;height:16px;stroke:var(--green);fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-  .pdf-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:11px;background:transparent;color:var(--text-muted);border:1px solid var(--border-strong);border-radius:var(--radius-sm);font-size:13.5px;font-weight:500;cursor:pointer;font-family:inherit;transition:all 0.15s;margin-bottom:10px;}
-  .pdf-btn:hover{background:var(--surface2);color:var(--text);border-color:var(--green);}
-  .pdf-btn svg{width:15px;height:15px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;}
-  /* ── PROFESSIONAL PDF REPORT STYLES ── */
-  @media print {
-    @page { margin: 0; size: A4; }
-
-    /* Hide everything except the print report */
-    body > *:not(#pdf-report){ display:none!important; }
-    #pdf-report{ display:block!important; }
-
-    /* Reset body */
-    body{ background:#fff; margin:0; padding:0; font-family:'Helvetica Neue',Helvetica,Arial,sans-serif; }
-
-    /* Report layout */
-    .pr-page{ width:210mm; min-height:297mm; background:#fff; position:relative; box-sizing:border-box; }
-    .pr-header{ background:#1a6632; padding:32px 40px 28px; display:flex; justify-content:space-between; align-items:flex-end; }
-    .pr-header-left{}
-    .pr-logo-text{ font-size:22px; font-weight:700; color:#fff; letter-spacing:-0.5px; }
-    .pr-logo-text span{ color:#5aac5e; }
-    .pr-tagline{ font-size:10px; color:rgba(255,255,255,0.6); text-transform:uppercase; letter-spacing:1.5px; margin-top:3px; }
-    .pr-header-right{ text-align:right; }
-    .pr-company{ font-size:18px; font-weight:600; color:#fff; }
-    .pr-meta{ font-size:10px; color:rgba(255,255,255,0.6); margin-top:3px; }
-
-    .pr-body{ padding:32px 40px; }
-
-    /* Score hero */
-    .pr-score-hero{ display:flex; gap:32px; align-items:flex-start; padding-bottom:28px; margin-bottom:28px; border-bottom:2px solid #f0f0f0; }
-    .pr-score-left{ flex:1; }
-    .pr-score-num{ font-size:64px; font-weight:800; color:#1a6632; line-height:1; letter-spacing:-3px; }
-    .pr-score-denom{ font-size:20px; color:#aaa; font-weight:400; }
-    .pr-score-label{ font-size:11px; color:#888; text-transform:uppercase; letter-spacing:1px; margin-top:6px; }
-    .pr-zone{ display:inline-block; margin-top:10px; padding:5px 14px; border-radius:20px; font-size:12px; font-weight:600; }
-    .pr-zone-fit{ background:#e8f4e9; color:#1a6632; }
-    .pr-zone-over{ background:#fdf0ef; color:#c0392b; }
-    .pr-zone-under{ background:#fef6ec; color:#b35c00; }
-    .pr-flag{ margin-top:8px; font-size:11.5px; font-weight:600; }
-    .pr-flag.outlier{ color:#7b3fbf; }
-    .pr-flag.laggard{ color:#b35c00; }
-
-    .pr-adj-box{ background:#fdf0ef; border:1px solid #f5c6c2; border-radius:8px; padding:10px 14px; margin-top:10px; }
-    .pr-adj-box.improved{ background:#e8f4e9; border-color:#b7dfb9; }
-    .pr-adj-label{ font-size:10px; color:#888; }
-    .pr-adj-vals{ font-size:15px; font-weight:700; color:#c0392b; margin-top:2px; }
-    .pr-adj-vals.improved{ color:#1a6632; }
-    .pr-adj-note{ font-size:10px; color:#888; margin-top:2px; }
-
-    .pr-score-right{ width:200px; }
-
-    /* Section titles */
-    .pr-section{ margin-bottom:24px; }
-    .pr-section-title{ font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:1.5px; color:#1a6632; border-bottom:1px solid #e8f4e9; padding-bottom:5px; margin-bottom:14px; }
-
-    /* Metrics grid */
-    .pr-metrics{ display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-bottom:0; }
-    .pr-metric{ background:#f8f9f7; border-radius:8px; padding:12px 14px; border:1px solid #eee; }
-    .pr-metric-label{ font-size:9.5px; color:#888; text-transform:uppercase; letter-spacing:0.6px; margin-bottom:5px; }
-    .pr-metric-value{ font-size:22px; font-weight:700; color:#111; letter-spacing:-0.5px; line-height:1; }
-    .pr-metric-sub{ font-size:9.5px; color:#aaa; margin-top:3px; }
-
-    /* Component bars */
-    .pr-bar-row{ display:flex; align-items:center; gap:10px; margin-bottom:10px; }
-    .pr-bar-label{ font-size:11.5px; color:#555; width:160px; flex-shrink:0; }
-    .pr-bar-track{ flex:1; height:8px; background:#f0f0f0; border-radius:4px; overflow:hidden; }
-    .pr-bar-fill{ height:8px; border-radius:4px; }
-    .pr-bar-fill.ok{ background:#1a6632; }
-    .pr-bar-fill.low{ background:#c0392b; }
-    .pr-bar-val{ font-size:12px; font-weight:700; width:30px; text-align:right; }
-    .pr-bar-val.ok{ color:#1a6632; }
-    .pr-bar-val.low{ color:#c0392b; }
-    .pr-below-tag{ font-size:9px; font-weight:700; color:#c0392b; background:#fdf0ef; padding:2px 7px; border-radius:4px; margin-left:4px; }
-
-    /* Recommendations */
-    .pr-rec{ display:flex; gap:10px; margin-bottom:10px; align-items:flex-start; padding-bottom:10px; border-bottom:1px solid #f5f5f5; }
-    .pr-rec:last-child{ border-bottom:none; margin-bottom:0; }
-    .pr-rec-arrow{ color:#1a6632; font-weight:700; flex-shrink:0; font-size:13px; margin-top:1px; }
-    .pr-rec-text{ font-size:11.5px; color:#444; line-height:1.6; }
-
-    /* Footer */
-    .pr-footer{ position:absolute; bottom:0; left:0; right:0; padding:16px 40px; background:#f8f9f7; border-top:1px solid #eee; display:flex; justify-content:space-between; align-items:center; }
-    .pr-footer-left{ font-size:9.5px; color:#aaa; }
-    .pr-footer-right{ font-size:9.5px; color:#1a6632; }
-
-    /* Two column layout for body */
-    .pr-two-col{ display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+  @media(max-width:480px){
+    .metrics-grid{grid-template-columns:repeat(2,1fr);}
+    .gauge-section{flex-direction:column;align-items:flex-start;gap:16px;}
+    .score-num{font-size:36px;}
   }
 </style>
 </head>
 <body>
 
-<!-- EMAIL GATE — shown until verified -->
-<div class="gate-overlay" id="gate-overlay">
-  <div class="gate-card">
-    <img src="/GrowFitt_Logo.png" alt="GrowFitt" class="gate-logo">
-
-    <!-- Step 1: email entry -->
-    <div id="gate-step-email">
-      <h2 class="gate-title">Start your Growth Fitness assessment</h2>
-      <p class="gate-sub">Enter your work email to receive your access code. Personal email accounts are not accepted.</p>
-      <input class="gate-input" type="email" id="gate-email" placeholder="you@company.com" autocomplete="email" onkeydown="if(event.key==='Enter')requestOTP()">
-      <button class="gate-btn" id="gate-send-btn" onclick="requestOTP()">Send access code</button>
-      <div class="gate-err" id="gate-email-err"></div>
-      <p class="gate-note">We'll send a one-time code to verify your work email.<br>Your report will be delivered to this address automatically.</p>
+<div class="topbar">
+  <a href="/"><img src="data:image/png;base64,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" alt="GrowFitt" style="height:36px;width:auto;display:block;" /></a>
+  <div style="display:flex;align-items:center;gap:20px;">
+    <div id="audit-counter" style="display:flex;align-items:center;gap:12px;font-size:11px;color:var(--text-muted);background:rgba(255,255,255,0.06);padding:6px 14px;border-radius:20px;border:1px solid var(--border);">
+      <span>🌍</span>
+      <div>
+        <span style="color:var(--text);font-weight:600;" id="counter-num">2,847</span>
+        <span> audits completed</span>
+      </div>
+      <span style="color:var(--border);">|</span>
+      <div id="counter-geos" style="display:flex;gap:8px;">
+        <span title="North America">🇺🇸 <span style="color:var(--text);font-weight:600;">1,241</span></span>
+        <span title="Europe">🇪🇺 <span style="color:var(--text);font-weight:600;">687</span></span>
+        <span title="Asia Pacific">🌏 <span style="color:var(--text);font-weight:600;">513</span></span>
+        <span title="Middle East & Africa">🌍 <span style="color:var(--text);font-weight:600;">284</span></span>
+        <span title="Other">🌐 <span style="color:var(--text);font-weight:600;">122</span></span>
+      </div>
     </div>
-
-    <!-- Step 2: OTP entry (hidden initially) -->
-    <div id="gate-step-otp" style="display:none;">
-      <h2 class="gate-title">Check your inbox</h2>
-      <p class="gate-sub">We sent a 6-digit code to <strong id="gate-email-display"></strong></p>
-      <input class="gate-input otp-input" type="text" id="gate-otp" placeholder="000000" maxlength="6" inputmode="numeric" autocomplete="one-time-code" onkeydown="if(event.key==='Enter')verifyOTP()">
-      <button class="gate-btn" id="gate-verify-btn" onclick="verifyOTP()">Verify &amp; start assessment</button>
-      <div class="gate-err" id="gate-otp-err"></div>
-      <button class="gate-back" onclick="backToEmail()">← Use a different email</button>
-      <p class="gate-note">Didn't receive it? Check your spam folder or <span style="text-decoration:underline;cursor:pointer;color:var(--text-muted);" onclick="resendOTP()">resend the code</span>.</p>
-    </div>
+    <span class="topbar-right">Growth Advisor · v3.1</span>
   </div>
 </div>
 
-<div class="topbar">
-  <a href="/"><img src="/GrowFitt_Logo.png" alt="GrowFitt" class="topbar-logo"></a>
-  <span class="topbar-right">Growth Advisor · v3.1</span>
-</div>
 <div class="main">
   <div class="progress-wrap">
-    <div class="progress-label"><span id="progress-text">Getting started</span><span id="progress-pct">0%</span></div>
+    <div class="progress-label">
+      <span id="progress-text">Getting started</span>
+      <span id="progress-pct">0%</span>
+    </div>
     <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:0%"></div></div>
   </div>
   <div class="chat-area" id="chat"></div>
   <div id="quick-reply-area"></div>
-
+  <div id="input-area">
+    <div class="input-wrap">
+      <textarea id="user-input" placeholder="Type your answer..." rows="1"></textarea>
+      <button class="send-btn" id="send-btn" onclick="handleSend()">
+        <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+      </button>
+    </div>
+  </div>
 </div>
+
 <script>
-const state={step:0,answers:{},scores:{},companyName:'',lastRecs:[]};
-const SLIDERS={
-  growth_rate:{min:0,max:150,step:1,default:30,unit:'%',hint:'Drag to set your LTM revenue growth rate.'},
-  nrr:{min:50,max:200,step:1,default:110,unit:'%',hint:'100% = flat. Above 100% means expansion from existing customers.'},
-  grr:{min:50,max:100,step:1,default:90,unit:'%',hint:'Must be 100% or below — excludes upsells.'},
-  gm:{min:-20,max:100,step:1,default:70,unit:'%',hint:'Revenue minus cost of goods sold as a % of revenue.'},
-  fcf:{min:-100,max:60,step:1,default:5,unit:'%',hint:'Negative = burning cash. Positive = profitable.'},
-  inbound_pct:{min:0,max:100,step:5,default:30,unit:'%',hint:'Include organic search, referrals, word of mouth, content.'},
-  sales_efficiency:{min:0,max:5,step:0.1,default:1.0,unit:'x',hint:'Net new ARR divided by S&M spend (Magic Number). Above 1.0 is healthy.'},
-  cac_payback:{min:3,max:48,step:1,default:18,unit:'mo',hint:'Months to recover your customer acquisition cost. Under 12 is strong.'},
-  burn_multiple:{min:0,max:5,step:0.1,default:2.0,unit:'x',hint:'Net cash burned divided by net new ARR. Under 1.5x is efficient.'},
+const state = { step:0, answers:{}, scores:{}, companyName:'', companyWebsite:'', primaryMarket:'', secondaryMarkets:[], esSubScores:{} };
+
+// ── SLIDER CONFIGS ────────────────────────────────────────────────────────────
+const SLIDERS = {
+  arr_revenue:      { min:0,   max:5000, step:1,   default:10,  unit:'M', hint:'Enter your current ARR or annual revenue in USD millions. E.g. 25 = $25M.' },
+  growth_rate:      { min:0,   max:150,  step:1,   default:30,  unit:'%', hint:'Drag to set your LTM revenue growth rate.' },
+  nrr:              { min:50,  max:200,  step:1,   default:110, unit:'%', hint:'100% = flat retention. Above 100% means expansion from existing customers.' },
+  grr:              { min:50,  max:100,  step:1,   default:90,  unit:'%', hint:'Must be 100% or below — excludes any upsells or expansions.' },
+  gm:               { min:-20, max:100,  step:1,   default:70,  unit:'%', hint:'Revenue minus cost of goods sold as a percentage of revenue.' },
+  fcf:              { min:-100,max:60,   step:1,   default:5,   unit:'%', hint:'Negative = burning cash. Positive = profitable on a cash basis.' },
+  inbound_pct:      { min:0,   max:100,  step:5,   default:30,  unit:'%', hint:'Include organic search, referrals, word of mouth, and content-led demand.' },
+  sales_efficiency: { min:0,   max:5,    step:0.1, default:1.0, unit:'x', hint:'Net new ARR divided by S&M spend (Magic Number). Above 1.0 is healthy.' },
+  cac_payback:      { min:3,   max:48,   step:1,   default:18,  unit:'mo',hint:'Months to fully recover your customer acquisition cost. Under 12 is strong.' },
+  burn_multiple:    { min:0,   max:5,    step:0.1, default:2.0, unit:'x', hint:'Net cash burned divided by net new ARR. Under 1.5x is efficient for early stage.' },
 };
-const ARR_STEPS=[
-  {label:'Pre-revenue',value:0},{label:'< $100K',value:0.1},
-  {label:'$100K – $250K',value:0.25},{label:'$250K – $500K',value:0.5},
-  {label:'$500K – $1M',value:0.75},{label:'$1M – $2M',value:1.5},
-  {label:'$2M – $3M',value:2.5},{label:'$3M – $5M',value:4},
-  {label:'$5M – $7M',value:6},{label:'$7M – $10M',value:8.5},
-  {label:'$10M – $15M',value:12.5},{label:'$15M – $20M',value:17.5},
-  {label:'$20M – $30M',value:25},{label:'$30M – $50M',value:40},
-  {label:'$50M – $75M',value:62.5},{label:'$75M – $100M',value:87.5},
-  {label:'$100M – $150M',value:125},{label:'$150M – $200M',value:175},
-  {label:'$200M – $300M',value:250},{label:'$300M – $500M',value:400},
-  {label:'$500M – $750M',value:625},{label:'$750M – $1B',value:875},
-  {label:'> $1B',value:1500},
+
+// ── STAGE CLASSIFICATION ──────────────────────────────────────────────────────
+// Primary: ARR/Revenue bracket  Secondary: LTM Growth vs BGR
+const ARR_STAGE_MAP = [
+  { key:'Early',  label:'Early',  min:0,    max:10,   bgr:0.80 },
+  { key:'Growth', label:'Growth', min:10,   max:100,  bgr:0.55 },
+  { key:'Scale',  label:'Scale',  min:100,  max:1000, bgr:0.35 },
+  { key:'Late',   label:'Late',   min:1000, max:Infinity, bgr:0.25 },
 ];
-const STAGE_HINTS=[{max:10,key:'Early',bgr:80},{max:100,key:'Growth',bgr:55},{max:1000,key:'Scale',bgr:35},{max:Infinity,key:'Late',bgr:25}];
-function getStageHint(arrM){for(const s of STAGE_HINTS){if(arrM<s.max)return s;}return STAGE_HINTS[3];}
 
-let STEPS=[];
-function buildSteps(isEarly){
-  const base=[
-    
-    {key:'arr_revenue',ask:()=>`Hello there! What is the current ARR or annual revenue for <strong>${state.emailDomain||verifiedEmail.split('@')[1]||'your company'}</strong>?`,type:'arr',hint:'This determines your growth stage and benchmark.'},
-    {key:'category',ask:()=>`What best describes ${state.companyName}'s product category?`,type:'choice',choices:['Infra / Dev / AI','Security','Horizontal SaaS','Vertical SaaS'],hint:'This adjusts the growth benchmark to your market. It does not affect the GFS score itself.'},
-    {key:'growth_rate',ask:(a)=>{const h=getStageHint(parseFloat(a.arr_revenue||10));return `What was your revenue growth rate over the last 12 months?<br><span style="font-size:13px;color:var(--text-muted)">You're in the <strong>${h.key}</strong> stage — benchmark growth rate: ${h.bgr}%+.</span>`;},type:'slider'},
-    {key:'nrr',ask:()=>`What is your Net Revenue Retention (NRR)?<br><span style="font-size:13px;color:var(--text-muted)">Includes upsells and expansions from existing customers.</span>`,type:'slider'},
-    {key:'grr',ask:()=>`What is your Gross Revenue Retention (GRR)?<br><span style="font-size:13px;color:var(--text-muted)">Base revenue retained, excluding upsells — must be 100% or below.</span>`,type:'slider'},
-    {key:'gm',ask:()=>`What is your Gross Margin?<br><span style="font-size:13px;color:var(--text-muted)">Revenue minus cost of goods sold, as a % of revenue.</span>`,type:'slider'},
-    {key:'fcf',ask:()=>`What is your Free Cash Flow (FCF) margin?<br><span style="font-size:13px;color:var(--text-muted)">Negative = burning cash. Positive = profitable.</span>`,type:'slider'},
-  ];
-  const earlyExtra=[
-    {key:'sales_efficiency',ask:()=>`What is your Sales Efficiency ratio (Magic Number)?<br><span style="font-size:13px;color:var(--text-muted)">Net new ARR ÷ S&M spend. Above 1.0 is healthy, below 0.5 is a concern.</span>`,type:'slider'},
-    {key:'cac_payback',ask:()=>`What is your CAC Payback period?<br><span style="font-size:13px;color:var(--text-muted)">Months to recover your CAC. Under 12 months is strong.</span>`,type:'slider'},
-    {key:'burn_multiple',ask:()=>`What is your Burn Multiple?<br><span style="font-size:13px;color:var(--text-muted)">Net cash burned ÷ net new ARR added. Under 1.5x is efficient.</span>`,type:'slider'},
-  ];
-  const tail=[
-    {key:'inbound_pct',ask:()=>`What percentage of new business comes from inbound — organic, referrals, word of mouth, content?`,type:'slider'},
-    {key:'deal_quality',ask:()=>`How would you describe your typical deal quality and trajectory?`,type:'choice',choices:['Sharp decline recently','Material decline','Roughly the same','Slight increase','Improving a lot'],hint:'Consider deal size trend, win rates, and sales cycle movement.'},
-    {key:'cohort_trend',ask:()=>`Last one. How has your retention been trending — last 3 months vs your 12-month average?`,type:'choice',choices:['Sharp decline recently','Material decline','Roughly the same','Slight improvement','Improving significantly'],hint:'Captures whether retention health is getting better or worse.'},
-  ];
-  STEPS=isEarly?[...base,...earlyExtra,...tail]:[...base,...tail];
+function classifyStage(arrM) {
+  for (const s of ARR_STAGE_MAP) {
+    if (arrM >= s.min && arrM < s.max) return s;
+  }
+  return ARR_STAGE_MAP[3];
 }
-buildSteps(false);
 
-function updateProgress(){
-  const pct=Math.round((state.step/STEPS.length)*100);
-  const labels=['Getting started','Revenue / ARR','Category','Growth rate','Net retention','Gross retention','Gross margin','Cash flow','Sales efficiency','CAC payback','Burn multiple','Inbound mix','Deal quality','Retention trend'];
+function getGrowthFlag(growthPct, bgr) {
+  if (growthPct > 1.5 * bgr) return 'outlier';
+  if (growthPct < 0.5 * bgr) return 'laggard';
+  return null;
+}
+
+// ── DYNAMIC STEPS ─────────────────────────────────────────────────────────────
+let STEPS = [];
+
+function buildSteps(stageKey) {
+  const isEarly = stageKey === 'Early' || stageKey === 'Growth';
+  const MARKET_OPTIONS = ['North America','Europe','South East Asia','Middle East & Africa','China','Asia Pacific (incl. Japan)','LATAM'];
+
+  const base = [
+    { key:'company',     ask:"Hi! I'm your GrowFitt growth advisor. Let's assess your growth fitness score — takes about 3–4 minutes.\n\nWhat's the name of your company?", type:'text' },
+    { key:'company_context', ask:(a)=>`Is this assessment for <strong>${a.company}</strong> — the same company as your registered email — or for a different company?`, type:'choice',
+      choices:['Same company as my email','A different company'] },
+    { key:'company_website', ask:()=>`What is the company\'s website URL?<br><span style="font-size:13px;color:var(--text-muted)">E.g. https://acme.com — helps us personalise your report.</span>`, type:'text',
+      skipIf:(a)=>a.company_context==='Same company as my email' },
+    { key:'primary_market', ask:()=>`What is your <strong>primary revenue market</strong>?`, type:'choice',
+      choices:['North America','Europe','South East Asia','Middle East & Africa','China','Asia Pacific (incl. Japan)','LATAM'] },
+    { key:'secondary_markets', ask:()=>`Which are your <strong>secondary markets</strong>? (Select all that apply — we\'ll capture each one)`, type:'multi',
+      choices:['North America','Europe','South East Asia','Middle East & Africa','China','Asia Pacific (incl. Japan)','LATAM','None / Single market'] },
+    { key:'arr_revenue', ask:(a)=>`Great, ${a.company}! What is your current ARR or annual revenue?`, type:'slider',
+      hint:'This is your primary stage classifier.' },
+    { key:'growth_rate', ask:(a)=>{
+        const arr = parseFloat(a.arr_revenue||10);
+        const st = classifyStage(arr);
+        return `What was your revenue growth rate over the last 12 months?<br><span style="font-size:13px;color:var(--text-muted)">Based on your revenue, you're in the <strong>${st.key}</strong> stage (benchmark growth rate: ${Math.round(st.bgr*100)}%+).</span>`;
+      }, type:'slider' },
+    { key:'nrr',         ask:()=>`What is your Net Revenue Retention (NRR)?<br><span style="font-size:13px;color:var(--text-muted)">Includes upsells and expansions from existing customers.</span>`, type:'slider' },
+    { key:'grr',         ask:()=>`What is your Gross Revenue Retention (GRR)?<br><span style="font-size:13px;color:var(--text-muted)">Base revenue retained, excluding upsells — must be 100% or below.</span>`, type:'slider' },
+    { key:'gm',          ask:()=>`What is your Gross Margin?<br><span style="font-size:13px;color:var(--text-muted)">Revenue minus cost of goods sold, as a % of revenue.</span>`, type:'slider' },
+    { key:'fcf',         ask:()=>`What is your Free Cash Flow (FCF) margin?<br><span style="font-size:13px;color:var(--text-muted)">Negative = burning cash. Positive = profitable.</span>`, type:'slider' },
+  ];
+  const earlyExtra = [
+    { key:'sales_efficiency', ask:()=>`What is your Sales Efficiency ratio (Magic Number)?<br><span style="font-size:13px;color:var(--text-muted)">Net new ARR ÷ S&M spend. Above 1.0 is healthy, below 0.5 is a concern.</span>`, type:'slider' },
+    { key:'cac_payback',      ask:()=>`What is your CAC Payback period?<br><span style="font-size:13px;color:var(--text-muted)">Months to recover your customer acquisition cost. Under 12 months is strong.</span>`, type:'slider' },
+    { key:'burn_multiple',    ask:()=>`What is your Burn Multiple?<br><span style="font-size:13px;color:var(--text-muted)">Net cash burned ÷ net new ARR added. Under 1.5x is efficient.</span>`, type:'slider' },
+  ];
+  const tail = [
+    { key:'inbound_pct',  ask:()=>`What percentage of your new business comes from inbound — organic search, referrals, word of mouth, content?`, type:'slider' },
+    { key:'deal_quality', ask:()=>`How would you describe your typical deal quality and trajectory?`, type:'choice',
+      choices:['Sharp decline recently','Material decline','Roughly the same','Slight increase','Improving a lot'],
+      hint:'Consider average deal size trend, win rates, and sales cycle movement.' },
+    { key:'cohort_trend', ask:()=>`Last one. How has your retention been trending — last 3 months vs your 12-month average?`, type:'choice',
+      choices:['Sharp decline recently','Material decline','Roughly the same','Slight improvement','Improving significantly'],
+      hint:'Captures whether retention health is getting better or worse recently.' },
+  ];
+  STEPS = isEarly ? [...base, ...earlyExtra, ...tail] : [...base, ...tail];
+}
+buildSteps('Late');
+
+// ── LOOKUP ────────────────────────────────────────────────────────────────────
+function lookup(val, table) {
+  let s=table[0][1];
+  for(let i=0;i<table.length;i++){if(val>=table[i][0])s=table[i][1];}
+  return s;
+}
+
+// ── SCORING ENGINE v3.1 ───────────────────────────────────────────────────────
+// Adjusted GFS thresholds — if any component falls below 3.0 (Average floor)
+// the model applies a penalty to signal system weakness
+const COMPONENT_THRESHOLD = 3.0;
+const ADJUSTMENT_FACTOR   = 0.92; // 8% reduction per component below threshold
+
+function computeScores(a) {
+  const growth = parseFloat(a.growth_rate)/100;
+  const nrr    = parseFloat(a.nrr)/100;
+  const grr    = parseFloat(a.grr)/100;
+  const gm     = parseFloat(a.gm)/100;
+  const fcf    = parseFloat(a.fcf)/100;
+
+  // Stage from ARR (primary classifier)
+  const arrM   = parseFloat(a.arr_revenue||10);
+  const stage  = classifyStage(arrM);
+  const bgr    = stage.bgr;
+  const isEarly = stage.key === 'Early' || stage.key === 'Growth';
+
+  // Growth outlier / laggard flag (secondary check)
+  const growthFlag = getGrowthFlag(growth, bgr);
+
+  // GRS
+  const GRS = lookup(growth, [[0,1],[0.1,2],[0.2,3],[0.3,4],[0.4,5]]);
+
+  // SQS from % inbound
+  const inboundRaw = parseFloat(a.inbound_pct||30)/100;
+  const SQS = lookup(inboundRaw, [[0,1],[0.15,2],[0.30,2],[0.45,3],[0.60,4],[1.0,5]]);
+
+  // CQS
+  const expansion = nrr - grr;
+  const expansionScore = lookup(expansion, [[0,1],[0.05,2],[0.15,3],[0.25,4],[0.40,5]]);
+  const dealQualityMap = {
+    'Sharp decline recently':1,'Material decline':2,'Roughly the same':3,'Slight increase':4,'Improving a lot':5
+  };
+  const dealScore = dealQualityMap[a.deal_quality]||3;
+  const CQS = 0.70*expansionScore + 0.30*dealScore;
+
+  // GQS
+  const GQS = 0.30*GRS + 0.30*SQS + 0.40*CQS;
+
+  // NRS — absolute thresholds
+  const NRS  = lookup(nrr, [[0,1],[0.90,1],[1.01,2],[1.05,3],[1.20,4],[1.60,5]]);
+  const GRRS = lookup(grr, [[0,1],[0.80,2],[0.85,3],[0.90,4],[0.95,5]]);
+  const cohortMap = {
+    'Sharp decline recently':1,'Material decline':2,'Roughly the same':3,'Slight improvement':4,'Improving significantly':5
+  };
+  const CSS = cohortMap[a.cohort_trend]||3;
+  const RS = 0.45*NRS + 0.35*GRRS + 0.20*CSS;
+
+  // ES — stage adaptive
+  let ES, esFormula, esSubScores={};
+  if (isEarly) {
+    const burnMultiple = parseFloat(a.burn_multiple||2.0);
+    const salesEff     = parseFloat(a.sales_efficiency||1.0);
+    const cacPayback   = parseFloat(a.cac_payback||18);
+    const BurnScore    = lookup(burnMultiple, [[0,5],[1.0,5],[1.5,4],[2.0,3],[2.5,2],[3.0,1]]);
+    const SEScore      = lookup(salesEff,     [[0,1],[0.5,1],[0.9,2],[1.5,3],[3.0,4],[5.0,5]]);
+    const CACScore     = lookup(cacPayback,   [[0,5],[6,5],[12,4],[18,3],[24,2],[36,1]]);
+    const EBITDAScore  = lookup(fcf,          [[-0.5,1],[0.05,2],[0.15,3],[0.40,4],[0.60,5]]);
+    ES = 0.30*BurnScore + 0.25*SEScore + 0.20*CACScore + 0.25*EBITDAScore;
+    esFormula = 'Early/Growth formula';
+    esSubScores = { BurnScore, SEScore, CACScore, EBITDAScore, burnMultiple, salesEff, cacPayback };
+  } else {
+    const GM_Score  = lookup(gm,  [[0,1],[0.50,2],[0.60,3],[0.70,4],[0.80,5]]);
+    const FCF_Score = lookup(fcf, [[-1,1],[0,2],[0.10,3],[0.20,4],[0.30,5]]);
+    ES = 0.50*GM_Score + 0.50*FCF_Score;
+    esFormula = 'Scale/Late formula';
+    esSubScores = { GM_Score, FCF_Score };
+  }
+
+  // Raw GFS
+  const GFS = 0.30*GQS + 0.40*RS + 0.30*ES;
+
+  // ── ADJUSTED GFS ──
+  // Count components below the threshold (3.0 = Average floor)
+  const belowComponents = [];
+  if (GQS < COMPONENT_THRESHOLD) belowComponents.push('Growth Quality');
+  if (RS  < COMPONENT_THRESHOLD) belowComponents.push('Retention');
+  if (ES  < COMPONENT_THRESHOLD) belowComponents.push('Efficiency');
+
+  let adjGFS = GFS;
+  belowComponents.forEach(() => { adjGFS = adjGFS * ADJUSTMENT_FACTOR; });
+  const hasAdjustment = belowComponents.length > 0;
+
+  // Mfit tiers use adjGFS for OGR calculation
+  let mfitLow,mfitHigh,interpretation;
+  if      (adjGFS<2.5){mfitLow=0.5; mfitHigh=0.7;  interpretation='Broken';}
+  else if (adjGFS<3.0){mfitLow=0.7; mfitHigh=0.9;  interpretation='Fragile';}
+  else if (adjGFS<3.8){mfitLow=0.9; mfitHigh=1.1;  interpretation='Average';}
+  else if (adjGFS<4.5){mfitLow=1.1; mfitHigh=1.35; interpretation='Strong';}
+  else                {mfitLow=1.4; mfitHigh=1.75; interpretation='Elite';}
+
+  const OGR_Low  = bgr*mfitLow;
+  const OGR_High = bgr*mfitHigh;
+  const zone = growth<OGR_Low?'Under':(growth<=OGR_High?'Fit':'Over');
+
+  state.esSubScores = esSubScores;
+
+  return {
+    GFS, adjGFS, hasAdjustment, belowComponents,
+    GQS, RS, ES, OGR_Low, OGR_High, zone, interpretation,
+    NRS, GRRS, CSS, CQS, GRS, SQS, expansionScore, dealScore,
+    growth, nrr, grr, gm, fcf, bgr, expansion,
+    isEarly, esFormula, stageKey:stage.key,
+    arrM, growthFlag
+  };
+}
+
+// ── RECOMMENDATIONS ───────────────────────────────────────────────────────────
+function getRecs(s) {
+  const r=[], sub=state.esSubScores;
+  if (s.growthFlag==='outlier')
+    r.push(`Your growth rate of ${(s.growth*100).toFixed(0)}% is significantly above the ${Math.round(s.bgr*100)}% benchmark for your stage — flagged as an outlier. Validate the sustainability of this growth rate before committing further resources. Fast growth without system fitness leads to costly corrections.`);
+  if (s.growthFlag==='laggard')
+    r.push(`Your growth rate of ${(s.growth*100).toFixed(0)}% is well below the ${Math.round(s.bgr*100)}% benchmark for your stage — flagged as a laggard. Identify the primary constraint: pipeline, conversion, capacity, or market positioning.`);
+  if (s.SQS<3)
+    r.push('Inbound pull is weak. Growth is too dependent on outbound spend. Invest in content, community, and referral programmes to improve source quality and structurally reduce CAC.');
+  else if (s.SQS<4)
+    r.push('Inbound mix is building but below best-in-class. Doubling inbound contribution from here would materially improve your GFS score and reduce go-to-market costs.');
+  if (s.dealScore<3)
+    r.push('Deal quality is declining — a leading indicator of future NRR deterioration. Review ICP targeting, discount policies, and customer fit criteria before scaling acquisition spend.');
+  if (s.CQS<3)
+    r.push('Expansion revenue is weak. Strengthening upsell and land-and-expand motions is the single highest-leverage move for your growth system — NRR improvement compounds over time.');
+  if (s.GRS<3)
+    r.push('Growth rate is below stage benchmarks. Review pipeline generation and conversion rates — there may be positioning, capacity, or process constraints limiting top-line momentum.');
+  if (s.NRS<3)
+    r.push('Net retention is below the threshold for efficient scaling. Investigate churn drivers through exit interviews and cohort analysis — fix this before accelerating acquisition spend.');
+  if (s.GRRS<3)
+    r.push('Gross retention is deteriorating. Logo churn is eroding your base faster than you can fill it. Invest in customer success, onboarding quality, and health scoring urgently.');
+  if (s.CSS<3)
+    r.push('Retention has worsened over the last 3 months versus your annual average — an early warning signal. Act now before this drift compounds into a structural forecasting problem.');
+  if (s.isEarly) {
+    if ((sub.BurnScore||3)<3)
+      r.push('Burn multiple is high for your stage. Every dollar burned should generate proportional ARR. Review sales efficiency, headcount productivity, and discretionary spend.');
+    if ((sub.SEScore||3)<3)
+      r.push('Sales efficiency is below 1.0x — you\'re spending more to acquire revenue than you\'re generating. Review sales motion, territory design, ICP tightness, and conversion rates.');
+    if ((sub.CACScore||3)<3)
+      r.push('CAC payback is too long. Shortening it extends runway and improves investor confidence. Consider pricing architecture, sales cycle length, and higher-efficiency acquisition channels.');
+  } else {
+    if (s.gm<0.65)
+      r.push('Gross margin is below SaaS benchmarks. Review infrastructure costs, pricing architecture, and delivery efficiency — margin improvement here directly expands your OGR ceiling.');
+    if (s.fcf<0.05)
+      r.push('Free cash flow is thin or negative. Align sales and marketing spend to sustainable payback periods and prioritise high-efficiency growth motions over volume.');
+  }
+  if (s.zone==='Over')
+    r.push('You are growing faster than your system can sustain. Consolidate operations — fix retention and efficiency first or you risk a system break that will be costly to reverse.');
+  if (s.zone==='Under')
+    r.push('You have headroom to grow faster without straining the system. Identify whether the constraint is pipeline, conversion, or capacity — the system can absorb more growth.');
+  if (r.length===0)
+    r.push('Your growth system is well-calibrated across all dimensions. Maintain this fitness as you scale and track your GFS quarterly to catch early drift before it becomes structural.');
+  return r;
+}
+
+// ── PROGRESS ──────────────────────────────────────────────────────────────────
+function updateProgress() {
+  const pct = Math.round((state.step/STEPS.length)*100);
+  const labels = ['Getting started','Company name','Revenue / ARR','Growth rate',
+    'Net retention','Gross retention','Gross margin','Cash flow',
+    'Sales efficiency','CAC payback','Burn multiple',
+    'Inbound mix','Deal quality','Retention trend'];
   document.getElementById('progress-fill').style.width=pct+'%';
   document.getElementById('progress-pct').textContent=pct+'%';
   document.getElementById('progress-text').textContent=labels[Math.min(state.step,labels.length-1)]||'Completing...';
 }
 
-function addMsg(html,role){const chat=document.getElementById('chat');const d=document.createElement('div');d.className='msg '+role;d.innerHTML=`<div class="avatar ${role}">${role==='bot'?'GF':'YOU'}</div><div class="bubble ${role}">${html}</div>`;chat.appendChild(d);d.scrollIntoView({behavior:'smooth',block:'nearest'});}
-function addHint(text,type){const chat=document.getElementById('chat');const d=document.createElement('div');d.className='msg';d.innerHTML=`<div style="width:30px;flex-shrink:0"></div><div class="bubble ${type==='info'?'info-hint':'hint'}">${text}</div>`;chat.appendChild(d);}
-function showTyping(){const chat=document.getElementById('chat');const d=document.createElement('div');d.id='typing';d.className='msg';d.innerHTML=`<div class="avatar bot">GF</div><div class="bubble bot"><div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;chat.appendChild(d);d.scrollIntoView({behavior:'smooth',block:'nearest'});}
+// ── CHAT HELPERS ──────────────────────────────────────────────────────────────
+function addMsg(html,role){
+  const chat=document.getElementById('chat');
+  const d=document.createElement('div'); d.className='msg '+role;
+  d.innerHTML=`<div class="avatar ${role}">${role==='bot'?'GF':'YOU'}</div><div class="bubble ${role}">${html}</div>`;
+  chat.appendChild(d); d.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+function addHint(text,type){
+  const chat=document.getElementById('chat');
+  const d=document.createElement('div'); d.className='msg';
+  const cls=type==='info'?'info-hint':'hint';
+  d.innerHTML=`<div style="width:30px;flex-shrink:0"></div><div class="bubble ${cls}">${text}</div>`;
+  chat.appendChild(d);
+}
+function showTyping(){
+  const chat=document.getElementById('chat');
+  const d=document.createElement('div'); d.id='typing'; d.className='msg';
+  d.innerHTML=`<div class="avatar bot">GF</div><div class="bubble bot"><div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;
+  chat.appendChild(d); d.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
 function removeTyping(){const e=document.getElementById('typing');if(e)e.remove();}
-function setQR(choices){const area=document.getElementById('quick-reply-area');area.innerHTML='';if(!choices||!choices.length)return;const wrap=document.createElement('div');wrap.className='quick-replies';choices.forEach(c=>{const btn=document.createElement('button');btn.className='qr-btn';btn.textContent=c;btn.onclick=()=>submitAnswer(c);wrap.appendChild(btn);});area.appendChild(wrap);}
-
-function showArrPicker(){
-  const area=document.getElementById('quick-reply-area');area.innerHTML='';
-  
-  const defaultIdx=3;const card=document.createElement('div');card.className='slider-card';
-  card.innerHTML=`<div class="slider-top"><div><span class="slider-val-display" id="arr-display">${ARR_STEPS[defaultIdx].label}</span></div><span class="slider-range-label" id="arr-step-lbl">Step ${defaultIdx+1} of ${ARR_STEPS.length}</span></div><input type="range" id="arr-slider" min="0" max="${ARR_STEPS.length-1}" step="1" value="${defaultIdx}"><button class="slider-confirm-btn" id="confirm-arr" onclick="confirmArrSlider()">Confirm ${ARR_STEPS[defaultIdx].label} →</button>`;
-  area.appendChild(card);
-  const slider=document.getElementById('arr-slider'),display=document.getElementById('arr-display'),btn=document.getElementById('confirm-arr'),lbl=document.getElementById('arr-step-lbl');
-  function update(){const idx=parseInt(slider.value);const s=ARR_STEPS[idx];display.textContent=s.label;btn.textContent=`Confirm ${s.label} →`;lbl.textContent=`Step ${idx+1} of ${ARR_STEPS.length}`;slider.style.setProperty('--pct',(idx/(ARR_STEPS.length-1)*100).toFixed(1)+'%');}
-  slider.addEventListener('input',update);update();card.scrollIntoView({behavior:'smooth',block:'nearest'});
+function selectedSecondaryMarkets = [];
+function showMultiSelect(key, choices) {
+  selectedSecondaryMarkets = [];
+  const area = document.getElementById('quick-reply-area');
+  area.innerHTML = '';
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;flex-direction:column;gap:8px;padding:4px 0;';
+  const optWrap = document.createElement('div');
+  optWrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;';
+  choices.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'qr-btn';
+    btn.textContent = c;
+    btn.style.cssText = 'opacity:0.7;transition:all 0.2s;';
+    btn.onclick = () => {
+      if(selectedSecondaryMarkets.includes(c)) {
+        selectedSecondaryMarkets = selectedSecondaryMarkets.filter(x=>x!==c);
+        btn.style.opacity = '0.7';
+        btn.style.background = '';
+      } else {
+        if(c === 'None / Single market') {
+          selectedSecondaryMarkets = ['None / Single market'];
+          optWrap.querySelectorAll('button').forEach(b => { b.style.opacity='0.7'; b.style.background=''; });
+        } else {
+          selectedSecondaryMarkets = selectedSecondaryMarkets.filter(x=>x!=='None / Single market');
+          optWrap.querySelector('button[data-none]') && (optWrap.querySelector('button[data-none]').style.opacity='0.7');
+        }
+        selectedSecondaryMarkets.push(c);
+        btn.style.opacity = '1';
+        btn.style.background = 'rgba(46,168,90,0.25)';
+      }
+    };
+    if(c === 'None / Single market') btn.setAttribute('data-none','1');
+    optWrap.appendChild(btn);
+  });
+  const doneBtn = document.createElement('button');
+  doneBtn.className = 'qr-btn';
+  doneBtn.textContent = 'Confirm selection →';
+  doneBtn.style.cssText = 'background:var(--green);color:#fff;margin-top:4px;font-weight:600;';
+  doneBtn.onclick = () => {
+    const selected = selectedSecondaryMarkets.length ? selectedSecondaryMarkets : ['None / Single market'];
+    state.answers[key] = selected;
+    state.secondaryMarkets = selected;
+    addMsg(selected.join(', '), 'user');
+    area.innerHTML = '';
+    document.getElementById('user-input').disabled = false;
+    state.step++;
+    while(state.step < STEPS.length && STEPS[state.step].skipIf && STEPS[state.step].skipIf(state.answers)) state.step++;
+    updateProgress();
+    setTimeout(()=>askStep(state.step), 380);
+  };
+  wrap.appendChild(optWrap);
+  wrap.appendChild(doneBtn);
+  area.appendChild(wrap);
 }
-function confirmArrSlider(){
-  const idx=parseInt(document.getElementById('arr-slider').value);const arrStep=ARR_STEPS[idx];
-  document.getElementById('quick-reply-area').innerHTML='';addMsg(arrStep.label,'user');
-  state.answers['arr_revenue']=arrStep.value;state.answers['arr_label']=arrStep.label;
-  const hint=getStageHint(arrStep.value);const isEarly=hint.key==='Early'||hint.key==='Growth';
-  const next=state.step+1;buildSteps(isEarly);state.step=next;updateProgress();
-  if(isEarly)setTimeout(()=>addHint(`Based on your revenue, you're classified as <strong>${hint.key} stage</strong>. We'll include burn multiple, sales efficiency, and CAC payback for a more accurate score.`,'info'),200);
-  else setTimeout(()=>addHint(`Based on your revenue, you're classified as <strong>${hint.key} stage</strong> (benchmark growth rate: ${hint.bgr}%+).`,'info'),200);
-  setTimeout(()=>askStep(state.step),480);
-}
 
+function setQR(choices){
+  const area=document.getElementById('quick-reply-area'); area.innerHTML='';
+  if(!choices||!choices.length) return;
+  const wrap=document.createElement('div'); wrap.className='quick-replies';
+  choices.forEach(c=>{
+    const btn=document.createElement('button'); btn.className='qr-btn'; btn.textContent=c;
+    btn.onclick=()=>submitAnswer(c); wrap.appendChild(btn);
+  });
+  area.appendChild(wrap);
+}
 function showSlider(key){
-  const cfg=SLIDERS[key];if(!cfg)return;
-  const area=document.getElementById('quick-reply-area');area.innerHTML='';
-    const card=document.createElement('div');card.className='slider-card';
-  const sid='slider-'+key,did='sliderval-'+key;
-  card.innerHTML=`<div class="slider-top"><div><span class="slider-val-display" id="${did}">${cfg.default}</span><span class="slider-val-unit">${cfg.unit}</span></div><span class="slider-range-label">${cfg.min}${cfg.unit} – ${cfg.max}${cfg.unit}</span></div><input type="range" id="${sid}" min="${cfg.min}" max="${cfg.max}" step="${cfg.step}" value="${cfg.default}"><button class="slider-confirm-btn" id="confirm-${key}" onclick="confirmSlider('${key}')">Confirm ${cfg.default}${cfg.unit} →</button>`;
+  const cfg=SLIDERS[key]; if(!cfg) return;
+  const area=document.getElementById('quick-reply-area'); area.innerHTML='';
+  document.getElementById('user-input').disabled=true;
+  document.getElementById('send-btn').disabled=true;
+  const card=document.createElement('div');
+  card.className='slider-card'; card.id='slider-card-'+key;
+  const sid='slider-'+key, did='sliderval-'+key;
+  card.innerHTML=`
+    <div class="slider-top">
+      <div><span class="slider-val-display" id="${did}">${cfg.default}</span><span class="slider-val-unit">${cfg.unit}</span></div>
+      <span class="slider-range-label">${cfg.min}${cfg.unit} – ${cfg.max}${cfg.unit}</span>
+    </div>
+    <input type="range" id="${sid}" min="${cfg.min}" max="${cfg.max}" step="${cfg.step}" value="${cfg.default}">
+    <button class="slider-confirm-btn" id="confirm-${key}" onclick="confirmSlider('${key}')">Confirm ${cfg.default}${cfg.unit} →</button>
+  `;
   area.appendChild(card);
-  const slider=document.getElementById(sid),display=document.getElementById(did),btn=document.getElementById('confirm-'+key);
-  function update(){const v=parseFloat(slider.value);const disp=Number.isInteger(v)?v:v.toFixed(1);display.textContent=disp;btn.textContent=`Confirm ${disp}${cfg.unit} →`;slider.style.setProperty('--pct',((v-cfg.min)/(cfg.max-cfg.min)*100).toFixed(1)+'%');}
-  slider.addEventListener('input',update);update();card.scrollIntoView({behavior:'smooth',block:'nearest'});
+  const slider=document.getElementById(sid), display=document.getElementById(did);
+  const btn=document.getElementById('confirm-'+key);
+  function update(){
+    const v=parseFloat(slider.value);
+    const disp=Number.isInteger(v)?v:v.toFixed(1);
+    display.textContent=disp; btn.textContent=`Confirm ${disp}${cfg.unit} →`;
+    slider.style.setProperty('--pct',((v-cfg.min)/(cfg.max-cfg.min)*100).toFixed(1)+'%');
+  }
+  slider.addEventListener('input',update); update();
+  card.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 function confirmSlider(key){
-  const slider=document.getElementById('slider-'+key);const val=slider.value,cfg=SLIDERS[key];
+  const slider=document.getElementById('slider-'+key);
+  const val=slider.value, cfg=SLIDERS[key];
   document.getElementById('quick-reply-area').innerHTML='';
   const disp=Number.isInteger(parseFloat(val))?val:parseFloat(val).toFixed(1);
-  addMsg(disp+cfg.unit,'user');state.answers[key]=val;state.step++;updateProgress();
+  addMsg(disp+cfg.unit,'user');
+  state.answers[key]=val;
+
+  // After ARR is confirmed, derive stage and rebuild steps
+  if (key==='arr_revenue') {
+    const arrM = parseFloat(val);
+    const stage = classifyStage(arrM);
+    const next = state.step+1;
+    buildSteps(stage.key); state.step=next; updateProgress();
+    const isEarly = stage.key==='Early'||stage.key==='Growth';
+    if (isEarly) setTimeout(()=>addHint(`Based on your revenue, you're classified as <strong>${stage.key} stage</strong>. We'll include burn multiple, sales efficiency, and CAC payback for a more accurate efficiency score.`,'info'),200);
+    else setTimeout(()=>addHint(`Based on your revenue, you're classified as <strong>${stage.key} stage</strong> (benchmark growth rate: ${Math.round(stage.bgr*100)}%+).`,'info'),200);
+    setTimeout(()=>askStep(state.step),480); return;
+  }
+
+  state.step++;
+  // Skip steps that have a skipIf condition returning true
+  while(state.step < STEPS.length && STEPS[state.step].skipIf && STEPS[state.step].skipIf(state.answers)) {
+    state.step++;
+  }
+  updateProgress();
   setTimeout(()=>askStep(state.step),380);
 }
 
+// ── STEP ENGINE ───────────────────────────────────────────────────────────────
 function askStep(idx){
-  const step=STEPS[idx];if(!step){computeAndShow();return;}
+  const step=STEPS[idx]; if(!step){showResults();return;}
   const q=typeof step.ask==='function'?step.ask(state.answers):step.ask;
   showTyping();
   setTimeout(()=>{
-    removeTyping();addMsg(q.replace(/\n/g,'<br>'),'bot');
-    if(step.type==='arr'){addHint(step.hint||'Select your ARR bracket.');showArrPicker();}
-    else if(step.type==='slider'){if(SLIDERS[step.key]&&SLIDERS[step.key].hint)addHint(SLIDERS[step.key].hint);showSlider(step.key);}
-    else if(step.type==='choice'){if(step.hint)addHint(step.hint);setQR(step.choices);}
-
+    removeTyping(); addMsg(q.replace(/\n/g,'<br>'),'bot');
+    if(step.type==='slider'){
+      if(SLIDERS[step.key]&&SLIDERS[step.key].hint) addHint(SLIDERS[step.key].hint);
+      showSlider(step.key);
+    } else if(step.type==='multi'){
+      if(step.hint) addHint(step.hint);
+      showMultiSelect(step.key, step.choices);
+      document.getElementById('user-input').disabled=true;
+    } else if(step.type==='choice'){
+      if(step.hint) addHint(step.hint);
+      setQR(step.choices);
+      document.getElementById('user-input').disabled=true;
+      document.getElementById('send-btn').disabled=true;
+    } else {
+      setQR([]);
+      document.getElementById('user-input').disabled=false;
+      document.getElementById('send-btn').disabled=false;
+      setTimeout(()=>document.getElementById('user-input').focus(),50);
+    }
   },650);
 }
 function submitAnswer(val){
-  const step=STEPS[state.step];if(!step)return;
+  const step=STEPS[state.step]; if(!step) return;
   document.getElementById('quick-reply-area').innerHTML='';
-  addMsg(val,'user');state.answers[step.key]=val;
-  state.step++;updateProgress();setTimeout(()=>askStep(state.step),380);
+  document.getElementById('user-input').value='';
+  addMsg(val,'user');
+  state.answers[step.key]=val;
+  if(step.key==='company') state.companyName=val;
+  state.step++; updateProgress();
+  setTimeout(()=>askStep(state.step),380);
+}
+function handleSend(){
+  const v=document.getElementById('user-input').value.trim(); if(v) submitAnswer(v);
 }
 
-async function computeAndShow(){
-  setQR([]);
-  document.getElementById('progress-text').textContent='Calculating...';
-  showTyping();
-  let result;
-  try{
-    const res=await fetch('/.netlify/functions/compute-score',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(state.answers)});
-    result=await res.json();
-    if(!res.ok||!result.success)throw new Error(result.error||'Scoring failed');
-  }catch(err){
-    removeTyping();addMsg('Something went wrong calculating your score. Please try again or contact <a href="mailto:hello@growfitt.ai">hello@growfitt.ai</a>.','bot');
-    
-    document.getElementById('progress-text').textContent='Error — please retry. Please refresh the page.';return;
+// ── GAUGE ─────────────────────────────────────────────────────────────────────
+function drawGauge(canvasId,gfs,adjGfs){
+  const canvas=document.getElementById(canvasId); if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width,H=canvas.height,cx=W/2,cy=H-10,r=H-22;
+  ctx.clearRect(0,0,W,H);
+  // Track
+  ctx.beginPath(); ctx.arc(cx,cy,r,Math.PI,2*Math.PI);
+  ctx.strokeStyle='#e0e5df'; ctx.lineWidth=10; ctx.lineCap='round'; ctx.stroke();
+  // Raw GFS arc (lighter)
+  const pctRaw=Math.min(1,Math.max(0,gfs/5));
+  ctx.beginPath(); ctx.arc(cx,cy,r,Math.PI,Math.PI+pctRaw*Math.PI);
+  ctx.strokeStyle='rgba(46,107,53,0.25)'; ctx.lineWidth=10; ctx.lineCap='round'; ctx.stroke();
+  // Adjusted GFS arc (solid)
+  const scoreToShow = adjGfs !== undefined ? adjGfs : gfs;
+  const pct=Math.min(1,Math.max(0,scoreToShow/5));
+  const col=scoreToShow<2.5?'#c0392b':scoreToShow<3.0?'#e07b00':scoreToShow<3.8?'#639922':'#2e6b35';
+  ctx.beginPath(); ctx.arc(cx,cy,r,Math.PI,Math.PI+pct*Math.PI);
+  ctx.strokeStyle=col; ctx.lineWidth=10; ctx.lineCap='round'; ctx.stroke();
+  const nx=cx+r*Math.cos(Math.PI+pct*Math.PI),ny=cy+r*Math.sin(Math.PI+pct*Math.PI);
+  ctx.beginPath(); ctx.arc(nx,ny,5,0,2*Math.PI); ctx.fillStyle=col; ctx.fill();
+}
+
+// ── EMAIL ─────────────────────────────────────────────────────────────────────
+async function sendEmail(){
+  const email=document.getElementById('email-input').value.trim();
+  const btn=document.getElementById('email-btn'), status=document.getElementById('email-status');
+  if(!email||!email.includes('@')){status.innerHTML='<div class="err-msg">Please enter a valid email address.</div>';return;}
+  btn.disabled=true; btn.textContent='Sending...'; status.innerHTML='';
+  const s=state.scores;
+  const payload={
+    to:email, companyName:state.companyName,
+    scores:{
+      GFS:s.GFS, adjGFS:s.adjGFS, hasAdjustment:s.hasAdjustment,
+      belowComponents:s.belowComponents,
+      GQS:s.GQS,RS:s.RS,ES:s.ES,
+      OGR_Low:s.OGR_Low,OGR_High:s.OGR_High,
+      zone:s.zone,interpretation:s.interpretation,
+      growth:s.growth,nrr:s.nrr,grr:s.grr,gm:s.gm,fcf:s.fcf,
+      expansion:s.expansion,isEarly:s.isEarly,esFormula:s.esFormula,
+      stageKey:s.stageKey, growthFlag:s.growthFlag,
+      recommendations:getRecs(s)
+    }
+  };
+  try {
+    const res=await fetch('/.netlify/functions/send-report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const data=await res.json();
+    if(res.ok&&data.success){
+      status.innerHTML='<div class="sent-msg">✓ Report sent to '+email+'</div>';
+      btn.textContent='Sent ✓';
+    } else { throw new Error(data.error||'Unknown error'); }
+  } catch(err){
+    status.innerHTML='<div class="err-msg">Failed to send: '+err.message+'</div>';
+    btn.disabled=false; btn.textContent='Send report';
   }
-  const s=result.scores;state.scores=s;state.lastRecs=result.recommendations;
-  document.getElementById('progress-fill').style.width='100%';document.getElementById('progress-pct').textContent='100%';document.getElementById('progress-text').textContent='Assessment complete';
-  removeTyping();addMsg(`Assessment complete. ${state.companyName}'s Growth Fitness Score is <strong>${s.adjGFS.toFixed(2)}/5.00</strong> — <strong>${s.interpretation}</strong>.`,'bot');
-  renderResultCard(s,result.recommendations);
-  autoSendReport(s,result.recommendations);
 }
 
-function renderResultCard(s,recs){
-  const chat=document.getElementById('chat');
-  const zoneClass=s.zone==='Fit'?'zone-fit':s.zone==='Over'?'zone-over':'zone-under';
-  const recHtml=recs.map(r=>`<div class="rec-item"><span class="rec-arrow">→</span><span>${r}</span></div>`).join('');
-  const adjDiff=s.adjGFS-s.GFS;
-  const adjHtml=s.hasAdjustment?`<div class="gfs-comparison ${adjDiff<0?'declined':'improved'}"><div><div class="gfs-adj-label">Raw GFS <span style="opacity:0.6">vs</span> Adjusted GFS</div><div class="gfs-adj-note">Adjusted for weak component${s.belowComponents.length>1?'s':''}: ${s.belowComponents.join(', ')}</div></div><span class="gfs-adj-val ${adjDiff<0?'down':'up'}">${s.GFS.toFixed(2)}</span><span class="gfs-adj-arrow ${adjDiff<0?'down':'up'}">${adjDiff<0?'↓':'↑'}</span><span class="gfs-adj-val ${adjDiff<0?'down':'up'}">${s.adjGFS.toFixed(2)}</span></div>`:'';
-  const flagHtml=s.growthFlag?`<div class="growth-flag ${s.growthFlag}">${s.growthFlag==='outlier'?'⚡ Outlier — growth significantly above benchmark':'⚠ Laggard — growth significantly below benchmark'}</div>`:'';
-  const effTiles=s.isEarly?`<div class="metric-tile"><div class="label">Sales efficiency</div><div class="value">${parseFloat(state.answers.sales_efficiency||1).toFixed(1)}x</div><div class="sub">Magic number</div></div><div class="metric-tile"><div class="label">CAC payback</div><div class="value">${state.answers.cac_payback||18}mo</div><div class="sub">Months to recover</div></div><div class="metric-tile"><div class="label">Burn multiple</div><div class="value">${parseFloat(state.answers.burn_multiple||2).toFixed(1)}x</div><div class="sub">Burn ÷ net new ARR</div></div>`:`<div class="metric-tile"><div class="label">Gross margin</div><div class="value">${(s.gm*100).toFixed(0)}%</div><div class="sub">Unit economics</div></div><div class="metric-tile"><div class="label">FCF margin</div><div class="value">${(s.fcf*100).toFixed(0)}%</div><div class="sub">Cash efficiency</div></div><div class="metric-tile"><div class="label">Expansion ratio</div><div class="value">${(s.expansion*100).toFixed(0)}pp</div><div class="sub">NRR − GRR spread</div></div>`;
-  const card=document.createElement('div');card.className='result-card';
-  card.innerHTML=`<div class="result-header"><h2>GrowFitt Growth Advisor — ${state.companyName}</h2><p>Generated ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})} · Model v3.2 · ${s.stageKey} stage · ${state.answers.arr_label||''} ARR · ${s.category||''}${s.categoryMultiplier&&s.categoryMultiplier!==1?' ('+s.categoryMultiplier+'×)':''}</p></div><div class="result-body"><div class="gauge-section"><canvas id="gauge-canvas" width="160" height="90"></canvas><div class="score-block"><div><span class="score-num">${s.adjGFS.toFixed(2)}</span><span class="score-denom">/5.00</span></div><div class="score-label">Growth Fitness Score${s.hasAdjustment?' (adjusted)':''}</div><div class="zone-badge ${zoneClass}">${s.interpretation} · ${s.zone} zone</div>${flagHtml}${adjHtml}</div></div><div class="section-title">Key metrics</div><div class="metrics-grid"><div class="metric-tile"><div class="label">Optimal growth range</div><div class="value">${(s.OGR_Low*100).toFixed(0)}–${(s.OGR_High*100).toFixed(0)}%</div><div class="sub">${s.cbgr?Math.round(s.cbgr*100)+'% CBGR-adjusted':'System can sustain'}</div></div><div class="metric-tile"><div class="label">Current growth rate</div><div class="value">${(s.growth*100).toFixed(0)}%</div><div class="sub">${s.zone==='Fit'?'Within fit range':s.zone==='Over'?'Above fit range':'Below fit range'}</div></div><div class="metric-tile"><div class="label">NRR</div><div class="value">${(s.nrr*100).toFixed(0)}%</div><div class="sub">Net revenue retention</div></div></div><div class="section-title" style="margin-top:4px">Efficiency inputs <span class="model-badge">${s.esFormula}</span></div><div class="metrics-grid">${effTiles}</div><div class="section-title" style="margin-top:4px">Component scores</div><div class="sub-scores"><div class="sub-row"><span class="sub-name">Growth quality (GQS)</span><div class="bar-track"><div class="bar-fill ${s.GQSBelow?'below':''}" style="width:${(s.GQS/5*100).toFixed(0)}%"></div></div><span class="sub-val">${s.GQS.toFixed(1)}</span>${s.GQSBelow?'<span class="sub-flag low">Below threshold</span>':''}</div><div class="sub-row"><span class="sub-name">Retention score (RS)</span><div class="bar-track"><div class="bar-fill ${s.RSBelow?'below':''}" style="width:${(s.RS/5*100).toFixed(0)}%"></div></div><span class="sub-val">${s.RS.toFixed(1)}</span>${s.RSBelow?'<span class="sub-flag low">Below threshold</span>':''}</div><div class="sub-row"><span class="sub-name">Efficiency score (ES)</span><div class="bar-track"><div class="bar-fill ${s.ESBelow?'below':''}" style="width:${(s.ES/5*100).toFixed(0)}%"></div></div><span class="sub-val">${s.ES.toFixed(1)}</span>${s.ESBelow?'<span class="sub-flag low">Below threshold</span>':''}</div></div><div class="section-title">Recommendations</div><div class="recs">${recHtml}</div><div class="report-sent-strip"><svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg><span>Report sent to your registered email — <strong>${verifiedEmail}</strong></span></div><button class="pdf-btn" onclick="downloadPDF()"><svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>Download report as PDF</button><button class="restart-btn" onclick="restart()">↺ Start new assessment</button></div>`;
-  chat.appendChild(card);card.scrollIntoView({behavior:'smooth',block:'nearest'});
+// ── RESULTS ───────────────────────────────────────────────────────────────────
+function showResults(){
+  const s=computeScores(state.answers); state.scores=s;
+  setQR([]);
+  document.getElementById('user-input').disabled=true;
+  document.getElementById('send-btn').disabled=true;
+  document.getElementById('input-area').style.display='none';
+
+  // ── Heavy-duty processing illusion ────────────────────────────────────────
+  const processingSteps = [
+    { pct:12,  text:'Initialising GFS Model v3.1...',              delay:0    },
+    { pct:22,  text:'Classifying company stage from ARR...',        delay:600  },
+    { pct:34,  text:'Computing Growth Quality Score (GQS)...',      delay:1200 },
+    { pct:46,  text:'Evaluating Retention Score (RS)...',           delay:1900 },
+    { pct:58,  text:'Calculating Efficiency Score (ES)...',         delay:2600 },
+    { pct:69,  text:'Applying benchmark growth rate (BGR)...',      delay:3400 },
+    { pct:78,  text:'Running component threshold analysis...',      delay:4100 },
+    { pct:86,  text:'Calibrating Optimal Growth Range (OGR)...',    delay:4800 },
+    { pct:93,  text:'Generating recommendations...',                delay:5400 },
+    { pct:100, text:'Assessment complete',                          delay:6100 },
+  ];
+  const pFill = document.getElementById('progress-fill');
+  const pText = document.getElementById('progress-text');
+  const pPct  = document.getElementById('progress-pct');
+
+  processingSteps.forEach((step, i) => {
+    setTimeout(() => {
+      if(pFill) pFill.style.width = step.pct + '%';
+      if(pPct)  pPct.textContent  = step.pct + '%';
+      if(pText) pText.textContent = step.text;
+      if(i === 0) showTyping();
+      if(i === processingSteps.length - 1) {
+        // All processing done — show result
+        setTimeout(()=>{
+          removeTyping();
+          revealResult(s);
+        }, 900);
+      }
+    }, step.delay);
+  });
+}
+
+function revealResult(s){
+  removeTyping();
+  const scoreToShow = s.adjGFS.toFixed(2);
+    addMsg(`Assessment complete. ${state.companyName}'s Growth Fitness Score is <strong>${scoreToShow}/5.00</strong> — <strong>${s.interpretation}</strong>.`,'bot');
+
+    const chat=document.getElementById('chat');
+    const zoneClass=s.zone==='Fit'?'zone-fit':s.zone==='Over'?'zone-over':'zone-under';
+    const recs=getRecs(s);
+    const recHtml=recs.map(r=>`<div class="rec-item"><span class="rec-arrow">→</span><span>${r}</span></div>`).join('');
+    const sub=state.esSubScores;
+
+    // Adjusted GFS comparison block
+    const adjDiff = s.adjGFS - s.GFS;
+    const adjHtml = s.hasAdjustment ? `
+      <div class="gfs-comparison ${adjDiff<0?'declined':'improved'}">
+        <div>
+          <div class="gfs-adj-label">Raw GFS <span style="opacity:0.6">vs</span> Adjusted GFS</div>
+          <div class="gfs-adj-note">Adjusted for weak component${s.belowComponents.length>1?'s':''}: ${s.belowComponents.join(', ')}</div>
+        </div>
+        <span class="gfs-adj-val ${adjDiff<0?'down':'up'}">${s.GFS.toFixed(2)}</span>
+        <span class="gfs-adj-arrow ${adjDiff<0?'down':'up'}">${adjDiff<0?'↓':'↑'}</span>
+        <span class="gfs-adj-val ${adjDiff<0?'down':'up'}">${s.adjGFS.toFixed(2)}</span>
+      </div>` : '';
+
+    // Growth flag
+    const flagHtml = s.growthFlag ? `
+      <div class="growth-flag ${s.growthFlag}">
+        ${s.growthFlag==='outlier'?'⚡ Outlier — growth significantly above benchmark':'⚠ Laggard — growth significantly below benchmark'}
+      </div>` : '';
+
+    // Efficiency tiles
+    const effTiles = s.isEarly ? `
+      <div class="metric-tile"><div class="label">Sales efficiency</div><div class="value">${parseFloat(state.answers.sales_efficiency||1).toFixed(1)}x</div><div class="sub">Magic number</div></div>
+      <div class="metric-tile"><div class="label">CAC payback</div><div class="value">${state.answers.cac_payback||18}mo</div><div class="sub">Months to recover</div></div>
+      <div class="metric-tile"><div class="label">Burn multiple</div><div class="value">${parseFloat(state.answers.burn_multiple||2).toFixed(1)}x</div><div class="sub">Burn ÷ net new ARR</div></div>
+    ` : `
+      <div class="metric-tile"><div class="label">Gross margin</div><div class="value">${(s.gm*100).toFixed(0)}%</div><div class="sub">Unit economics</div></div>
+      <div class="metric-tile"><div class="label">FCF margin</div><div class="value">${(s.fcf*100).toFixed(0)}%</div><div class="sub">Cash efficiency</div></div>
+      <div class="metric-tile"><div class="label">Expansion ratio</div><div class="value">${(s.expansion*100).toFixed(0)}pp</div><div class="sub">NRR − GRR spread</div></div>
+    `;
+
+    // Bar flags for below-threshold components
+    const gqsBelow = s.GQS < 3.0, rsBelow = s.RS < 3.0, esBelow = s.ES < 3.0;
+
+    const card=document.createElement('div'); card.className='result-card';
+    card.innerHTML=`
+      <div class="result-header">
+        <h2>GrowFitt Growth Advisor — ${state.companyName}</h2>
+        <p>Generated ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})} · Model v3.1 · ${s.stageKey} stage · $${s.arrM}M ARR${state.primaryMarket ? ' · ' + state.primaryMarket : ''}${state.companyWebsite ? ' · <a href="' + state.companyWebsite + '" style="color:var(--green-light);" target="_blank">' + state.companyWebsite + '</a>' : ''}</p>
+      </div>
+      <div class="result-body">
+        <div class="gauge-section">
+          <canvas id="gauge-canvas" width="160" height="90"></canvas>
+          <div class="score-block">
+            <div><span class="score-num">${s.adjGFS.toFixed(2)}</span><span class="score-denom">/5.00</span></div>
+            <div class="score-label">Growth Fitness Score${s.hasAdjustment?' (adjusted)':''}</div>
+            <div class="zone-badge ${zoneClass}">${s.interpretation} · ${s.zone} zone</div>
+            ${flagHtml}
+            ${adjHtml}
+          </div>
+        </div>
+
+        <div class="section-title">Key metrics</div>
+        <div class="metrics-grid">
+          <div class="metric-tile">
+            <div class="label">Optimal growth range</div>
+            <div class="value">${(s.OGR_Low*100).toFixed(0)}–${(s.OGR_High*100).toFixed(0)}%</div>
+            <div class="sub">System can sustain</div>
+          </div>
+          <div class="metric-tile">
+            <div class="label">Current growth rate</div>
+            <div class="value">${(s.growth*100).toFixed(0)}%</div>
+            <div class="sub">${s.zone==='Fit'?'Within fit range':s.zone==='Over'?'Above fit range':'Below fit range'}</div>
+          </div>
+          <div class="metric-tile">
+            <div class="label">NRR</div>
+            <div class="value">${(s.nrr*100).toFixed(0)}%</div>
+            <div class="sub">Net revenue retention</div>
+          </div>
+        </div>
+
+        <div class="section-title" style="margin-top:4px">Efficiency inputs <span class="model-badge">${s.esFormula}</span></div>
+        <div class="metrics-grid">${effTiles}</div>
+
+        <div class="section-title" style="margin-top:4px">Component scores</div>
+        <div class="sub-scores">
+          <div class="sub-row">
+            <span class="sub-name">Growth quality (GQS)</span>
+            <div class="bar-track"><div class="bar-fill ${gqsBelow?'below':''}" style="width:${(s.GQS/5*100).toFixed(0)}%"></div></div>
+            <span class="sub-val">${s.GQS.toFixed(1)}</span>
+            ${gqsBelow?'<span class="sub-flag low">Below threshold</span>':''}
+          </div>
+          <div class="sub-row">
+            <span class="sub-name">Retention score (RS)</span>
+            <div class="bar-track"><div class="bar-fill ${rsBelow?'below':''}" style="width:${(s.RS/5*100).toFixed(0)}%"></div></div>
+            <span class="sub-val">${s.RS.toFixed(1)}</span>
+            ${rsBelow?'<span class="sub-flag low">Below threshold</span>':''}
+          </div>
+          <div class="sub-row">
+            <span class="sub-name">Efficiency score (ES)</span>
+            <div class="bar-track"><div class="bar-fill ${esBelow?'below':''}" style="width:${(s.ES/5*100).toFixed(0)}%"></div></div>
+            <span class="sub-val">${s.ES.toFixed(1)}</span>
+            ${esBelow?'<span class="sub-flag low">Below threshold</span>':''}
+          </div>
+        </div>
+
+        <div class="section-title">Recommendations</div>
+        <div class="recs">${recHtml}</div>
+
+        <div class="email-section">
+          <div class="label">Send this report to the prospect</div>
+          <div class="email-row">
+            <input type="email" id="email-input" placeholder="prospect@company.com" />
+            <button class="email-send" id="email-btn" onclick="sendEmail()">Send report</button>
+          </div>
+          <div id="email-status"></div>
+        </div>
+        <button class="restart-btn" onclick="restart()">↺ Start new assessment</button>
+      </div>`;
+    chat.appendChild(card); card.scrollIntoView({behavior:'smooth',block:'nearest'});
   setTimeout(()=>drawGauge('gauge-canvas',s.GFS,s.adjGFS),120);
 }
 
-function drawGauge(canvasId,gfs,adjGfs){
-  const canvas=document.getElementById(canvasId);if(!canvas)return;
-  const ctx=canvas.getContext('2d');const W=canvas.width,H=canvas.height,cx=W/2,cy=H-10,r=H-22;
-  ctx.clearRect(0,0,W,H);
-  ctx.beginPath();ctx.arc(cx,cy,r,Math.PI,2*Math.PI);ctx.strokeStyle='#e0e5df';ctx.lineWidth=10;ctx.lineCap='round';ctx.stroke();
-  ctx.beginPath();ctx.arc(cx,cy,r,Math.PI,Math.PI+Math.min(1,Math.max(0,gfs/5))*Math.PI);ctx.strokeStyle='rgba(46,107,53,0.25)';ctx.lineWidth=10;ctx.lineCap='round';ctx.stroke();
-  const score=adjGfs!==undefined?adjGfs:gfs;const pct=Math.min(1,Math.max(0,score/5));
-  const col=score<2.5?'#c0392b':score<3.0?'#e07b00':score<3.8?'#639922':'#2e6b35';
-  ctx.beginPath();ctx.arc(cx,cy,r,Math.PI,Math.PI+pct*Math.PI);ctx.strokeStyle=col;ctx.lineWidth=10;ctx.lineCap='round';ctx.stroke();
-  const nx=cx+r*Math.cos(Math.PI+pct*Math.PI),ny=cy+r*Math.sin(Math.PI+pct*Math.PI);
-  ctx.beginPath();ctx.arc(nx,ny,5,0,2*Math.PI);ctx.fillStyle=col;ctx.fill();
-}
-
-async function autoSendReport(s,recs){
-  if(!verifiedEmail){console.warn('No verified email — skipping auto-send');return;}
-  const payload={to:verifiedEmail,companyName:state.companyName,scores:{GFS:s.GFS,adjGFS:s.adjGFS,hasAdjustment:s.hasAdjustment,belowComponents:s.belowComponents,GQS:s.GQS,RS:s.RS,ES:s.ES,OGR_Low:s.OGR_Low,OGR_High:s.OGR_High,zone:s.zone,interpretation:s.interpretation,growth:s.growth,nrr:s.nrr,grr:s.grr,gm:s.gm,fcf:s.fcf,expansion:s.expansion,isEarly:s.isEarly,esFormula:s.esFormula,stageKey:s.stageKey,growthFlag:s.growthFlag,recommendations:recs}};
-  try{
-    await fetch('/.netlify/functions/send-report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-  }catch(err){console.error('Auto-send failed:',err);}
-}
-
+// ── RESTART ───────────────────────────────────────────────────────────────────
 function restart(){
-  state.step=0;state.answers={};state.scores={};state.companyName='';state.lastRecs=[];buildSteps(false);
-  document.getElementById('chat').innerHTML='';document.getElementById('quick-reply-area').innerHTML='';
-  updateProgress();askStep(0);
-}
-// ── EMAIL GATE ────────────────────────────────────────────────────────────────
-let verifiedEmail = '';
-
-
-function downloadPDF(){
-  var s=state.scores, recs=state.lastRecs||[];
-  var date=new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
-
-  // Zone class
-  var zoneClass=s.zone==='Fit'?'pr-zone-fit':s.zone==='Over'?'pr-zone-over':'pr-zone-under';
-  var zoneTxt=s.interpretation+' \u00b7 '+s.zone+' zone';
-
-  // Flag
-  var flagHtml='';
-  if(s.growthFlag==='outlier') flagHtml='<div class="pr-flag outlier">\u26a1 Outlier \u2014 growth significantly above benchmark</div>';
-  else if(s.growthFlag==='laggard') flagHtml='<div class="pr-flag laggard">\u26a0 Laggard \u2014 growth significantly below benchmark</div>';
-
-  // Adjusted GFS
-  var adjDiff=s.adjGFS-s.GFS;
-  var adjHtml='';
-  if(s.hasAdjustment){
-    var adjCls=adjDiff<0?'':'improved';
-    adjHtml='<div class="pr-adj-box '+adjCls+'"><div class="pr-adj-label">Raw GFS vs Adjusted GFS</div>'
-      +'<div class="pr-adj-vals '+adjCls+'">'+s.GFS.toFixed(2)+' '+(adjDiff<0?'\u2193':'\u2191')+' '+s.adjGFS.toFixed(2)+'</div>'
-      +'<div class="pr-adj-note">Adjusted for: '+s.belowComponents.join(', ')+'</div></div>';
-  }
-
-  // Key metrics
-  var metricsHtml='<div class="pr-metrics">'
-    +'<div class="pr-metric"><div class="pr-metric-label">Optimal growth range</div><div class="pr-metric-value">'+(s.OGR_Low*100).toFixed(0)+'\u2013'+(s.OGR_High*100).toFixed(0)+'%</div><div class="pr-metric-sub">System can sustain</div></div>'
-    +'<div class="pr-metric"><div class="pr-metric-label">Current growth rate</div><div class="pr-metric-value">'+(s.growth*100).toFixed(0)+'%</div><div class="pr-metric-sub">'+(s.zone==='Fit'?'Within fit range':s.zone==='Over'?'Above fit range':'Below fit range')+'</div></div>'
-    +'<div class="pr-metric"><div class="pr-metric-label">NRR</div><div class="pr-metric-value">'+(s.nrr*100).toFixed(0)+'%</div><div class="pr-metric-sub">Net revenue retention</div></div>'
-    +'</div>';
-
-  // Efficiency metrics
-  var effHtml='<div class="pr-metrics">';
-  if(s.isEarly){
-    effHtml+='<div class="pr-metric"><div class="pr-metric-label">Sales efficiency</div><div class="pr-metric-value">'+parseFloat(state.answers.sales_efficiency||1).toFixed(1)+'x</div><div class="pr-metric-sub">Magic number</div></div>';
-    effHtml+='<div class="pr-metric"><div class="pr-metric-label">CAC payback</div><div class="pr-metric-value">'+(state.answers.cac_payback||18)+'mo</div><div class="pr-metric-sub">Months to recover</div></div>';
-    effHtml+='<div class="pr-metric"><div class="pr-metric-label">Burn multiple</div><div class="pr-metric-value">'+parseFloat(state.answers.burn_multiple||2).toFixed(1)+'x</div><div class="pr-metric-sub">Burn \u00f7 net new ARR</div></div>';
-  } else {
-    effHtml+='<div class="pr-metric"><div class="pr-metric-label">Gross margin</div><div class="pr-metric-value">'+(s.gm*100).toFixed(0)+'%</div><div class="pr-metric-sub">Unit economics</div></div>';
-    effHtml+='<div class="pr-metric"><div class="pr-metric-label">FCF margin</div><div class="pr-metric-value">'+(s.fcf*100).toFixed(0)+'%</div><div class="pr-metric-sub">Cash efficiency</div></div>';
-    effHtml+='<div class="pr-metric"><div class="pr-metric-label">Expansion ratio</div><div class="pr-metric-value">'+(s.expansion*100).toFixed(0)+'pp</div><div class="pr-metric-sub">NRR \u2212 GRR spread</div></div>';
-  }
-  effHtml+='</div>';
-
-  // Component bars
-  function bar(label,val){
-    var pct=(val/5*100).toFixed(0);
-    var low=val<3.0;
-    return '<div class="pr-bar-row">'
-      +'<span class="pr-bar-label">'+label+'</span>'
-      +'<div class="pr-bar-track"><div class="pr-bar-fill '+(low?'low':'ok')+'" style="width:'+pct+'%"></div></div>'
-      +'<span class="pr-bar-val '+(low?'low':'ok')+'">'+val.toFixed(1)+'</span>'
-      +(low?'<span class="pr-below-tag">Below threshold</span>':'')
-      +'</div>';
-  }
-  var barsHtml=bar('Growth quality (GQS)',s.GQS)+bar('Retention score (RS)',s.RS)+bar('Efficiency score (ES)',s.ES);
-
-  // Recommendations
-  var recsHtml=recs.map(function(r){
-    return '<div class="pr-rec"><span class="pr-rec-arrow">\u2192</span><span class="pr-rec-text">'+r+'</span></div>';
-  }).join('');
-
-  // Build full report HTML
-  var report='<div class="pr-page">'
-    // Header
-    +'<div class="pr-header">'
-      +'<div class="pr-header-left">'
-        +'<div class="pr-logo-text">Grow<span>Fitt</span></div>'
-        +'<div class="pr-tagline">Growth Fitness Assessment</div>'
-      +'</div>'
-      +'<div class="pr-header-right">'
-        +'<div class="pr-company">'+state.companyName+'</div>'
-        +'<div class="pr-meta">'+date+' \u00b7 Model v3.1 \u00b7 '+s.stageKey+' stage \u00b7 '+(state.answers.arr_label||'')+'</div>'
-      +'</div>'
-    +'</div>'
-    // Body
-    +'<div class="pr-body">'
-      // Score hero
-      +'<div class="pr-score-hero">'
-        +'<div class="pr-score-left">'
-          +'<div><span class="pr-score-num">'+s.adjGFS.toFixed(2)+'</span><span class="pr-score-denom">/5.00</span></div>'
-          +'<div class="pr-score-label">Growth Fitness Score'+(s.hasAdjustment?' (adjusted)':'')+'</div>'
-          +'<div class="pr-zone '+zoneClass+'">'+zoneTxt+'</div>'
-          +flagHtml
-          +adjHtml
-        +'</div>'
-        +'<div class="pr-score-right">'
-          // Mini OGR display
-          +'<div style="background:#f8f9f7;border:1px solid #eee;border-radius:10px;padding:16px;text-align:center;">'
-            +'<div style="font-size:9.5px;color:#888;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">Optimal Growth Range</div>'
-            +'<div style="font-size:28px;font-weight:800;color:#1a6632;letter-spacing:-1px;">'+(s.OGR_Low*100).toFixed(0)+'\u2013'+(s.OGR_High*100).toFixed(0)+'%</div>'
-            +'<div style="font-size:9.5px;color:#aaa;margin-top:4px;">Current: '+(s.growth*100).toFixed(0)+'% \u00b7 '+s.zone+'</div>'
-          +'</div>'
-        +'</div>'
-      +'</div>'
-      // Two column: metrics + components
-      +'<div class="pr-two-col">'
-        +'<div>'
-          +'<div class="pr-section">'
-            +'<div class="pr-section-title">Key metrics</div>'
-            +metricsHtml
-          +'</div>'
-          +'<div class="pr-section" style="margin-top:16px;">'
-            +'<div class="pr-section-title">Efficiency inputs \u00b7 <span style="color:#185fa5;font-size:9px;">'+s.esFormula+'</span></div>'
-            +effHtml
-          +'</div>'
-        +'</div>'
-        +'<div>'
-          +'<div class="pr-section">'
-            +'<div class="pr-section-title">Component scores</div>'
-            +barsHtml
-          +'</div>'
-        +'</div>'
-      +'</div>'
-      // Recommendations full width
-      +'<div class="pr-section" style="margin-top:20px;">'
-        +'<div class="pr-section-title">Recommendations</div>'
-        +recsHtml
-      +'</div>'
-    +'</div>'
-    // Footer
-    +'<div class="pr-footer">'
-      +'<div class="pr-footer-left">Confidential \u00b7 Generated by GrowFitt \u00b7 '+date+'</div>'
-      +'<div class="pr-footer-right">hello@growfitt.ai \u00b7 growfitt.ai</div>'
-    +'</div>'
-  +'</div>';
-
-  // Inject into placeholder and print
-  var el=document.getElementById('pdf-report');
-  el.innerHTML=report;
-  var prevTitle=document.title;
-  document.title='GrowFitt Growth Audit \u2014 '+state.companyName+' \u2014 GFS '+s.adjGFS.toFixed(2);
-  window.print();
-  document.title=prevTitle;
-  el.innerHTML='';
+  state.step=0; state.answers={}; state.scores={}; state.companyName=''; state.companyWebsite=''; state.primaryMarket=''; state.secondaryMarkets=[]; state.esSubScores={}; selectedSecondaryMarkets=[];
+  buildSteps('Late');
+  document.getElementById('chat').innerHTML='';
+  document.getElementById('quick-reply-area').innerHTML='';
+  document.getElementById('input-area').style.display='block';
+  document.getElementById('user-input').disabled=false;
+  document.getElementById('send-btn').disabled=false;
+  updateProgress(); askStep(0);
 }
 
-async function requestOTP() {
-  const email = document.getElementById('gate-email').value.trim();
-  const errEl = document.getElementById('gate-email-err');
-  const btn = document.getElementById('gate-send-btn');
-  errEl.textContent = '';
-  document.getElementById('gate-email').classList.remove('error');
-  if (!email || !email.includes('@') || !email.includes('.')) {
-    errEl.textContent = 'Please enter a valid email address.';
-    document.getElementById('gate-email').classList.add('error');
-    return;
-  }
-  btn.disabled = true;
-  btn.innerHTML = '<span class="gate-spinner"></span>Sending...';
-  try {
-    const res = await fetch('/.netlify/functions/verify-email', {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ action: 'request', email })
-    });
-    const data = await res.json();
-    if (res.ok && data.success) {
-      verifiedEmail = email;
-      document.getElementById('gate-email-display').textContent = email;
-      document.getElementById('gate-step-email').style.display = 'none';
-      document.getElementById('gate-step-otp').style.display = 'block';
-      setTimeout(() => document.getElementById('gate-otp').focus(), 100);
-    } else {
-      errEl.textContent = data.error || 'Failed to send code. Please try again.';
-      document.getElementById('gate-email').classList.add('error');
-    }
-  } catch {
-    errEl.textContent = 'Network error. Please try again.';
-  }
-  btn.disabled = false;
-  btn.innerHTML = 'Send access code';
-}
-
-async function verifyOTP() {
-  const otp = document.getElementById('gate-otp').value.trim();
-  const errEl = document.getElementById('gate-otp-err');
-  const btn = document.getElementById('gate-verify-btn');
-  errEl.textContent = '';
-  document.getElementById('gate-otp').classList.remove('error');
-  if (!otp || otp.length < 6) {
-    errEl.textContent = 'Please enter the 6-digit code.';
-    document.getElementById('gate-otp').classList.add('error');
-    return;
-  }
-  btn.disabled = true;
-  btn.innerHTML = '<span class="gate-spinner"></span>Verifying...';
-  try {
-    const res = await fetch('/.netlify/functions/verify-email', {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ action: 'verify', email: verifiedEmail, otp })
-    });
-    const data = await res.json();
-    if (res.ok && data.success) {
-      document.getElementById('gate-overlay').style.display = 'none';
-      // Derive company name and store domain from verified email
-      const domain = verifiedEmail.split('@')[1] || '';
-      state.emailDomain = domain;
-      const domainRoot = domain.split('.')[0];
-      state.companyName = domainRoot.charAt(0).toUpperCase() + domainRoot.slice(1);
-      // Personalised initiation message — fires first, then question follows
-      updateProgress();
-      setTimeout(function(){
-        var chat=document.getElementById('chat');
-        var d=document.createElement('div');
-        d.className='init-msg';
-        d.innerHTML='⚡ Initiating growth fitness assessment for <strong>'+domain+'</strong>';
-        chat.appendChild(d);
-        d.scrollIntoView({behavior:'smooth',block:'nearest'});
-        // First question fires after message is visible
-        setTimeout(function(){ askStep(0); }, 800);
-      },300);
-    } else {
-      errEl.textContent = data.error || 'Incorrect code. Please try again.';
-      document.getElementById('gate-otp').classList.add('error');
-      btn.disabled = false;
-      btn.innerHTML = 'Verify &amp; start assessment';
-    }
-  } catch {
-    errEl.textContent = 'Network error. Please try again.';
-    btn.disabled = false;
-    btn.innerHTML = 'Verify &amp; start assessment';
-  }
-}
-
-async function resendOTP() {
-  document.getElementById('gate-otp').value = '';
-  document.getElementById('gate-otp-err').textContent = 'Resending...';
-  const btn = document.getElementById('gate-verify-btn');
-  btn.disabled = true;
-  try {
-    const res = await fetch('/.netlify/functions/verify-email', {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ action: 'request', email: verifiedEmail })
-    });
-    const data = await res.json();
-    document.getElementById('gate-otp-err').textContent = res.ok ? 'New code sent — check your inbox.' : (data.error || 'Failed to resend.');
-  } catch {
-    document.getElementById('gate-otp-err').textContent = 'Network error.';
-  }
-  btn.disabled = false;
-  setTimeout(() => { document.getElementById('gate-otp').focus(); }, 100);
-}
-
-function backToEmail() {
-  document.getElementById('gate-step-otp').style.display = 'none';
-  document.getElementById('gate-step-email').style.display = 'block';
-  document.getElementById('gate-otp').value = '';
-  document.getElementById('gate-otp-err').textContent = '';
-}
-
-
-updateProgress();
+document.getElementById('user-input').addEventListener('keydown',function(e){
+  if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();handleSend();}
+});
+updateProgress(); askStep(0);
 </script>
-
-<div id="pdf-report" style="display:none;"></div>
 </body>
 </html>
