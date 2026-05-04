@@ -456,6 +456,7 @@ function confirmSlider(key){
 function askStep(idx){
   const step=STEPS[idx];if(!step){computeAndShow();return;}
   const q=typeof step.ask==='function'?step.ask(state.answers):step.ask;
+  hideTextInput();
   showTyping();
   setTimeout(()=>{
     removeTyping();addMsg(q.replace(/\n/g,'<br>'),'bot');
@@ -463,9 +464,30 @@ function askStep(idx){
     else if(step.type==='slider'){if(SLIDERS[step.key]&&SLIDERS[step.key].hint)addHint(SLIDERS[step.key].hint);showSlider(step.key);}
     else if(step.type==='multi'){if(step.hint)addHint(step.hint);showMultiSelect(step.key,step.choices);}
     else if(step.type==='choice'){if(step.hint)addHint(step.hint);setQR(step.choices);}
+    else if(step.type==='text'){
+      const area=document.getElementById('text-input-area');
+      const inp=document.getElementById('text-input-field');
+      if(area&&inp){area.style.display='block';inp.value='';inp.placeholder=step.placeholder||'Type your answer...';setTimeout(()=>inp.focus(),100);}
+    }
 
   },650);
 }
+
+function hideTextInput(){
+  const a=document.getElementById('text-input-area');
+  if(a) a.style.display='none';
+}
+
+function submitTextAnswer(){
+  const step=STEPS[state.step];
+  if(!step||step.type!=='text') return;
+  const inp=document.getElementById('text-input-field');
+  const val=(inp?inp.value:'').trim();
+  if(!val){if(inp)inp.focus();return;}
+  document.getElementById('text-input-area').style.display='none';
+  submitAnswer(val);
+}
+
 function submitAnswer(val){
   const step=STEPS[state.step];if(!step)return;
   document.getElementById('quick-reply-area').innerHTML='';
