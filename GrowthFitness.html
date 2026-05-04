@@ -388,7 +388,10 @@ function showMultiSelect(key, choices) {
       } else {
         if(c === 'None / Single market') {
           selectedSecondaryMarkets = ['None / Single market'];
-          optWrap.querySelectorAll('button').forEach(b => { b.style.opacity='0.7'; b.style.background=''; });
+          optWrap.querySelectorAll('button').forEach(b => { b.style.opacity='0.7'; b.style.background=''; b.style.borderColor=''; });
+          // Don't push again — array already set above
+          btn.style.opacity = '1'; btn.style.background = 'rgba(46,107,53,0.15)'; btn.style.borderColor = 'var(--green)';
+          return;
         } else {
           selectedSecondaryMarkets = selectedSecondaryMarkets.filter(x=>x!=='None / Single market');
         }
@@ -407,7 +410,6 @@ function showMultiSelect(key, choices) {
     state.answers[key] = selected;
     addMsg(selected.join(', '), 'user');
     area.innerHTML = '';
-    document.getElementById('user-input').disabled = false;
     state.step++;
     while(state.step < STEPS.length && STEPS[state.step].skipIf && STEPS[state.step].skipIf(state.answers)) state.step++;
     updateProgress();
@@ -493,16 +495,36 @@ function submitTextAnswer(){
   const inp=document.getElementById('text-input-field');
   const val=(inp?inp.value:'').trim();
   if(!val){if(inp)inp.focus();return;}
-  document.getElementById('text-input-area').style.display='none';
 
-  // If this is the company_website step, show init-msg with the entered URL
+  // Validate URL for company_website step
   if(step.key==='company_website'){
-    // Extract clean domain/name from URL
-    let label=val.replace(/^https?:\/\//,'').replace(/\/.*$/,'').replace(/^www\./,'');
-    if(!label) label=val;
+    // Must contain at least one dot (e.g. acme.com, https://acme.com)
+    const cleaned = val.replace(/^https?:\/\//,'').replace(/^www\./,'');
+    if(!cleaned.includes('.')){
+      inp.style.borderColor='var(--danger)';
+      // Show error below input
+      let errEl=document.getElementById('text-input-err');
+      if(!errEl){
+        errEl=document.createElement('div');
+        errEl.id='text-input-err';
+        errEl.style.cssText='font-size:12px;color:var(--danger);margin-top:4px;padding:0 2px;';
+        inp.parentNode.parentNode.appendChild(errEl);
+      }
+      errEl.textContent='Please enter a valid website URL (e.g. https://acme.com)';
+      inp.focus();
+      return;
+    }
+    // Clear any error
+    inp.style.borderColor='';
+    const errEl=document.getElementById('text-input-err');
+    if(errEl) errEl.textContent='';
+
+    // Show init-msg with cleaned domain
+    let label=cleaned.replace(/\/.*$/,'');
     showInitMsg(label);
   }
 
+  document.getElementById('text-input-area').style.display='none';
   submitAnswer(val);
 }
 
