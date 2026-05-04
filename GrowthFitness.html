@@ -278,7 +278,16 @@
   </div>
   <div class="chat-area" id="chat"></div>
   <div id="quick-reply-area"></div>
-
+  <div id="text-input-area" style="display:none;padding:10px 16px 14px;border-top:1px solid var(--border);background:var(--surface);">
+    <div style="display:flex;gap:8px;align-items:center;">
+      <input type="text" id="text-input-field"
+        style="flex:1;padding:10px 14px;border:1px solid var(--border-strong);border-radius:var(--radius-sm);background:var(--bg);color:var(--text);font-family:inherit;font-size:14px;outline:none;transition:border-color 0.15s;"
+        placeholder="Type your answer..."
+        onkeydown="if(event.key==='Enter')submitTextAnswer()">
+      <button onclick="submitTextAnswer()"
+        style="padding:10px 18px;background:var(--green);color:#fff;border:none;border-radius:var(--radius-sm);font-size:15px;font-weight:500;cursor:pointer;flex-shrink:0;">→</button>
+    </div>
+  </div>
 </div>
 <script>
 const state={step:0,answers:{},scores:{},companyName:'',lastRecs:[]};
@@ -485,7 +494,25 @@ function submitTextAnswer(){
   const val=(inp?inp.value:'').trim();
   if(!val){if(inp)inp.focus();return;}
   document.getElementById('text-input-area').style.display='none';
+
+  // If this is the company_website step, show init-msg with the entered URL
+  if(step.key==='company_website'){
+    // Extract clean domain/name from URL
+    let label=val.replace(/^https?:\/\//,'').replace(/\/.*$/,'').replace(/^www\./,'');
+    if(!label) label=val;
+    showInitMsg(label);
+  }
+
   submitAnswer(val);
+}
+
+function showInitMsg(label){
+  const chat=document.getElementById('chat');
+  const d=document.createElement('div');
+  d.className='init-msg';
+  d.innerHTML='⚡ Initiating growth fitness assessment for <strong>'+label+'</strong>';
+  chat.appendChild(d);
+  d.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
 function submitAnswer(val){
@@ -493,15 +520,15 @@ function submitAnswer(val){
   document.getElementById('quick-reply-area').innerHTML='';
   addMsg(val,'user');state.answers[step.key]=val;
 
-  // Show init message AFTER company context is confirmed
+  // Show init message at the right moment:
+  // - Same company → show immediately using email domain
+  // - Different company → wait until company_website is provided (handled in submitTextAnswer)
   if(step.key==='company_context'){
-    const domain=state.emailDomain||verifiedEmail.split('@')[1]||verifiedEmail;
-    const chat=document.getElementById('chat');
-    const d=document.createElement('div');
-    d.className='init-msg';
-    d.innerHTML='⚡ Initiating growth fitness assessment for <strong>'+domain+'</strong>';
-    chat.appendChild(d);
-    d.scrollIntoView({behavior:'smooth',block:'nearest'});
+    if(val==='Same company as my email'){
+      const domain=state.emailDomain||verifiedEmail.split('@')[1]||verifiedEmail;
+      showInitMsg(domain);
+    }
+    // If "A different company", init-msg fires in submitTextAnswer after website URL is entered
   }
 
   state.step++;
