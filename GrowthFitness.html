@@ -508,7 +508,6 @@ function submitTextAnswer(){
     const cleaned = val.replace(/^https?:\/\//,'').replace(/^www\./,'');
     if(!cleaned.includes('.')){
       inp.style.borderColor='var(--danger)';
-      // Show error below input
       let errEl=document.getElementById('text-input-err');
       if(!errEl){
         errEl=document.createElement('div');
@@ -525,8 +524,10 @@ function submitTextAnswer(){
     const errEl=document.getElementById('text-input-err');
     if(errEl) errEl.textContent='';
 
-    // Show init-msg with cleaned domain
-    let label=cleaned.replace(/\/.*$/,'');
+    // Extract clean domain, update companyName and emailDomain used everywhere
+    const label = cleaned.replace(/\/.*$/,'');
+    state.companyName = label;
+    state.emailDomain = label;
     showInitMsg(label);
   }
 
@@ -570,6 +571,10 @@ async function computeAndShow(){
   setQR([]);
   // Hide text input area if visible
   hideTextInput();
+
+  // Show "in progress" message in chat immediately
+  const domain = state.companyName || state.emailDomain || verifiedEmail.split('@')[1] || 'your company';
+  addMsg(`Growth fitness assessment for <strong>${domain}</strong> in progress — this takes about 10 seconds.`, 'bot');
 
   // Processing animation
   const processingSteps = [
@@ -854,8 +859,7 @@ async function verifyOTP() {
       // Derive company name and store domain from verified email
       const domain = verifiedEmail.split('@')[1] || '';
       state.emailDomain = domain;
-      const domainRoot = domain.split('.')[0];
-      state.companyName = domainRoot.charAt(0).toUpperCase() + domainRoot.slice(1);
+      state.companyName = domain;
       // Start assessment — init message fires AFTER company_context is answered
       updateProgress();
       setTimeout(function(){ askStep(0); }, 400);
