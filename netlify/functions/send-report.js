@@ -60,7 +60,7 @@ exports.handler = async (event) => {
     <!-- Header -->
     <div style="background:#1a6632;padding:24px 28px">
       <div style="font-size:11px;color:rgba(255,255,255,0.65);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">GrowFitt Growth Audit</div>
-      <div style="font-size:22px;font-weight:700;color:#ffffff;letter-spacing:-0.5px">${companyName}</div>
+      <div style="font-size:22px;font-weight:700;color:#ffffff;letter-spacing:-0.5px"><span style="color:#ffffff !important;text-decoration:none !important;">${companyName.replace('.', '⁠.⁠')}</span></div>
       <div style="font-size:12px;color:rgba(255,255,255,0.65);margin-top:4px">Generated ${date}</div>
     </div>
 
