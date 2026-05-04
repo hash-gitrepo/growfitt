@@ -492,7 +492,23 @@ function submitAnswer(val){
   const step=STEPS[state.step];if(!step)return;
   document.getElementById('quick-reply-area').innerHTML='';
   addMsg(val,'user');state.answers[step.key]=val;
-  state.step++;updateProgress();setTimeout(()=>askStep(state.step),380);
+
+  // Show init message AFTER company context is confirmed
+  if(step.key==='company_context'){
+    const domain=state.emailDomain||verifiedEmail.split('@')[1]||verifiedEmail;
+    const chat=document.getElementById('chat');
+    const d=document.createElement('div');
+    d.className='init-msg';
+    d.innerHTML='⚡ Initiating growth fitness assessment for <strong>'+domain+'</strong>';
+    chat.appendChild(d);
+    d.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }
+
+  state.step++;
+  // Skip steps whose condition is not met
+  while(state.step<STEPS.length && STEPS[state.step].skipIf && STEPS[state.step].skipIf(state.answers)) state.step++;
+  updateProgress();
+  setTimeout(()=>askStep(state.step),480);
 }
 
 async function computeAndShow(){
@@ -786,18 +802,9 @@ async function verifyOTP() {
       state.emailDomain = domain;
       const domainRoot = domain.split('.')[0];
       state.companyName = domainRoot.charAt(0).toUpperCase() + domainRoot.slice(1);
-      // Personalised initiation message — fires first, then question follows
+      // Start assessment — init message fires AFTER company_context is answered
       updateProgress();
-      setTimeout(function(){
-        var chat=document.getElementById('chat');
-        var d=document.createElement('div');
-        d.className='init-msg';
-        d.innerHTML='⚡ Initiating growth fitness assessment for <strong>'+domain+'</strong>';
-        chat.appendChild(d);
-        d.scrollIntoView({behavior:'smooth',block:'nearest'});
-        // First question fires after message is visible
-        setTimeout(function(){ askStep(0); }, 800);
-      },300);
+      setTimeout(function(){ askStep(0); }, 400);
     } else {
       errEl.textContent = data.error || 'Incorrect code. Please try again.';
       document.getElementById('gate-otp').classList.add('error');
