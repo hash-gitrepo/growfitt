@@ -328,11 +328,11 @@ function buildSteps(isEarly){
       skipIf:(a)=>a.company_context==='Same company as my email' },
     {key:'primary_market', ask:()=>`What is your <strong>primary revenue market</strong>?`, type:'choice',
       choices:['North America','Europe','South East Asia','Middle East & Africa','China','Asia Pacific (incl. Japan)','LATAM'] },
-    {key:'secondary_markets', ask:()=>`Which are your <strong>secondary markets</strong>? Select all that apply.`, type:'multi',
+    {key:'secondary_markets', ask:()=>`Which are your <strong>secondary markets</strong>?`, type:'choice',
       choices:['North America','Europe','South East Asia','Middle East & Africa','China','Asia Pacific (incl. Japan)','LATAM','None / Single market'] },
     
-    {key:'arr_revenue',ask:()=>`Hello there! What is the current ARR or annual revenue for <strong>${state.emailDomain||verifiedEmail.split('@')[1]||'your company'}</strong>?`,type:'arr',hint:'This determines your growth stage and benchmark.'},
-    {key:'category',ask:()=>`What best describes ${state.companyName}'s product category?`,type:'choice',choices:['Infra / Dev / AI','Security','Horizontal SaaS','Vertical SaaS'],hint:'This adjusts the growth benchmark to your market. It does not affect the GFS score itself.'},
+    {key:'arr_revenue',ask:()=>`What is your current ARR or annual revenue?`,type:'arr',hint:'This determines your growth stage and benchmark.'},
+    {key:'category',ask:()=>`What best describes your product category?`,type:'choice',choices:['Infra / Dev / AI','Security','Horizontal SaaS','Vertical SaaS'],hint:'This adjusts the growth benchmark to your market. It does not affect the GFS score itself.'},
     {key:'growth_rate',ask:(a)=>{const h=getStageHint(parseFloat(a.arr_revenue||10));return `What was your revenue growth rate over the last 12 months?<br><span style="font-size:13px;color:var(--text-muted)">You're in the <strong>${h.key}</strong> stage — benchmark growth rate: ${h.bgr}%+.</span>`;},type:'slider'},
     {key:'nrr',ask:()=>`What is your Net Revenue Retention (NRR)?<br><span style="font-size:13px;color:var(--text-muted)">Includes upsells and expansions from existing customers.</span>`,type:'slider'},
     {key:'grr',ask:()=>`What is your Gross Revenue Retention (GRR)?<br><span style="font-size:13px;color:var(--text-muted)">Base revenue retained, excluding upsells — must be 100% or below.</span>`,type:'slider'},
@@ -372,40 +372,8 @@ function showMultiSelect(key, choices) {
   selectedSecondaryMarkets = [];
   const area = document.getElementById('quick-reply-area');
   area.innerHTML = '';
-  const wrap = document.createElement('div');
-  wrap.style.cssText = 'display:flex;flex-direction:column;gap:8px;padding:4px 0;';
-  const optWrap = document.createElement('div');
-  optWrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;';
-  choices.forEach(c => {
-    const btn = document.createElement('button');
-    btn.className = 'qr-btn';
-    btn.textContent = c;
-    btn.style.opacity = '0.7';
-    btn.onclick = () => {
-      if(selectedSecondaryMarkets.includes(c)) {
-        selectedSecondaryMarkets = selectedSecondaryMarkets.filter(x=>x!==c);
-        btn.style.opacity = '0.7'; btn.style.background = '';
-      } else {
-        if(c === 'None / Single market') {
-          selectedSecondaryMarkets = ['None / Single market'];
-          optWrap.querySelectorAll('button').forEach(b => { b.style.opacity='0.7'; b.style.background=''; b.style.borderColor=''; });
-          // Don't push again — array already set above
-          btn.style.opacity = '1'; btn.style.background = 'rgba(46,107,53,0.15)'; btn.style.borderColor = 'var(--green)';
-          return;
-        } else {
-          selectedSecondaryMarkets = selectedSecondaryMarkets.filter(x=>x!=='None / Single market');
-        }
-        selectedSecondaryMarkets.push(c);
-        btn.style.opacity = '1'; btn.style.background = 'rgba(46,107,53,0.15)'; btn.style.borderColor = 'var(--green)';
-      }
-    };
-    optWrap.appendChild(btn);
-  });
-  const doneBtn = document.createElement('button');
-  doneBtn.className = 'qr-btn';
-  doneBtn.textContent = 'Confirm →';
-  doneBtn.style.cssText = 'background:var(--green);color:#fff;margin-top:4px;font-weight:600;';
-  doneBtn.onclick = () => {
+
+  function submitMulti() {
     const selected = selectedSecondaryMarkets.length ? selectedSecondaryMarkets : ['None / Single market'];
     state.answers[key] = selected;
     addMsg(selected.join(', '), 'user');
@@ -414,11 +382,49 @@ function showMultiSelect(key, choices) {
     while(state.step < STEPS.length && STEPS[state.step].skipIf && STEPS[state.step].skipIf(state.answers)) state.step++;
     updateProgress();
     setTimeout(()=>askStep(state.step), 380);
-  };
-  wrap.appendChild(optWrap);
+  }
+
+  const wrap = document.createElement('div');
+  wrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;padding:4px 0;';
+
+  // "Done ✓" chip — hidden until at least one market is selected
+  const doneBtn = document.createElement('button');
+  doneBtn.className = 'qr-btn';
+  doneBtn.textContent = 'Done ✓';
+  doneBtn.style.cssText = 'display:none;background:var(--green);color:#fff;font-weight:600;';
+  doneBtn.onclick = submitMulti;
+
+  choices.forEach(c => {
+    const btn = document.createElement('button');
+    btn.className = 'qr-btn';
+    btn.textContent = c;
+    btn.onclick = () => {
+      if(c === 'None / Single market') {
+        // Auto-submit immediately
+        selectedSecondaryMarkets = ['None / Single market'];
+        submitMulti();
+        return;
+      }
+      if(selectedSecondaryMarkets.includes(c)) {
+        selectedSecondaryMarkets = selectedSecondaryMarkets.filter(x=>x!==c);
+        btn.style.background = '';
+        btn.style.borderColor = '';
+        btn.style.color = '';
+      } else {
+        selectedSecondaryMarkets.push(c);
+        btn.style.background = 'rgba(46,107,53,0.15)';
+        btn.style.borderColor = 'var(--green)';
+        btn.style.color = 'var(--green)';
+      }
+      doneBtn.style.display = selectedSecondaryMarkets.length ? 'inline-flex' : 'none';
+    };
+    wrap.appendChild(btn);
+  });
+
   wrap.appendChild(doneBtn);
   area.appendChild(wrap);
 }
+
 
 function setQR(choices){const area=document.getElementById('quick-reply-area');area.innerHTML='';if(!choices||!choices.length)return;const wrap=document.createElement('div');wrap.className='quick-replies';choices.forEach(c=>{const btn=document.createElement('button');btn.className='qr-btn';btn.textContent=c;btn.onclick=()=>submitAnswer(c);wrap.appendChild(btn);});area.appendChild(wrap);}
 
@@ -562,9 +568,8 @@ function submitAnswer(val){
 
 async function computeAndShow(){
   setQR([]);
-  document.getElementById('user-input').disabled=true;
-  document.getElementById('send-btn').disabled=true;
-  document.getElementById('input-area').style.display='none';
+  // Hide text input area if visible
+  hideTextInput();
 
   // Processing animation
   const processingSteps = [
