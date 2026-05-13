@@ -461,9 +461,10 @@ function confirmArrSlider(){
   state.answers['arr_revenue']=arrStep.value;state.answers['arr_label']=arrStep.label;
   const hint=getStageHint(arrStep.value);const isEarly=hint.key==='Early'||hint.key==='Growth';
   const next=state.step+1;buildSteps(isEarly);state.step=next;updateProgress();
-  if(isEarly)setTimeout(()=>addHint(`Based on your revenue, you're classified as <strong>${hint.key} stage</strong>. We'll include burn multiple, sales efficiency, and CAC payback for a more accurate score.`,'info'),200);
-  else setTimeout(()=>addHint(`Based on your revenue, you're classified as <strong>${hint.key} stage</strong> (benchmark growth rate: ${hint.bgr}%+).`,'info'),200);
-  setTimeout(()=>askStep(state.step),480);
+  showBenchmarkInsight('arr_revenue', arrStep.value, state.answers);
+  if(isEarly)setTimeout(()=>addHint(`Based on your revenue, you're classified as <strong>${hint.key} stage</strong>. We'll include burn multiple, sales efficiency, and CAC payback for a more accurate score.`,'info'),600);
+  else setTimeout(()=>addHint(`Based on your revenue, you're classified as <strong>${hint.key} stage</strong> (benchmark growth rate: ${hint.bgr}%+).`,'info'),600);
+  setTimeout(()=>askStep(state.step),1800);
 }
 
 function showSlider(key){
@@ -481,10 +482,12 @@ function confirmSlider(key){
   const slider=document.getElementById('slider-'+key);const val=slider.value,cfg=SLIDERS[key];
   document.getElementById('quick-reply-area').innerHTML='';
   const disp=Number.isInteger(parseFloat(val))?val:parseFloat(val).toFixed(1);
-  addMsg(disp+cfg.unit,'user');state.answers[key]=val;state.step++;
+  addMsg(disp+cfg.unit,'user');state.answers[key]=val;
+  const hasInsight = showBenchmarkInsight(key, val, state.answers);
+  state.step++;
   while(state.step < STEPS.length && STEPS[state.step].skipIf && STEPS[state.step].skipIf(state.answers)) state.step++;
   updateProgress();
-  setTimeout(()=>askStep(state.step),380);
+  setTimeout(()=>askStep(state.step), hasInsight ? 1800 : 380);
 }
 
 function askStep(idx){
@@ -711,7 +714,7 @@ function getBenchmarkInsight(key, val, answers) {
 
 function showBenchmarkInsight(key, val, answers) {
   const insight = getBenchmarkInsight(key, val, answers);
-  if (!insight) return;
+  if (!insight) return false;
   // Small delay so it appears after the user's answer bubble
   setTimeout(() => {
     const chat = document.getElementById('chat');
@@ -721,6 +724,7 @@ function showBenchmarkInsight(key, val, answers) {
     chat.appendChild(d);
     d.scrollIntoView({behavior:'smooth',block:'nearest'});
   }, 300);
+  return true;
 }
 
 function submitAnswer(val){
