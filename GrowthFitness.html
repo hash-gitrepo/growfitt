@@ -672,6 +672,38 @@ function getBenchmarkInsight(key, val, answers) {
       return `⚠️ <strong>${pct}% inbound</strong> — growth is heavily dependent on outbound spend. This creates a fragile, expensive engine. Investing in content, community and referrals would strengthen your GFS.`;
     }
 
+    case 'category': {
+      const catInsights = {
+        'Infra / Dev / AI':    `🚀 <strong>Infra / Dev / AI</strong> is the highest-velocity category in SaaS right now. Benchmark growth rates here run 30% above the average for your stage — the bar is high, but the market tailwind is real.`,
+        'Security':            `🔒 <strong>Security</strong> is a resilient, non-discretionary spend category. Growth benchmarks run ~10% above baseline for your stage, and GRR tends to be stronger than average — customers rarely churn security tools.`,
+        'Horizontal SaaS':    `📊 <strong>Horizontal SaaS</strong> is the most competitive category. Benchmarks run ~20% below the stage baseline, reflecting intensely contested markets. Category differentiation and NRR are key to standing out.`,
+        'Vertical SaaS':      `🏭 <strong>Vertical SaaS</strong> companies have natural moats and strong GRR once embedded. Growth benchmarks are ~10% below baseline, but retention and expansion economics tend to be superior.`,
+      };
+      return catInsights[val] || null;
+    }
+
+    case 'deal_quality': {
+      const dqInsights = {
+        'Improving a lot':        `🏆 <strong>Deal quality improving a lot</strong> — this is a leading indicator of GTM health. Rising deal sizes and improving win rates suggest your ICP is tightening and your value proposition is resonating.`,
+        'Slight increase':        `✅ <strong>Deal quality slightly improving</strong> — a positive signal. This often precedes stronger NRR as better-fit customers expand faster and churn less.`,
+        'Roughly the same':      `📊 <strong>Deal quality stable</strong>. Consistency is good, but flat deal quality can mask underlying shifts in win rate or sales cycle. Worth a deeper look every quarter.`,
+        'Material decline':       `⚠️ <strong>Deal quality in material decline</strong> — this is a significant warning sign. Falling deal sizes or win rates often precede NRR deterioration. Reviewing ICP and qualification criteria is urgent.`,
+        'Sharp decline recently': `🔴 <strong>Sharp deal quality decline</strong> — this will materially impact your GFS. Immediate diagnosis of whether it's a market shift, competitive pressure, or GTM execution issue is critical.`,
+      };
+      return dqInsights[val] || null;
+    }
+
+    case 'cohort_trend': {
+      const ctInsights = {
+        'Improving significantly': `🏆 <strong>Retention improving significantly</strong> — this is one of the most powerful leading indicators in SaaS. Improving cohorts compound over time and directly lift NRR, GRR, and LTV. Great signal for your GFS.`,
+        'Slight improvement':      `✅ <strong>Retention trending upward</strong> — positive momentum here will support your NRR and reduce future churn drag. Keep monitoring and reinforce what's working.`,
+        'Roughly the same':        `📊 <strong>Retention stable</strong>. Flat trends are manageable if the absolute level is healthy, but stability can also mean you've hit a ceiling. Worth reviewing cohort health by segment.`,
+        'Material decline':        `⚠️ <strong>Retention declining materially</strong> — this is a critical signal. Deteriorating cohorts create compounding churn that's hard to outgrow with new acquisition. Customer success investment is likely needed.`,
+        'Sharp decline recently':  `🔴 <strong>Sharp retention decline</strong> — this will be the most influential input to your GFS outcome. Root-cause analysis by cohort, segment, and lifecycle stage should be an immediate priority.`,
+      };
+      return ctInsights[val] || null;
+    }
+
     default:
       return null;
   }
@@ -708,7 +740,7 @@ function submitAnswer(val){
   }
 
   // Show benchmark insight for key metric questions
-  const insightKeys = ['arr_revenue','growth_rate','nrr','grr','gm','fcf','sales_efficiency','cac_payback','burn_multiple','inbound_pct'];
+  const insightKeys = ['arr_revenue','growth_rate','nrr','grr','gm','fcf','sales_efficiency','cac_payback','burn_multiple','inbound_pct','category','deal_quality','cohort_trend'];
   if(insightKeys.includes(step.key)){
     showBenchmarkInsight(step.key, val, state.answers);
   }
