@@ -345,7 +345,7 @@ function buildSteps(isEarly){
       skipIf:(a)=>a.company_context==='Same company as my email' },
     {key:'primary_market', ask:()=>`What is your <strong>primary revenue market</strong>?`, type:'choice',
       choices:['North America','Europe','South East Asia','Middle East & Africa','China','Asia Pacific (incl. Japan)','LATAM'] },
-    {key:'secondary_markets', ask:()=>`Which are your <strong>secondary markets</strong>?`, type:'choice',
+    {key:'secondary_markets', ask:()=>`Which are your <strong>secondary markets</strong>?`, type:'multi',
       choices:['North America','Europe','South East Asia','Middle East & Africa','China','Asia Pacific (incl. Japan)','LATAM','None / Single market'] },
     
     {key:'arr_revenue',ask:()=>`What is your current ARR or annual revenue?`,type:'arr',hint:'This determines your growth stage and benchmark.'},
@@ -391,33 +391,49 @@ function showMultiSelect(key, choices) {
   area.innerHTML = '';
 
   function submitMulti() {
-    const selected = selectedSecondaryMarkets.length ? selectedSecondaryMarkets : ['None / Single market'];
+    let selected = selectedSecondaryMarkets.length ? selectedSecondaryMarkets : ['None / Single market'];
+
+    // If primary + secondary geos > 3, collapse to Global
+    const primaryCount = state.answers['primary_market'] && state.answers['primary_market'] !== '' ? 1 : 0;
+    const totalGeos = primaryCount + selected.filter(x => x !== 'None / Single market').length;
+    if (totalGeos > 3) {
+      selected = ['Global'];
+      addHint("You operate across 4+ regions — we've set your market footprint to <strong>Global</strong>.", 'info');
+    }
+
     state.answers[key] = selected;
     addMsg(selected.join(', '), 'user');
     area.innerHTML = '';
     state.step++;
     while(state.step < STEPS.length && STEPS[state.step].skipIf && STEPS[state.step].skipIf(state.answers)) state.step++;
     updateProgress();
-    setTimeout(()=>askStep(state.step), 380);
+    setTimeout(()=>askStep(state.step), selected[0] === 'Global' ? 900 : 380);
   }
 
   const wrap = document.createElement('div');
   wrap.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;padding:4px 0;';
 
-  // "Done ✓" chip — hidden until at least one market is selected
+  // Counter label
+  const counterLabel = document.createElement('div');
+  counterLabel.style.cssText = 'width:100%;font-size:12px;color:var(--text-hint);margin-bottom:2px;';
+  counterLabel.textContent = 'Select at least 2 secondary markets, or choose None.';
+  wrap.appendChild(counterLabel);
+
+  // "Done ✓" chip — hidden until at least 2 markets are selected
   const doneBtn = document.createElement('button');
   doneBtn.className = 'qr-btn';
   doneBtn.textContent = 'Done ✓';
   doneBtn.style.cssText = 'display:none;background:var(--green);color:#fff;font-weight:600;';
   doneBtn.onclick = submitMulti;
 
+  const btnMap = {};
   choices.forEach(c => {
     const btn = document.createElement('button');
     btn.className = 'qr-btn';
     btn.textContent = c;
+    btnMap[c] = btn;
     btn.onclick = () => {
       if(c === 'None / Single market') {
-        // Auto-submit immediately
         selectedSecondaryMarkets = ['None / Single market'];
         submitMulti();
         return;
@@ -433,7 +449,24 @@ function showMultiSelect(key, choices) {
         btn.style.borderColor = 'var(--green)';
         btn.style.color = 'var(--green)';
       }
-      doneBtn.style.display = selectedSecondaryMarkets.length ? 'inline-flex' : 'none';
+
+      const count = selectedSecondaryMarkets.length;
+      const primaryCount = state.answers['primary_market'] ? 1 : 0;
+      const totalGeos = primaryCount + count;
+
+      if (count >= 2) {
+        if (totalGeos > 3) {
+          counterLabel.innerHTML = '<strong style="color:var(--green)">4+ regions selected — will be set to Global.</strong>';
+        } else {
+          counterLabel.textContent = count + ' selected — click Done or add more.';
+        }
+        doneBtn.style.display = 'inline-flex';
+      } else {
+        counterLabel.textContent = count === 1
+          ? 'Select at least 1 more, or choose None.'
+          : 'Select at least 2 secondary markets, or choose None.';
+        doneBtn.style.display = 'none';
+      }
     };
     wrap.appendChild(btn);
   });
