@@ -223,6 +223,20 @@
     /* Two column layout for body */
     .pr-two-col{ display:grid; grid-template-columns:1fr 1fr; gap:24px; }
   }
+
+  /* ── BENCHMARK INSIGHT BUBBLES ── */
+  .bubble.insight-hint{
+    background:linear-gradient(135deg,rgba(26,102,50,0.06) 0%,rgba(46,168,90,0.04) 100%);
+    border:1px solid rgba(46,107,53,0.2);
+    border-left:3px solid var(--green);
+    color:var(--text);
+    font-size:13px;
+    line-height:1.6;
+    padding:10px 14px;
+    border-radius:0 10px 10px 10px;
+    margin-top:2px;
+  }
+
 </style>
 </head>
 <body>
@@ -547,6 +561,136 @@ function showInitMsg(label){
   d.scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 
+
+// ── BENCHMARK INSIGHT ENGINE ─────────────────────────────────────────────────
+// Shows a contextual insight bubble after each key metric answer
+// Benchmarks derived from compute-score.js thresholds + Atlas database
+
+function getBenchmarkInsight(key, val, answers) {
+  const arrM = parseFloat(answers.arr_revenue || 10);
+  const stage = arrM < 10 ? 'Early' : arrM < 100 ? 'Growth' : arrM < 1000 ? 'Scale' : 'Late';
+  const cat   = answers.category || '';
+  const v     = parseFloat(val);
+
+  switch(key) {
+
+    case 'arr_revenue': {
+      const brackets = [
+        [0,    0.5,  'pre-seed'],
+        [0.5,  2,    'seed-stage'],
+        [2,    10,   'early-stage'],
+        [10,   30,   'Series A'],
+        [30,   100,  'Series B'],
+        [100,  500,  'Series C+'],
+        [500,  1000, 'late-stage'],
+        [1000, Infinity, 'public-company'],
+      ];
+      const bracket = brackets.find(([min, max]) => v >= min && v < max);
+      const label = bracket ? bracket[2] : 'enterprise';
+      const bgr   = arrM < 10 ? 80 : arrM < 100 ? 55 : arrM < 1000 ? 35 : 25;
+      return `📊 At $${v < 1 ? (v*1000).toFixed(0)+'K' : v+'M'} ARR you're classified as <strong>${label}</strong>. The benchmark growth rate for this stage is <strong>${bgr}%+</strong> — we'll use this to calibrate your OGR.`;
+    }
+
+    case 'growth_rate': {
+      const bgr   = arrM < 10 ? 80 : arrM < 100 ? 55 : arrM < 1000 ? 35 : 25;
+      const catMult = cat === 'Infra / Dev / AI' ? 1.30 : cat === 'Security' ? 1.10 : cat === 'Vertical SaaS' ? 0.90 : cat === 'Horizontal SaaS' ? 0.80 : 1.0;
+      const cbgr  = Math.round(bgr * catMult);
+      const pct   = Math.round(v);
+      const delta = Math.round(v - cbgr);
+      if (v >= cbgr * 1.5)
+        return `🚀 <strong>${pct}%</strong> growth is well above the ${cbgr}% benchmark for your stage — in the top quartile of ${stage.toLowerCase()}-stage ${cat || 'SaaS'} companies. Sustaining this efficiently is the priority.`;
+      if (v >= cbgr)
+        return `✅ <strong>${pct}%</strong> growth is above the ${cbgr}% stage benchmark — <strong>+${delta}pp ahead</strong> of the threshold. You're tracking well.`;
+      if (v >= cbgr * 0.7)
+        return `⚠️ <strong>${pct}%</strong> growth is <strong>${Math.abs(delta)}pp below</strong> the ${cbgr}% benchmark for your stage and category. Identifying the growth constraint should be a near-term priority.`;
+      return `🔴 <strong>${pct}%</strong> growth is significantly below the ${cbgr}% stage benchmark — in the bottom quartile. This will materially impact your GFS score.`;
+    }
+
+    case 'nrr': {
+      const pct = Math.round(v);
+      if (v >= 130) return `🏆 <strong>${pct}% NRR</strong> is elite — top 10% of public SaaS companies. You're growing your existing customer base at an exceptional rate.`;
+      if (v >= 120) return `🚀 <strong>${pct}% NRR</strong> is best-in-class. Companies like Snowflake and Datadog built category leadership on NRR at this level.`;
+      if (v >= 110) return `✅ <strong>${pct}% NRR</strong> is strong. The median for top-quartile public SaaS companies is ~115% — you're in good company.`;
+      if (v >= 105) return `📊 <strong>${pct}% NRR</strong> is above 100%, meaning you're growing from existing customers — but there's significant room to improve expansion revenue.`;
+      if (v >= 100) return `⚠️ <strong>${pct}% NRR</strong> means you're just covering churn with expansion. Below 105% is a warning sign for efficient scaling.`;
+      return `🔴 <strong>${pct}% NRR</strong> is below 100% — you're losing revenue from your existing base. This is the most urgent metric to address before scaling acquisition spend.`;
+    }
+
+    case 'grr': {
+      const pct = Math.round(v);
+      if (v >= 95) return `✅ <strong>${pct}% GRR</strong> is strong logo retention. Less than 5% revenue churn means your base is stable — the foundation for healthy expansion.`;
+      if (v >= 90) return `📊 <strong>${pct}% GRR</strong> is at the median for SaaS companies. The best-in-class threshold is 95%+ — there's room to improve logo and contraction churn.`;
+      if (v >= 85) return `⚠️ <strong>${pct}% GRR</strong> means you're losing ~${100-pct}% of base revenue annually before expansion. This drags significantly on compound growth.`;
+      return `🔴 <strong>${pct}% GRR</strong> is a critical concern. Logo churn at this level means you're filling a leaky bucket — fix retention before investing heavily in new acquisition.`;
+    }
+
+    case 'gm': {
+      const pct = Math.round(v);
+      if (v >= 80) return `🏆 <strong>${pct}% gross margin</strong> is best-in-class for SaaS. This gives you strong unit economics to reinvest in growth — Median for elite public SaaS is 75-80%.`;
+      if (v >= 70) return `✅ <strong>${pct}% gross margin</strong> is healthy and above the ~70% median for public SaaS. You have a solid foundation for efficient scaling.`;
+      if (v >= 60) return `📊 <strong>${pct}% gross margin</strong> is acceptable but below the 70% SaaS benchmark. Infrastructure or delivery costs may be compressing your margin.`;
+      if (v >= 50) return `⚠️ <strong>${pct}% gross margin</strong> is below SaaS benchmarks and will constrain your OGR ceiling. Improving this should be a medium-term priority.`;
+      return `🔴 <strong>${pct}% gross margin</strong> is significantly below SaaS norms. At this level, scaling spend is extremely capital-inefficient. Cost structure review is urgent.`;
+    }
+
+    case 'fcf': {
+      const pct = Math.round(v);
+      if (v >= 0.20) return `🏆 <strong>${pct}% FCF margin</strong> is exceptional — the Rule of 40 standard asks for growth + FCF ≥ 40. You have significant financial resilience.`;
+      if (v >= 0.10) return `✅ <strong>${pct}% FCF margin</strong> — you're cash flow positive and at or above the median for profitable public SaaS companies.`;
+      if (v >= 0.0)  return `📊 <strong>Near breakeven FCF</strong>. You're not burning cash — a meaningful milestone — but building a positive FCF buffer will improve investor confidence and OGR range.`;
+      if (v >= -0.2) return `⚠️ <strong>${pct}% FCF margin</strong> means you're burning cash at a moderate rate. Benchmark for ${stage.toLowerCase()}-stage companies: the efficient ones target breakeven within 12-18 months.`;
+      return `🔴 <strong>${pct}% FCF margin</strong> is significant cash burn. At ${stage.toLowerCase()} stage this may be expected, but the payback period needs to be clearly defined to investors and the team.`;
+    }
+
+    case 'sales_efficiency': {
+      if (v >= 1.5) return `🏆 <strong>${v}x sales efficiency</strong> is exceptional. For every $1 in S&M spend you're generating $${v.toFixed(1)} in ARR — top decile for ${stage.toLowerCase()}-stage companies.`;
+      if (v >= 1.0) return `✅ <strong>${v}x sales efficiency</strong> — above 1.0x means your go-to-market is paying back in under a year. This is the benchmark threshold.`;
+      if (v >= 0.5) return `⚠️ <strong>${v}x sales efficiency</strong> is below 1.0x. You're spending more than you're generating proportionally — review ICP tightness, sales cycle, and conversion rates.`;
+      return `🔴 <strong>${v}x sales efficiency</strong> is a significant concern. At below 0.5x you're burning $2+ for every $1 of ARR added. This needs immediate attention.`;
+    }
+
+    case 'cac_payback': {
+      const mo = Math.round(v);
+      if (v <= 12) return `🏆 <strong>${mo} month CAC payback</strong> is excellent — under 12 months is the benchmark for capital-efficient SaaS. You recover acquisition cost quickly.`;
+      if (v <= 18) return `✅ <strong>${mo} month CAC payback</strong> is healthy and within the 12-18 month benchmark range for ${stage.toLowerCase()}-stage SaaS companies.`;
+      if (v <= 24) return `⚠️ <strong>${mo} month payback</strong> is above the 18-month benchmark. Shortening this would extend your runway and improve investor confidence.`;
+      return `🔴 <strong>${mo} month CAC payback</strong> is long. At this level, a significant portion of your revenue is going toward recovering past acquisition costs rather than generating margin.`;
+    }
+
+    case 'burn_multiple': {
+      if (v <= 1.0) return `🏆 <strong>${v}x burn multiple</strong> is exceptional capital efficiency — you're generating more ARR than you're burning. Top decile for ${stage.toLowerCase()}-stage companies.`;
+      if (v <= 1.5) return `✅ <strong>${v}x burn multiple</strong> is efficient. The benchmark threshold is under 1.5x — you're in healthy territory.`;
+      if (v <= 2.5) return `⚠️ <strong>${v}x burn multiple</strong> is above the 1.5x benchmark. You're burning ${v}x of what you're adding in ARR — a signal to review headcount and GTM spend efficiency.`;
+      return `🔴 <strong>${v}x burn multiple</strong> is high. Investors in down markets expect under 2x. Reducing this should be a near-term operational priority.`;
+    }
+
+    case 'inbound_pct': {
+      const pct = Math.round(v);
+      if (v >= 60) return `🏆 <strong>${pct}% inbound</strong> — you've built strong organic pull. Companies with 60%+ inbound have structurally lower CAC and higher deal quality. This is a significant competitive moat.`;
+      if (v >= 45) return `✅ <strong>${pct}% inbound</strong> is above average. Best-in-class SaaS companies drive 50-70% through organic channels — you're on the right trajectory.`;
+      if (v >= 30) return `📊 <strong>${pct}% inbound</strong> is the median for growth-stage SaaS. Increasing inbound from here would meaningfully improve your CAC and source quality scores.`;
+      return `⚠️ <strong>${pct}% inbound</strong> — growth is heavily dependent on outbound spend. This creates a fragile, expensive engine. Investing in content, community and referrals would strengthen your GFS.`;
+    }
+
+    default:
+      return null;
+  }
+}
+
+function showBenchmarkInsight(key, val, answers) {
+  const insight = getBenchmarkInsight(key, val, answers);
+  if (!insight) return;
+  // Small delay so it appears after the user's answer bubble
+  setTimeout(() => {
+    const chat = document.getElementById('chat');
+    const d = document.createElement('div');
+    d.className = 'msg';
+    d.innerHTML = `<div style="width:30px;flex-shrink:0"></div><div class="bubble insight-hint">${insight}</div>`;
+    chat.appendChild(d);
+    d.scrollIntoView({behavior:'smooth',block:'nearest'});
+  }, 300);
+}
+
 function submitAnswer(val){
   const step=STEPS[state.step];if(!step)return;
   document.getElementById('quick-reply-area').innerHTML='';
@@ -563,11 +707,19 @@ function submitAnswer(val){
     // If "A different company", init-msg fires in submitTextAnswer after website URL is entered
   }
 
+  // Show benchmark insight for key metric questions
+  const insightKeys = ['arr_revenue','growth_rate','nrr','grr','gm','fcf','sales_efficiency','cac_payback','burn_multiple','inbound_pct'];
+  if(insightKeys.includes(step.key)){
+    showBenchmarkInsight(step.key, val, state.answers);
+  }
+
   state.step++;
   // Skip steps whose condition is not met
   while(state.step<STEPS.length && STEPS[state.step].skipIf && STEPS[state.step].skipIf(state.answers)) state.step++;
   updateProgress();
-  setTimeout(()=>askStep(state.step),480);
+  // Slightly longer delay when showing insight so user can read it
+  const insightDelay = insightKeys.includes(step.key) ? 1800 : 480;
+  setTimeout(()=>askStep(state.step), insightDelay);
 }
 
 async function computeAndShow(){
