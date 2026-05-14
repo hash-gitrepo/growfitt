@@ -12,7 +12,8 @@ exports.handler = async (event) => {
     return { statusCode: 400, body: JSON.stringify({ error: "Invalid JSON body" }) };
   }
 
-  const { to, companyName, scores } = payload;
+  const { to, companyName, scores, answers } = payload;
+  const a = answers || {};
 
   if (!to || !companyName || !scores) {
     return { statusCode: 400, body: JSON.stringify({ error: "Missing required fields: to, companyName, scores" }) };
@@ -27,6 +28,37 @@ exports.handler = async (event) => {
   const zoneBg   = s.zone === "Fit" ? "#e7f4ea"  : s.zone === "Over" ? "#fdf0ef"  : "#fef6ec";
 
   const THRESHOLD = 3.0;
+
+  // GFS interpretation tier
+  const gfsTier = (v) => {
+    if (v >= 4.5) return { label: 'Elite',   color: '#1a6632' };
+    if (v >= 3.8) return { label: 'Strong',  color: '#639922' };
+    if (v >= 3.0) return { label: 'Average', color: '#ca8a04' };
+    if (v >= 2.5) return { label: 'Fragile', color: '#e07b00' };
+    return             { label: 'Broken',  color: '#c0392b' };
+  };
+  const tier = gfsTier(s.adjGFS || s.GFS);
+
+  // Qualitative context rows from new questions
+  const qualRows = [];
+  if (a.ai_impact)          qualRows.push(['AI impact on growth', a.ai_impact]);
+  if (a.platform_expansion) qualRows.push(['Platform expansion trend', a.platform_expansion]);
+  if (a.ai_revenue)         qualRows.push(['Revenue from AI', a.ai_revenue]);
+  if (a.usage_growth)       qualRows.push(['Usage growth trend', a.usage_growth]);
+  if (a.deal_quality)       qualRows.push(['Deal quality', a.deal_quality]);
+  if (a.cohort_trend)       qualRows.push(['Retention cohort trend', a.cohort_trend]);
+
+  const qualHtml = qualRows.length ? `
+    <div style="padding:20px 28px;border-bottom:1px solid rgba(0,0,0,0.07)">
+      <div style="font-size:11px;font-weight:600;color:#8a8c87;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:14px">Qualitative context</div>
+      <table width="100%" cellpadding="0" cellspacing="0">
+        ${qualRows.map(([label, val]) => `
+        <tr>
+          <td style="font-size:12px;color:#8a8c87;padding:5px 0;width:180px">${label}</td>
+          <td style="font-size:13px;color:#1a1a18;font-weight:500;padding:5px 0">${val}</td>
+        </tr>`).join('')}
+      </table>
+    </div>` : '';
   const barHtml = (label, val) => {
     const pct = Math.round((val / 5) * 100);
     const below = val < THRESHOLD;
@@ -70,11 +102,14 @@ exports.handler = async (event) => {
         <tr>
           <td>
             <div style="font-size:48px;font-weight:700;color:#1a1a18;line-height:1;letter-spacing:-2px">
-              ${s.GFS.toFixed(2)}<span style="font-size:20px;font-weight:400;color:#5a5c57">/5.00</span>
+              ${(s.adjGFS || s.GFS).toFixed(2)}<span style="font-size:20px;font-weight:400;color:#5a5c57">/5.00</span>
             </div>
-            <div style="font-size:13px;color:#5a5c57;margin-top:4px">Growth Fitness Score</div>
-            <div style="display:inline-block;margin-top:12px;padding:5px 16px;border-radius:20px;font-size:13px;font-weight:600;background:${zoneBg};color:${zoneColor}">
+            <div style="font-size:13px;color:#5a5c57;margin-top:4px">Growth Fitness Score${s.hasAdjustment ? ' (adjusted)' : ''}</div>
+            <div style="display:inline-block;margin-top:8px;padding:5px 16px;border-radius:20px;font-size:13px;font-weight:600;background:${zoneBg};color:${zoneColor}">
               ${s.interpretation} &middot; ${s.zone} zone
+            </div>
+            <div style="display:inline-block;margin-top:6px;margin-left:8px;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;background:${tier.color}18;color:${tier.color}">
+              ${tier.label}
             </div>
           </td>
           <td style="text-align:right;vertical-align:top">
@@ -140,10 +175,20 @@ exports.handler = async (event) => {
       </table>
     </div>
 
+    <!-- Qualitative context -->
+    ${qualHtml}
+
     <!-- Recommendations -->
     <div style="padding:20px 28px;border-bottom:1px solid rgba(0,0,0,0.07)">
       <div style="font-size:11px;font-weight:600;color:#8a8c87;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:14px">Recommendations</div>
       <ul style="margin:0;padding-left:18px">${recsList}</ul>
+    </div>
+
+    <!-- Atlas CTA -->
+    <div style="padding:16px 28px;border-bottom:1px solid rgba(0,0,0,0.07);text-align:center">
+      <a href="https://growfitt.ai/atlas" style="display:inline-block;padding:11px 28px;background:#185fa5;color:#ffffff;border-radius:8px;font-size:13.5px;font-weight:600;text-decoration:none">
+        🌐 View Atlas — compare your position to the full benchmark database
+      </a>
     </div>
 
     <!-- Footer -->
@@ -187,7 +232,7 @@ hello@growfitt.ai · growfitt.ai
     const result = await resend.emails.send({
       from: "GrowFitt <noreply@growfitt.ai>",
       to: [to],
-      subject: `GrowFitt Growth Audit — ${companyName} | GFS ${s.GFS.toFixed(2)}/5.00`,
+      subject: `GrowFitt Growth Audit — ${companyName} | GFS ${(s.adjGFS||s.GFS).toFixed(2)}/5.00`,
       html: htmlBody,
       text: textBody,
     });
