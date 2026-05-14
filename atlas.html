@@ -800,6 +800,73 @@ document.addEventListener('DOMContentLoaded', function() {
   // Growth starts empty
   const g = document.getElementById('f-growth');
   if (g) g.style.background = '#1f2b21';
+
+  // ── PRE-FILL FROM GROWTHFITNESS URL PARAMS ──────────────────────────────────
+  // GrowthFitness passes: ?cat=...&arr=...&growth=...&gm=...&geo=...
+  var params = new URLSearchParams(window.location.search);
+
+  function setSelect(id, val) {
+    if (!val) return false;
+    var el = document.getElementById(id);
+    if (!el) return false;
+    for (var i = 0; i < el.options.length; i++) {
+      if (el.options[i].value === val) { el.selectedIndex = i; return true; }
+    }
+    return false;
+  }
+
+  function setSlider(id, dispId, unitId, val, isOptional) {
+    if (val === null || val === undefined || isNaN(val)) return false;
+    var el = document.getElementById(id);
+    if (!el) return false;
+    el.value = val;
+    el.classList.remove('unset');
+    // Update gradient
+    var min = parseFloat(el.min), max = parseFloat(el.max);
+    var pct = ((val - min) / (max - min) * 100).toFixed(1);
+    el.style.setProperty('--pct', pct + '%');
+    el.style.background = '';
+    // Update display
+    var disp = document.getElementById(dispId);
+    if (disp) { disp.textContent = val; disp.classList.remove('dim'); }
+    var unit = document.getElementById(unitId);
+    if (unit) unit.textContent = '%';
+    return true;
+  }
+
+  var didPrefill = false;
+  if (params.get('cat'))    { setSelect('f-category', params.get('cat'));    didPrefill = true; }
+  if (params.get('arr'))    { setSelect('f-arr',      params.get('arr'));     didPrefill = true; }
+  if (params.get('geo'))    { setSelect('f-geo',      params.get('geo'));     didPrefill = true; }
+  var growthVal = parseInt(params.get('growth'));
+  if (!isNaN(growthVal) && growthVal > 0) {
+    setSlider('f-growth', 'disp-growth', 'unit-growth', growthVal, false);
+    didPrefill = true;
+  }
+  var gmVal = parseInt(params.get('gm'));
+  if (!isNaN(gmVal) && gmVal > 0) {
+    setSlider('f-gm', 'disp-gm', 'unit-gm', gmVal, true);
+    didPrefill = true;
+  }
+
+  // Auto-run the benchmark if we have the minimum required fields
+  if (didPrefill && params.get('cat') && params.get('arr') && !isNaN(growthVal) && growthVal > 0) {
+    // Scroll form into view briefly, then auto-submit
+    setTimeout(function() {
+      // Add a visible banner so user knows this was pre-filled
+      var banner = document.createElement('div');
+      banner.style.cssText = 'background:rgba(29,111,184,0.08);border:1px solid rgba(29,111,184,0.2);border-radius:8px;padding:10px 16px;font-size:13px;color:#185fa5;margin-bottom:16px;display:flex;align-items:center;gap:8px;';
+      banner.innerHTML = '<span>⚡</span><span>Pre-filled from your GrowFitt assessment — running your benchmark position now.</span>';
+      var formBody = document.querySelector('.form-card-body');
+      if (formBody) formBody.insertBefore(banner, formBody.firstChild);
+      runAtlas();
+      // Scroll to results
+      setTimeout(function() {
+        var res = document.getElementById('results-section');
+        if (res) res.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 300);
+    }, 400);
+  }
 });
 
 
