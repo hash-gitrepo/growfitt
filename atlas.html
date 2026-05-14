@@ -794,16 +794,16 @@ function resetSlider(sliderId, dispId, unitId) {
 document.addEventListener('DOMContentLoaded', function() {
   // Unset optional sliders — all-dark background
   ['f-nrr','f-gm','f-cac','f-se'].forEach(function(id) {
-    const el = document.getElementById(id);
+    var el = document.getElementById(id);
     if (el) el.style.background = '#1f2b21';
   });
-  // Growth starts empty
-  const g = document.getElementById('f-growth');
+  var g = document.getElementById('f-growth');
   if (g) g.style.background = '#1f2b21';
 
-  // ── PRE-FILL FROM GROWTHFITNESS URL PARAMS ──────────────────────────────────
-  // GrowthFitness passes: ?cat=...&arr=...&growth=...&gm=...&geo=...
+  // ── PRE-FILL & AUTO-RUN FROM GROWTHFITNESS URL PARAMS ──────────────────────
+  // Params passed: ?cat=...&arr=...&growth=...&gm=...&geo=...
   var params = new URLSearchParams(window.location.search);
+  var didPrefill = false;
 
   function setSelect(id, val) {
     if (!val) return false;
@@ -815,57 +815,65 @@ document.addEventListener('DOMContentLoaded', function() {
     return false;
   }
 
-  function setSlider(id, dispId, unitId, val, isOptional) {
-    if (val === null || val === undefined || isNaN(val)) return false;
+  function setSlider(id, dispId, unitId, val) {
     var el = document.getElementById(id);
-    if (!el) return false;
+    if (!el || isNaN(val) || val <= 0) return false;
     el.value = val;
     el.classList.remove('unset');
-    // Update gradient
     var min = parseFloat(el.min), max = parseFloat(el.max);
     var pct = ((val - min) / (max - min) * 100).toFixed(1);
     el.style.setProperty('--pct', pct + '%');
     el.style.background = '';
-    // Update display
     var disp = document.getElementById(dispId);
-    if (disp) { disp.textContent = val; disp.classList.remove('dim'); }
+    if (disp) { disp.textContent = val; disp.classList.remove('dim'); disp.style.color = ''; }
     var unit = document.getElementById(unitId);
     if (unit) unit.textContent = '%';
     return true;
   }
 
-  var didPrefill = false;
-  if (params.get('cat'))    { setSelect('f-category', params.get('cat'));    didPrefill = true; }
-  if (params.get('arr'))    { setSelect('f-arr',      params.get('arr'));     didPrefill = true; }
-  if (params.get('geo'))    { setSelect('f-geo',      params.get('geo'));     didPrefill = true; }
-  var growthVal = parseInt(params.get('growth'));
+  if (params.get('cat'))    { if(setSelect('f-category', params.get('cat')))    didPrefill = true; }
+  if (params.get('arr'))    { if(setSelect('f-arr',      params.get('arr')))    didPrefill = true; }
+  if (params.get('geo'))    { setSelect('f-geo', params.get('geo')); }
+
+  var growthVal = parseInt(params.get('growth'), 10);
   if (!isNaN(growthVal) && growthVal > 0) {
-    setSlider('f-growth', 'disp-growth', 'unit-growth', growthVal, false);
-    didPrefill = true;
+    if (setSlider('f-growth', 'disp-growth', 'unit-growth', growthVal)) didPrefill = true;
   }
-  var gmVal = parseInt(params.get('gm'));
+  var gmVal = parseInt(params.get('gm'), 10);
   if (!isNaN(gmVal) && gmVal > 0) {
-    setSlider('f-gm', 'disp-gm', 'unit-gm', gmVal, true);
-    didPrefill = true;
+    setSlider('f-gm', 'disp-gm', 'unit-gm', gmVal);
   }
 
-  // Auto-run the benchmark if we have the minimum required fields
+  // If we have the minimum required fields, auto-run immediately and scroll to results
   if (didPrefill && params.get('cat') && params.get('arr') && !isNaN(growthVal) && growthVal > 0) {
-    // Scroll form into view briefly, then auto-submit
+    // Show banner inside form so user knows it was pre-filled
+    var banner = document.createElement('div');
+    banner.style.cssText = [
+      'background:rgba(29,111,184,0.08)',
+      'border:1px solid rgba(29,111,184,0.25)',
+      'border-radius:8px',
+      'padding:10px 16px',
+      'font-size:13px',
+      'color:#185fa5',
+      'margin-bottom:16px',
+      'display:flex',
+      'align-items:center',
+      'gap:8px'
+    ].join(';');
+    banner.innerHTML = '<span style="font-size:16px">⚡</span><span><strong>Pre-filled from your GrowFitt assessment.</strong> Your benchmark results are shown below.</span>';
+    var formBody = document.querySelector('.form-card-body');
+    if (formBody) formBody.insertBefore(banner, formBody.firstChild);
+
+    // Run immediately — DOM is ready
+    try { runAtlas(); } catch(e) { console.error('Atlas auto-run error:', e); }
+
+    // Scroll to results after a short paint delay
     setTimeout(function() {
-      // Add a visible banner so user knows this was pre-filled
-      var banner = document.createElement('div');
-      banner.style.cssText = 'background:rgba(29,111,184,0.08);border:1px solid rgba(29,111,184,0.2);border-radius:8px;padding:10px 16px;font-size:13px;color:#185fa5;margin-bottom:16px;display:flex;align-items:center;gap:8px;';
-      banner.innerHTML = '<span>⚡</span><span>Pre-filled from your GrowFitt assessment — running your benchmark position now.</span>';
-      var formBody = document.querySelector('.form-card-body');
-      if (formBody) formBody.insertBefore(banner, formBody.firstChild);
-      runAtlas();
-      // Scroll to results
-      setTimeout(function() {
-        var res = document.getElementById('results-section');
-        if (res) res.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 300);
-    }, 400);
+      var res = document.getElementById('results-section');
+      if (res && res.classList.contains('show')) {
+        res.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 200);
   }
 });
 
