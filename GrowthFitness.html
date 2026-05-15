@@ -399,6 +399,22 @@ function updateProgress(){
 }
 
 function addMsg(html,role){const chat=document.getElementById('chat');const d=document.createElement('div');d.className='msg '+role;d.innerHTML=`<div class="avatar ${role}">${role==='bot'?'GF':'YOU'}</div><div class="bubble ${role}">${html}</div>`;chat.appendChild(d);d.scrollIntoView({behavior:'smooth',block:'nearest'});}
+
+function scrollForOptions(){
+  // Scroll so the last bot question is near the top of the viewport,
+  // and the quick-reply-area (options) below it is fully visible.
+  // Two-frame delay to let the options render into the DOM first.
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    const area=document.getElementById('quick-reply-area');
+    if(!area)return;
+    // Scroll so the bottom of the options area is at the bottom of the viewport
+    // with a small margin — this centres the question + options in the view.
+    const areaRect=area.getBoundingClientRect();
+    const areaBottom=window.scrollY+areaRect.bottom;
+    const targetScroll=areaBottom-window.innerHeight+32; // 32px bottom margin
+    window.scrollTo({top:Math.max(0,targetScroll),behavior:'smooth'});
+  }));
+}
 function addHint(text,type){const chat=document.getElementById('chat');const d=document.createElement('div');d.className='msg';d.innerHTML=`<div style="width:30px;flex-shrink:0"></div><div class="bubble ${type==='info'?'info-hint':'hint'}">${text}</div>`;chat.appendChild(d);}
 function showTyping(){const chat=document.getElementById('chat');const d=document.createElement('div');d.id='typing';d.className='msg';d.innerHTML=`<div class="avatar bot">GF</div><div class="bubble bot"><div class="typing"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div></div>`;chat.appendChild(d);d.scrollIntoView({behavior:'smooth',block:'nearest'});}
 function removeTyping(){const e=document.getElementById('typing');if(e)e.remove();}
@@ -559,6 +575,7 @@ function askStep(idx){
       const inp=document.getElementById('text-input-field');
       if(area&&inp){area.style.display='block';inp.value='';inp.placeholder=step.placeholder||'Type your answer...';setTimeout(()=>inp.focus(),100);}
     }
+    scrollForOptions();
 
   },650);
 }
@@ -1044,8 +1061,11 @@ async function autoSendReport(s,recs){
   if(!verifiedEmail){console.warn('No verified email — skipping auto-send');return;}
   const payload={to:verifiedEmail,companyName:state.companyName,answers:state.answers,scores:{GFS:s.GFS,adjGFS:s.adjGFS,hasAdjustment:s.hasAdjustment,belowComponents:s.belowComponents,GQS:s.GQS,RS:s.RS,ES:s.ES,OGR_Low:s.OGR_Low,OGR_High:s.OGR_High,zone:s.zone,interpretation:s.interpretation,growth:s.growth,nrr:s.nrr,grr:s.grr,gm:s.gm,fcf:s.fcf,expansion:s.expansion,isEarly:s.isEarly,esFormula:s.esFormula,stageKey:s.stageKey,growthFlag:s.growthFlag,recommendations:recs}};
   try{
-    await fetch('/.netlify/functions/send-report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-  }catch(err){console.error('Auto-send failed:',err);}
+    const res = await fetch('/.netlify/functions/send-report',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
+    const data = await res.json().catch(()=>({}));
+    if(!res.ok){console.error('send-report failed:',res.status, data);}
+    else{console.log('Report sent successfully, id:', data.id);}
+  }catch(err){console.error('Auto-send network error:',err);}
 }
 
 function restart(){
