@@ -853,34 +853,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Auto-run if we have cat + arr (inferred or direct) + growth
   if (didPrefill && params.get('cat') && arrSet && !isNaN(growthVal) && growthVal > 0) {
-    // Show banner inside form so user knows it was pre-filled
-    var banner = document.createElement('div');
-    banner.style.cssText = [
-      'background:rgba(29,111,184,0.08)',
-      'border:1px solid rgba(29,111,184,0.25)',
-      'border-radius:8px',
-      'padding:10px 16px',
-      'font-size:13px',
-      'color:#185fa5',
-      'margin-bottom:16px',
-      'display:flex',
-      'align-items:center',
-      'gap:8px'
-    ].join(';');
-    banner.innerHTML = '<span style="font-size:16px">⚡</span><span><strong>Pre-filled from your GrowFitt assessment.</strong> Your benchmark results are shown below.</span>';
-    var formBody = document.querySelector('.form-card-body');
-    if (formBody) formBody.insertBefore(banner, formBody.firstChild);
-
-    // Run immediately — DOM is ready
+    // Run immediately — DOM is ready, all fields are set
     try { _atlasAutoRun = true; runAtlas(); _atlasAutoRun = false; } catch(e) { _atlasAutoRun = false; console.error('Atlas auto-run error:', e); }
 
-    // Scroll to results after a short paint delay
-    setTimeout(function() {
-      var res = document.getElementById('results-section');
-      if (res && res.classList.contains('show')) {
-        res.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }
-    }, 200);
+    // Scroll directly to results — skip the form entirely
+    var res = document.getElementById('results-section');
+    if (res && res.classList.contains('show')) {
+      res.scrollIntoView({ behavior: 'instant', block: 'start' });
+    }
   }
 });
 

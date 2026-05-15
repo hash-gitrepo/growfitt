@@ -917,29 +917,35 @@ function renderResultCard(s,recs){
   (function(){
     const a = state.answers;
     const p = new URLSearchParams();
-    if (a.category)    p.set('cat', a.category);
-    // Map arr_label to Atlas ARR band
-    const arrMap = {
-      '<$250K':'<$1M','$250K – $500K':'<$1M','$500K – $1M':'<$1M',
-      '$1M – $2M':'$1M–$5M','$2M – $5M':'$1M–$5M',
-      '$5M – $10M':'$5M–$10M','$10M – $20M':'$10M–$25M','$20M – $30M':'$10M–$25M',
-      '$30M – $50M':'$25M–$50M','$50M – $75M':'$50M–$100M','$75M – $100M':'$50M–$100M',
-      '$100M – $150M':'$100M+','$150M – $200M':'$100M+','$200M – $300M':'$100M+',
-      '$300M – $500M':'$100M+','$500M – $750M':'$100M+','$750M – $1B':'$100M+','> $1B':'$100M+'
-    };
-    if (a.arr_label && arrMap[a.arr_label]) p.set('arr', arrMap[a.arr_label]);
-    // growth_rate is 0-100 integer
+    if (a.category) p.set('cat', a.category);
+
+    // Derive Atlas ARR band from numeric arr_revenue (most reliable)
+    const arrV = parseFloat(a.arr_revenue);
+    if (!isNaN(arrV)) {
+      const band = arrV < 1   ? '<$1M'
+                 : arrV < 5   ? '$1M–$5M'
+                 : arrV < 10  ? '$5M–$10M'
+                 : arrV < 25  ? '$10M–$25M'
+                 : arrV < 50  ? '$25M–$50M'
+                 : arrV < 100 ? '$50M–$100M'
+                 :               '$100M+';
+      p.set('arr', band);
+    }
+
+    // growth_rate is stored as 0-150 integer string
     if (a.growth_rate) p.set('growth', Math.round(parseFloat(a.growth_rate)));
-    // gm is 0-100 integer
+    // gm is stored as 0-100 integer string
     if (a.gm) p.set('gm', Math.round(parseFloat(a.gm)));
+
     // primary_market → geo
     const geoMap = {
-      'North America':'North America','Europe':'Europe',
-      'India & SEA':'Southeast Asia','Middle East & Africa':'Middle East',
-      'China':'Southeast Asia','Asia Pacific (incl. Japan)':'Southeast Asia',
+      'North America':'North America', 'Europe':'Europe',
+      'India & SEA':'Southeast Asia',  'Middle East & Africa':'Middle East',
+      'China':'Southeast Asia',        'Asia Pacific (incl. Japan)':'Southeast Asia',
       'Global':'Global'
     };
     if (a.primary_market && geoMap[a.primary_market]) p.set('geo', geoMap[a.primary_market]);
+
     const link = document.getElementById('atlas-link');
     if (link) link.href = '/atlas?' + p.toString();
   })();
