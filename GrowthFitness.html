@@ -963,6 +963,23 @@ function renderResultCard(s,recs){
     };
     if (a.primary_market && geoMap[a.primary_market]) p.set('geo', geoMap[a.primary_market]);
 
+    // Pass additional metrics so Atlas can compute a more accurate estimated GFS
+    if (a.nrr)         p.set('nrr',     Math.round(parseFloat(a.nrr)));
+    if (a.grr)         p.set('grr',     Math.round(parseFloat(a.grr)));
+    if (a.fcf)         p.set('fcf',     parseFloat(a.fcf).toFixed(2));
+    if (a.inbound_pct) p.set('inbound', Math.round(parseFloat(a.inbound_pct)));
+    if (a.deal_quality)  p.set('dq',   a.deal_quality);
+    if (a.cohort_trend)  p.set('css',  a.cohort_trend);
+    if (a.burn_multiple) p.set('burn', parseFloat(a.burn_multiple).toFixed(1));
+    if (a.cac_payback)   p.set('cac',  Math.round(parseFloat(a.cac_payback)));
+
+    // Pass the real assessment GFS scores so Atlas shows exact values, not estimates
+    p.set('gfs',    s.adjGFS.toFixed(2));
+    p.set('ogrL',   Math.round(s.OGR_Low  * 100));
+    p.set('ogrH',   Math.round(s.OGR_High * 100));
+    p.set('zone',   s.zone);
+    p.set('interp', s.interpretation);
+
     const link = document.getElementById('atlas-link');
     if (link) link.href = '/atlas?' + p.toString();
   })();

@@ -856,6 +856,24 @@ document.addEventListener('DOMContentLoaded', function() {
   var gmVal = parseInt(params.get('gm'), 10);
   if (!isNaN(gmVal) && gmVal > 0) { setSlider('f-gm', 'disp-gm', 'unit-gm', gmVal); }
 
+  // Store additional assessment metrics on window for estimateGFS to use
+  window._atlasFromAssessment = {
+    nrr:             params.get('nrr')     ? parseInt(params.get('nrr'), 10)     : null,
+    grr:             params.get('grr')     ? parseInt(params.get('grr'), 10)     : null,
+    fcf:             params.get('fcf')     ? parseFloat(params.get('fcf'))       : null,
+    inbound:         params.get('inbound') ? parseInt(params.get('inbound'), 10) : null,
+    dq:              params.get('dq')      || null,
+    css:             params.get('css')     || null,
+    burn:            params.get('burn')    ? parseFloat(params.get('burn'))      : null,
+    cac:             params.get('cac')     ? parseInt(params.get('cac'), 10)     : null,
+    // Real assessment scores — when present, bypass estimateGFS entirely
+    assessmentGFS:   params.get('gfs')    ? parseFloat(params.get('gfs'))        : null,
+    assessmentOgrL:  params.get('ogrL')   ? parseInt(params.get('ogrL'), 10)    : null,
+    assessmentOgrH:  params.get('ogrH')   ? parseInt(params.get('ogrH'), 10)    : null,
+    assessmentZone:  params.get('zone')   || null,
+    assessmentInterp:params.get('interp') || null,
+  };
+
   // Auto-run if we have all required fields
   if (didPrefill && params.get('cat') && arrSet && !isNaN(growthVal) && growthVal > 0) {
     try { _atlasAutoRun = true; runAtlas(); _atlasAutoRun = false; } catch(e) { _atlasAutoRun = false; }
@@ -869,56 +887,98 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 // ── GFS ESTIMATE (proxy model for Atlas — not the full server-side model) ─────
-function estimateGFS(growth, nrr, gm, se, stage, cat) {
+function estimateGFS(growth, nrr_param, gm, se, stage, cat) {
   // Stage BGR and category multiplier — identical to compute-score.js
   const bgr  = STAGE_BGR[stage] || 0.55;
   const mult = CAT_MULT[cat]   || 1.0;
   const cbgr = bgr * mult;
   const g = growth / 100;
+  const isEarly = (stage === 'Early' || stage === 'Growth');
 
-  // GRS — identical lookup table to compute-score.js
+  // Use full assessment data when available (passed via URL params)
+  const A = window._atlasFromAssessment || {};
+
+  // ── GRS — identical to compute-score.js ──
   const GRS = g<0.1?1 : g<0.2?2 : g<0.3?3 : g<0.4?4 : 5;
 
-  // SQS: Atlas doesn't collect inbound_pct — use neutral 3.0 (market average)
-  const SQS = 3.0;
-
-  // CQS: Atlas doesn't collect deal_quality — use neutral 3.0
-  const CQS = 3.0;
-
-  // GQS — same weights as compute-score.js
-  const GQS = 0.30*GRS + 0.30*SQS + 0.40*CQS;
-
-  // NRS — identical lookup to compute-score.js
-  const n = (nrr || 110) / 100;
-  const NRS = n<0.90?1 : n<1.01?1 : n<1.05?2 : n<1.20?3 : n<1.60?4 : 5;
-
-  // GRRS and CSS: not collected in Atlas — use neutral 3.0
-  const GRRS = 3.0;
-  const CSS  = 3.0;
-
-  // RS — same weights as compute-score.js
-  const RS = 0.45*NRS + 0.35*GRRS + 0.20*CSS;
-
-  // ES — use GM score as proxy; FCF not collected so use neutral midpoint
-  const GMS = (gm||70)<50?1 : (gm||70)<60?2 : (gm||70)<70?3 : (gm||70)<80?4 : 5;
-  let ES = 0.50*GMS + 0.50*3.0; // 50% GM, 50% neutral FCF — matches Scale/Late formula shape
-  if (se > 0) {
-    // For early stage with SE provided, weight it in
-    const SES = se<0.5?1:se<0.9?2:se<1.0?3:se<1.5?3:se<3.0?4:5;
-    ES = 0.35*GMS + 0.35*SES + 0.30*3.0;
+  // ── SQS — use inbound_pct if available, else neutral 3.0 ──
+  let SQS = 3.0;
+  if (A.inbound != null) {
+    const inb = A.inbound / 100;
+    SQS = inb<0.15?2 : inb<0.30?2 : inb<0.45?3 : inb<0.60?4 : 5;
   }
 
-  // Raw GFS — same weights as compute-score.js
-  const GFS = 0.30*GQS + 0.40*RS + 0.30*ES;
+  // ── CQS — use deal_quality if available, else neutral 3.0 ──
+  const dealMap = {'Sharp decline recently':1,'Material decline':2,'Roughly the same':3,'Slight increase':4,'Improving a lot':5};
+  const dealScore = A.dq ? (dealMap[A.dq] || 3) : 3;
+  // expansion unknown in Atlas — use neutral 3
+  const CQS = 0.70 * 3 + 0.30 * dealScore;
 
-  // Adjustments — same penalty as compute-score.js
+  // ── GQS — same weights as compute-score.js ──
+  const GQS = 0.30*GRS + 0.30*SQS + 0.40*CQS;
+
+  // ── NRS — use NRR from assessment if available, else param or default ──
+  const nrrVal = A.nrr != null ? A.nrr : (nrr_param || 110);
+  const n = nrrVal / 100;
+  const NRS = n<0.90?1 : n<1.01?1 : n<1.05?2 : n<1.20?3 : n<1.60?4 : 5;
+
+  // ── GRRS — use GRR from assessment if available, else neutral ──
+  let GRRS = 3.0;
+  if (A.grr != null) {
+    const grrV = A.grr / 100;
+    GRRS = grrV<0.80?2 : grrV<0.85?3 : grrV<0.90?4 : grrV>=0.95?5 : 4;
+  }
+
+  // ── CSS — use cohort_trend if available ──
+  const cohortMap = {'Sharp decline recently':1,'Material decline':2,'Roughly the same':3,'Slight improvement':4,'Improving significantly':5};
+  const CSS = A.css ? (cohortMap[A.css] || 3) : 3.0;
+
+  // ── RS — same weights as compute-score.js ──
+  const RS = 0.45*NRS + 0.35*GRRS + 0.20*CSS;
+
+  // ── ES — use full Early/Growth formula if efficiency data available ──
+  let ES;
+  const GMS = (gm||70)<50?1 : (gm||70)<60?2 : (gm||70)<70?3 : (gm||70)<80?4 : 5;
+
+  if (isEarly && (A.burn != null || A.cac != null || A.fcf != null)) {
+    // Use same Early/Growth formula as compute-score.js
+    const burnVal  = A.burn != null ? A.burn : 2.0;
+    const seVal    = se > 0 ? se : 1.0;
+    const cacVal   = A.cac != null ? A.cac : 18;
+    const fcfVal   = A.fcf != null ? A.fcf : 0.05;
+    // Lookup functions matching compute-score.js exactly (step-function, last match wins)
+    function lk(val, tbl) { let s=tbl[0][1]; for(let i=0;i<tbl.length;i++){if(val>=tbl[i][0])s=tbl[i][1];} return s; }
+    const BurnScore   = lk(burnVal, [[0,5],[1.0,5],[1.5,4],[2.0,3],[2.5,2],[3.0,1]]);
+    const SEScore     = lk(seVal,   [[0,1],[0.5,1],[0.9,2],[1.0,3],[1.5,3],[3.0,4],[5.0,5]]);
+    const CACScore    = lk(cacVal,  [[0,5],[6,5],[12,4],[18,3],[24,2],[36,1]]);
+    const EBITDAScore = lk(fcfVal,  [[-0.5,1],[0.05,2],[0.15,3],[0.40,4],[0.60,5]]);
+    ES = 0.30*BurnScore + 0.25*SEScore + 0.20*CACScore + 0.25*EBITDAScore;
+  } else if (!isEarly && A.fcf != null) {
+    // Scale/Late formula with FCF known
+    // Scale/Late ES formula from compute-score.js
+    function lk2(val,tbl){let s=tbl[0][1];for(let i=0;i<tbl.length;i++){if(val>=tbl[i][0])s=tbl[i][1];}return s;}
+    const FCF_Score = lk2(A.fcf, [[-1,1],[0,2],[0.10,3],[0.20,4],[0.30,5]]);
+    ES = 0.50*GMS + 0.50*FCF_Score;
+  } else {
+    // Fallback: GM-based estimate with conservative neutral for unknown efficiency inputs
+    // Use 2.5 neutral for early stage (efficiency often weak at this stage) to avoid over-estimating
+    const neutralES = isEarly ? 2.5 : 3.0;
+    ES = 0.50*GMS + 0.50*neutralES;
+    if (se > 0) {
+      const SES = se<0.5?1:se<0.9?2:se<1.0?3:se<1.5?3:se<3.0?4:5;
+      ES = 0.35*GMS + 0.35*SES + 0.30*neutralES;
+    }
+  }
+
+  // ── Raw GFS + adjustments — identical to compute-score.js ──
+  const GFS = 0.30*GQS + 0.40*RS + 0.30*ES;
   let adj = GFS;
   if (GQS<3) adj*=0.92;
   if (RS<3)  adj*=0.92;
   if (ES<3)  adj*=0.92;
   adj = Math.min(5, Math.max(1.2, adj));
 
-  // Mfit tiers — identical to compute-score.js
+  // ── Mfit tiers — identical to compute-score.js ──
   let mL,mH,interp;
   if(adj<2.5){mL=0.5;mH=0.7;interp='Broken';}
   else if(adj<3.0){mL=0.7;mH=0.9;interp='Fragile';}
@@ -1043,7 +1103,24 @@ function runAtlas() {
   if (!growth || growth <= 0) { if(!_atlasAutoRun) alert('Please drag the LTM Growth rate slider to set your growth rate.'); return; }
 
   const bench = getBenchmark(cat, arr);
-  const res = estimateGFS(growth, nrr, gm, se, stage, cat);
+
+  // Use real assessment scores if passed via URL — skip estimation entirely
+  const A = window._atlasFromAssessment || {};
+  let res;
+  if (A.assessmentGFS != null && A.assessmentOgrL != null) {
+    const ogrL   = A.assessmentOgrL;
+    const ogrH   = A.assessmentOgrH;
+    const zone   = A.assessmentZone   || (growth < ogrL ? 'Under' : growth <= ogrH ? 'Fit' : 'Over');
+    const interp = A.assessmentInterp || (A.assessmentGFS>=4.5?'Elite':A.assessmentGFS>=3.8?'Strong':A.assessmentGFS>=3.0?'Average':A.assessmentGFS>=2.5?'Fragile':'Broken');
+    // cbgr needed for insight text: derive from OGR midpoint and mfit midpoint
+    const mfitMid = interp==='Broken'?0.6:interp==='Fragile'?0.8:interp==='Average'?1.0:interp==='Strong'?1.225:1.575;
+    const cbgr    = Math.round((ogrL + ogrH) / 2 / mfitMid);
+    res = { gfs: A.assessmentGFS, zone, ogrL, ogrH, cbgr, interp, fromAssessment: true };
+  } else {
+    res = estimateGFS(growth, nrr, gm, se, stage, cat);
+    res.fromAssessment = false;
+  }
+
   // Store globally for filter re-render
   _lastSubmission = { growth, gm, cat, arr, geo, country, funding, bench, res };
 
@@ -1072,9 +1149,17 @@ function runAtlas() {
   gfsEl.textContent = res.gfs.toFixed(2);
   gfsEl.style.color = res.gfs>=3.8?'var(--green-light)':res.gfs>=3.0?'var(--orange)':'var(--red)';
   document.getElementById('res-interpretation').textContent = res.interp;
-  // Make clear this is an estimate — full assessment gives exact score
   const gfsDisc = document.getElementById('res-gfs-disclaimer');
-  if(gfsDisc) gfsDisc.style.display='';
+  if (gfsDisc) {
+    if (res.fromAssessment) {
+      gfsDisc.innerHTML = '✅ <strong>Your GFS from your GrowFitt assessment.</strong> This is your exact score — benchmarking below shows how you compare.';
+      gfsDisc.style.cssText += ';background:rgba(26,102,50,0.07);border-color:rgba(26,102,50,0.2);color:#1a6632;';
+    } else {
+      gfsDisc.innerHTML = 'ⓘ <strong>Estimated GFS.</strong> Atlas uses 3 inputs for a quick position. Your full <a href="/growthfitness" style="color:#185fa5;font-weight:600;">GrowFitt assessment</a> (12+ inputs) gives the precise score.';
+      gfsDisc.style.cssText += ';background:rgba(24,95,165,0.07);border-color:rgba(24,95,165,0.18);color:#185fa5;';
+    }
+    gfsDisc.style.display = '';
+  }
   document.getElementById('res-ogr').textContent = res.ogrL + '–' + res.ogrH + '%';
   const gCol = res.zone==='Fit'?'var(--green-light)':res.zone==='Over'?'var(--red)':'var(--orange)';
   document.getElementById('res-growth-display').innerHTML = '<span style="color:'+gCol+'">'+growth+'%</span> ('+(res.zone==='Fit'?'✓ Within fit range':res.zone==='Over'?'↑ Above fit range':'↓ Below fit range')+')';
