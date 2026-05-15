@@ -57,31 +57,61 @@ exports.handler = async (event) => {
   // Segment widths proportional to range size (total = 5 units)
   const segWidths = dialTiers.map(t => Math.round((t.max - t.min) / 5 * 100));
 
+  // Position marker: how far along the 540px bar is the needle?
+  const needlePct = Math.min(100, Math.max(0, (adjScore / 5) * 100));
+
   const dialHtml = (
-    '<div style="text-align:center;padding:24px 20px 16px;background:#fafafa;border-radius:8px;margin-bottom:8px">'
-    // Title
-    +'<div style="font-size:11px;font-weight:600;color:#8a8c87;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:16px">What does your score mean?</div>'
-    // Big score number
-    +'<div style="font-size:52px;font-weight:800;color:'+tier.color+';line-height:1;letter-spacing:-2px;margin-bottom:4px">'+adjScore.toFixed(2)+'</div>'
-    +'<div style="font-size:13px;color:#5a5c57;margin-bottom:16px">/5.00 &nbsp;&middot;&nbsp; Growth Fitness Score</div>'
-    // Tier badge
-    +'<div style="display:inline-block;padding:6px 20px;border-radius:20px;background:'+tier.bg+';color:'+tier.color+';font-size:15px;font-weight:700;letter-spacing:0.3px;margin-bottom:20px">'+tier.label+'</div>'
-    // Colour bar segments
-    +'<table width="100%" cellpadding="0" cellspacing="2" style="margin-bottom:8px"><tr>'
+    // Outer wrapper — white, no background box
+    '<div style="text-align:center;padding:28px 24px 20px;">'
+    // Section title
+    +'<div style="font-size:11px;font-weight:600;color:#8a8c87;text-transform:uppercase;letter-spacing:1px;margin-bottom:20px">What does your score mean?</div>'
+    // Score + label row — mimics the app card layout
+    +'<table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px"><tr>'
+      // Left: big score
+      +'<td style="text-align:left;vertical-align:middle;width:50%">'
+        +'<div style="font-size:56px;font-weight:800;color:'+tier.color+';line-height:1;letter-spacing:-2px">'+adjScore.toFixed(2)+'</div>'
+        +'<div style="font-size:13px;color:#8a8c87;margin-top:4px">/5.00 &nbsp;Growth Fitness Score</div>'
+      +'</td>'
+      // Right: tier badge + scale reference
+      +'<td style="text-align:right;vertical-align:middle;width:50%">'
+        +'<div style="display:inline-block;padding:8px 22px;border-radius:24px;background:'+tier.bg+';color:'+tier.color+';font-size:18px;font-weight:700;letter-spacing:0.3px;margin-bottom:8px">'+tier.label+'</div>'
+        +'<div style="font-size:11px;color:#8a8c87">Scored out of 5.00</div>'
+      +'</td>'
+    +'</tr></table>'
+    // Progress bar — 5 pill segments with gap between them
+    +'<table width="100%" cellpadding="0" cellspacing="4" style="margin-bottom:6px"><tr>'
     + dialTiers.map(function(t, i) {
         const isActive = i === activeIdx;
+        // Pill height: active = 20px, inactive = 12px; border-radius: 100px for pill shape
+        const h = isActive ? '20' : '12';
+        const opacity = isActive ? '1' : '0.22';
+        const mt = isActive ? '0' : '4'; // vertically centre inactive pills
         return '<td style="width:'+segWidths[i]+'%;padding:0">'
-          +'<div style="height:'+(isActive?'14':'8')+'px;background:'+t.color+';opacity:'+(isActive?'1':'0.3')+';border-radius:3px'+(isActive?';box-shadow:0 0 0 2px '+t.color+',0 0 0 4px white':'')+'">&nbsp;</div>'
+          +'<div style="height:'+h+'px;margin-top:'+mt+'px;background:'+t.color+';opacity:'+opacity+';border-radius:100px">&nbsp;</div>'
           +'</td>';
       }).join("")
     +'</tr></table>'
-    // Segment labels
-    +'<table width="100%" cellpadding="0" cellspacing="2"><tr>'
+    // Labels below segments
+    +'<table width="100%" cellpadding="0" cellspacing="4"><tr>'
     + dialTiers.map(function(t, i) {
         const isActive = i === activeIdx;
-        return '<td style="width:'+segWidths[i]+'%;text-align:center;font-size:9px;font-weight:'+(isActive?'700':'400')+';color:'+(isActive?t.color:'#b0b0b0')+';padding-top:4px">'+t.label+'</td>';
+        return '<td style="width:'+segWidths[i]+'%;text-align:center;font-size:10px;font-weight:'+(isActive?'700':'400')+';color:'+(isActive?t.color:'#c0c0c0')+';padding-top:5px">'+t.label+'</td>';
       }).join("")
     +'</tr></table>'
+    // Score range legend — coloured dots with range labels (matches app)
+    +'<div style="margin-top:16px;padding-top:14px;border-top:1px solid #f0f0f0">'
+    +'<table align="center" cellpadding="0" cellspacing="0"><tr>'
+    + dialTiers.map(function(t) {
+        const rangeLabel = t.min === 0   ? '&lt;&nbsp;2.5'
+                         : t.max === 5.0 ? '4.5&nbsp;&ndash;&nbsp;5'
+                         : t.min.toString().replace('.','.')+'&nbsp;&ndash;&nbsp;'+t.max.toString().replace('.','.') ;
+        return '<td style="padding:3px 10px;white-space:nowrap">'
+          +'<span style="display:inline-block;width:9px;height:9px;border-radius:50%;background:'+t.color+';vertical-align:middle;margin-right:5px"></span>'
+          +'<span style="font-size:11px;color:#5a5c57;vertical-align:middle">'+rangeLabel+' '+t.label+'</span>'
+          +'</td>';
+      }).join("")
+    +'</tr></table>'
+    +'</div>'
     +'</div>'
   );
 
@@ -164,25 +194,21 @@ exports.handler = async (event) => {
       <div style="font-size:12px;color:rgba(255,255,255,0.65);margin-top:4px">Generated ${date}</div>
     </div>
 
-    <div style="padding:20px 28px 0;border-bottom:1px solid rgba(0,0,0,0.07);padding-bottom:24px">
+    <div style="border-bottom:1px solid rgba(0,0,0,0.07)">
       ${dialHtml}
-      <table width="100%" cellpadding="0" cellspacing="0"><tr>
-        <td>
-          <div style="display:inline-block;margin-top:8px;padding:5px 16px;border-radius:20px;font-size:13px;font-weight:600;background:${zoneBg};color:${zoneColor}">
+      <!-- Zone + OGR strip -->
+      <table width="100%" cellpadding="0" cellspacing="0" style="padding:0 24px 20px"><tr>
+        <td style="vertical-align:middle">
+          <div style="display:inline-block;padding:5px 16px;border-radius:20px;font-size:13px;font-weight:600;background:${zoneBg};color:${zoneColor}">
             ${s.interpretation} &middot; ${s.zone} zone
           </div>
         </td>
         <td style="text-align:right;vertical-align:middle">
-          <table cellpadding="0" cellspacing="0">
-            <tr><td style="text-align:center;padding:0 8px">
-              <div style="font-size:10px;color:#8a8c87;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">OGR Range</div>
-              <div style="font-size:18px;font-weight:600;color:#1a1a18">${(s.OGR_Low*100).toFixed(0)}&ndash;${(s.OGR_High*100).toFixed(0)}%</div>
-            </td></tr>
-            <tr><td style="text-align:center;padding:8px 8px 0">
-              <div style="font-size:10px;color:#8a8c87;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">Current Growth</div>
-              <div style="font-size:18px;font-weight:600;color:${zoneColor}">${(s.growth*100).toFixed(0)}%</div>
-            </td></tr>
-          </table>
+          <span style="font-size:11px;color:#8a8c87;text-transform:uppercase;letter-spacing:0.5px;margin-right:8px">OGR</span>
+          <span style="font-size:16px;font-weight:700;color:#1a1a18">${(s.OGR_Low*100).toFixed(0)}&ndash;${(s.OGR_High*100).toFixed(0)}%</span>
+          &nbsp;&nbsp;
+          <span style="font-size:11px;color:#8a8c87;text-transform:uppercase;letter-spacing:0.5px;margin-right:8px">Growth</span>
+          <span style="font-size:16px;font-weight:700;color:${zoneColor}">${(s.growth*100).toFixed(0)}%</span>
         </td>
       </tr></table>
     </div>
