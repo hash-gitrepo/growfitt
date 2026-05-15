@@ -29,7 +29,7 @@ exports.handler = async (event) => {
 
   const THRESHOLD = 3.0;
 
-  // GFS tier interpretation (matches result card dial)
+  // GFS tier
   const gfsTier = (v) => {
     if (v >= 4.5) return { label: "Elite",   color: "#1a6632", bg: "#e8f4e9" };
     if (v >= 3.8) return { label: "Strong",  color: "#639922", bg: "#f0f7e6" };
@@ -40,46 +40,78 @@ exports.handler = async (event) => {
   const adjScore = s.adjGFS || s.GFS;
   const tier = gfsTier(adjScore);
 
-  // GFS tier dial — server-side inline SVG (email-safe, no JS needed in client)
-  const dialSvg = (function() {
-    const tiers = [
-      { label:"Broken",  min:0,   max:2.5, color:"#c0392b" },
-      { label:"Fragile", min:2.5, max:3.0, color:"#e07b00" },
-      { label:"Average", min:3.0, max:3.8, color:"#ca8a04" },
-      { label:"Strong",  min:3.8, max:4.5, color:"#639922" },
-      { label:"Elite",   min:4.5, max:5.0, color:"#1a6632" },
-    ];
-    const W=300, H=170, cx=150, cy=160, outerR=130, innerR=100;
-    let arcs="", labels="";
-    tiers.forEach(function(t) {
-      const pS=t.min/5, pE=t.max/5;
-      const aS=Math.PI+pS*Math.PI, aE=Math.PI+pE*Math.PI;
-      const x1o=(cx+outerR*Math.cos(aS)).toFixed(2), y1o=(cy+outerR*Math.sin(aS)).toFixed(2);
-      const x2o=(cx+outerR*Math.cos(aE)).toFixed(2), y2o=(cy+outerR*Math.sin(aE)).toFixed(2);
-      const x1i=(cx+innerR*Math.cos(aE)).toFixed(2), y1i=(cy+innerR*Math.sin(aE)).toFixed(2);
-      const x2i=(cx+innerR*Math.cos(aS)).toFixed(2), y2i=(cy+innerR*Math.sin(aS)).toFixed(2);
-      const lg=(pE-pS)>0.5?1:0;
-      arcs+='<path d="M '+x1o+' '+y1o+' A '+outerR+' '+outerR+' 0 '+lg+' 1 '+x2o+' '+y2o+' L '+x1i+' '+y1i+' A '+innerR+' '+innerR+' 0 '+lg+' 0 '+x2i+' '+y2i+' Z" fill="'+t.color+'" opacity="0.75"/>';
-      const aMid=(aS+aE)/2, lR=outerR+16;
-      const lx=(cx+lR*Math.cos(aMid)).toFixed(1), ly=(cy+lR*Math.sin(aMid)).toFixed(1);
-      labels+='<text x="'+lx+'" y="'+ly+'" text-anchor="middle" dominant-baseline="middle" font-size="9" fill="'+t.color+'" font-weight="700" font-family="Arial,sans-serif">'+t.label+'</text>';
-    });
-    const pct=Math.min(1,Math.max(0,adjScore/5));
-    const nA=Math.PI+pct*Math.PI, nLen=110;
-    const nx=(cx+nLen*Math.cos(nA)).toFixed(2), ny=(cy+nLen*Math.sin(nA)).toFixed(2);
-    return '<svg width="300" height="175" viewBox="0 0 '+W+' '+H+'" xmlns="http://www.w3.org/2000/svg">'
-      +'<path d="M '+(cx-outerR)+' '+cy+' A '+outerR+' '+outerR+' 0 0 1 '+(cx+outerR)+' '+cy+'" fill="none" stroke="#e8e8e8" stroke-width="30"/>'
-      +arcs
-      +'<line x1="'+cx+'" y1="'+cy+'" x2="'+nx+'" y2="'+ny+'" stroke="'+tier.color+'" stroke-width="3" stroke-linecap="round"/>'
-      +'<circle cx="'+cx+'" cy="'+cy+'" r="7" fill="'+tier.color+'"/>'
-      +'<circle cx="'+cx+'" cy="'+cy+'" r="3" fill="#ffffff"/>'
-      +'<text x="'+cx+'" y="'+(cy-28)+'" text-anchor="middle" font-size="26" font-weight="800" fill="'+tier.color+'" font-family="Arial,sans-serif">'+adjScore.toFixed(2)+'</text>'
-      +'<text x="'+cx+'" y="'+(cy-12)+'" text-anchor="middle" font-size="10" fill="#888" font-family="Arial,sans-serif">'+tier.label.toUpperCase()+'</text>'
-      +labels
-      +'</svg>';
-  })();
+  // ── GFS SCORE DIAL — Gmail-safe HTML/CSS (no SVG) ────────────────────────────
+  // 5 coloured segments as table cells, score centred below, needle approximated
+  // by highlighting the active segment
+  const dialTiers = [
+    { label: "Broken",  min: 0,   max: 2.5, color: "#c0392b" },
+    { label: "Fragile", min: 2.5, max: 3.0, color: "#e07b00" },
+    { label: "Average", min: 3.0, max: 3.8, color: "#ca8a04" },
+    { label: "Strong",  min: 3.8, max: 4.5, color: "#639922" },
+    { label: "Elite",   min: 4.5, max: 5.0, color: "#1a6632" },
+  ];
+  // Which segment is active?
+  const activeTierIdx = dialTiers.findIndex(t => adjScore >= t.min && adjScore < t.max);
+  const activeIdx = activeTierIdx === -1 ? dialTiers.length - 1 : activeTierIdx;
 
-  // Qualitative context from new assessment questions
+  // Segment widths proportional to range size (total = 5 units)
+  const segWidths = dialTiers.map(t => Math.round((t.max - t.min) / 5 * 100));
+
+  const dialHtml = (
+    '<div style="text-align:center;padding:24px 20px 16px;background:#fafafa;border-radius:8px;margin-bottom:8px">'
+    // Title
+    +'<div style="font-size:11px;font-weight:600;color:#8a8c87;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:16px">What does your score mean?</div>'
+    // Big score number
+    +'<div style="font-size:52px;font-weight:800;color:'+tier.color+';line-height:1;letter-spacing:-2px;margin-bottom:4px">'+adjScore.toFixed(2)+'</div>'
+    +'<div style="font-size:13px;color:#5a5c57;margin-bottom:16px">/5.00 &nbsp;&middot;&nbsp; Growth Fitness Score</div>'
+    // Tier badge
+    +'<div style="display:inline-block;padding:6px 20px;border-radius:20px;background:'+tier.bg+';color:'+tier.color+';font-size:15px;font-weight:700;letter-spacing:0.3px;margin-bottom:20px">'+tier.label+'</div>'
+    // Colour bar segments
+    +'<table width="100%" cellpadding="0" cellspacing="2" style="margin-bottom:8px"><tr>'
+    + dialTiers.map(function(t, i) {
+        const isActive = i === activeIdx;
+        return '<td style="width:'+segWidths[i]+'%;padding:0">'
+          +'<div style="height:'+(isActive?'14':'8')+'px;background:'+t.color+';opacity:'+(isActive?'1':'0.3')+';border-radius:3px'+(isActive?';box-shadow:0 0 0 2px '+t.color+',0 0 0 4px white':'')+'">&nbsp;</div>'
+          +'</td>';
+      }).join("")
+    +'</tr></table>'
+    // Segment labels
+    +'<table width="100%" cellpadding="0" cellspacing="2"><tr>'
+    + dialTiers.map(function(t, i) {
+        const isActive = i === activeIdx;
+        return '<td style="width:'+segWidths[i]+'%;text-align:center;font-size:9px;font-weight:'+(isActive?'700':'400')+';color:'+(isActive?t.color:'#b0b0b0')+';padding-top:4px">'+t.label+'</td>';
+      }).join("")
+    +'</tr></table>'
+    +'</div>'
+  );
+
+  // ── ATLAS URL — built server-side from answers ────────────────────────────────
+  const atlasBase = "https://growfitt.ai/atlas";
+  const atlasParams = new URLSearchParams();
+  if (a.category) atlasParams.set("cat", a.category);
+  const arrV = parseFloat(a.arr_revenue);
+  if (!isNaN(arrV)) {
+    const band = arrV < 1   ? "<$1M"
+               : arrV < 5   ? "$1M\u2013$5M"
+               : arrV < 10  ? "$5M\u2013$10M"
+               : arrV < 25  ? "$10M\u2013$25M"
+               : arrV < 50  ? "$25M\u2013$50M"
+               : arrV < 100 ? "$50M\u2013$100M"
+               :               "$100M+";
+    atlasParams.set("arr", band);
+  }
+  if (a.growth_rate) atlasParams.set("growth", Math.round(parseFloat(a.growth_rate)));
+  if (a.gm)         atlasParams.set("gm",     Math.round(parseFloat(a.gm)));
+  const geoMap = {
+    "North America": "North America", "Europe": "Europe",
+    "India & SEA": "Southeast Asia",  "Middle East & Africa": "Middle East",
+    "China": "Southeast Asia",        "Asia Pacific (incl. Japan)": "Southeast Asia",
+    "Global": "Global"
+  };
+  if (a.primary_market && geoMap[a.primary_market]) atlasParams.set("geo", geoMap[a.primary_market]);
+  const atlasUrl = atlasBase + "?" + atlasParams.toString();
+
+  // ── QUALITATIVE CONTEXT ───────────────────────────────────────────────────────
   const qualRows = [];
   if (a.ai_impact)          qualRows.push(["AI impact on growth",    a.ai_impact]);
   if (a.deal_quality)       qualRows.push(["Deal quality trend",     a.deal_quality]);
@@ -101,6 +133,7 @@ exports.handler = async (event) => {
     +'</table></div>'
   ) : "";
 
+  // ── COMPONENT SCORE BARS ──────────────────────────────────────────────────────
   const barHtml = (label, val) => {
     const pct = Math.round((val / 5) * 100);
     const below = val < THRESHOLD;
@@ -131,22 +164,15 @@ exports.handler = async (event) => {
       <div style="font-size:12px;color:rgba(255,255,255,0.65);margin-top:4px">Generated ${date}</div>
     </div>
 
-    <div style="padding:28px 28px 24px;border-bottom:1px solid rgba(0,0,0,0.07)">
-      <div style="text-align:center;margin-bottom:20px">${dialSvg}</div>
+    <div style="padding:20px 28px 0;border-bottom:1px solid rgba(0,0,0,0.07);padding-bottom:24px">
+      ${dialHtml}
       <table width="100%" cellpadding="0" cellspacing="0"><tr>
         <td>
-          <div style="font-size:48px;font-weight:700;color:#1a1a18;line-height:1;letter-spacing:-2px">
-            ${adjScore.toFixed(2)}<span style="font-size:20px;font-weight:400;color:#5a5c57">/5.00</span>
-          </div>
-          <div style="font-size:13px;color:#5a5c57;margin-top:4px">Growth Fitness Score${s.hasAdjustment ? " (adjusted)" : ""}</div>
           <div style="display:inline-block;margin-top:8px;padding:5px 16px;border-radius:20px;font-size:13px;font-weight:600;background:${zoneBg};color:${zoneColor}">
             ${s.interpretation} &middot; ${s.zone} zone
           </div>
-          <span style="display:inline-block;margin-left:8px;margin-top:8px;padding:4px 12px;border-radius:20px;font-size:12px;font-weight:700;background:${tier.bg};color:${tier.color}">
-            ${tier.label}
-          </span>
         </td>
-        <td style="text-align:right;vertical-align:top">
+        <td style="text-align:right;vertical-align:middle">
           <table cellpadding="0" cellspacing="0">
             <tr><td style="text-align:center;padding:0 8px">
               <div style="font-size:10px;color:#8a8c87;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px">OGR Range</div>
@@ -195,8 +221,8 @@ exports.handler = async (event) => {
     ${qualHtml}
 
     <div style="padding:20px 28px;border-bottom:1px solid rgba(0,0,0,0.07);text-align:center">
-      <a href="https://growfitt.ai/atlas" style="display:inline-block;padding:12px 28px;background:#185fa5;color:#ffffff;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;font-family:Arial,sans-serif">
-        &#127760;&nbsp; View Atlas &mdash; compare your benchmark position
+      <a href="${atlasUrl}" style="display:inline-block;padding:12px 28px;background:#185fa5;color:#ffffff;border-radius:8px;font-size:14px;font-weight:600;text-decoration:none;font-family:Arial,sans-serif">
+        &#127760;&nbsp; View your benchmark position in Atlas
       </a>
       <div style="font-size:11px;color:#8a8c87;margin-top:8px">See how you rank against 7,400 public SaaS companies</div>
     </div>
@@ -221,7 +247,7 @@ exports.handler = async (event) => {
     "GrowFitt Growth Audit — " + companyName,
     "Generated: " + date,
     "",
-    "GROWTH FITNESS SCORE: " + adjScore.toFixed(2) + " / 5.00 (" + s.interpretation + ") — " + tier.label,
+    "GROWTH FITNESS SCORE: " + adjScore.toFixed(2) + " / 5.00 — " + tier.label + " (" + s.interpretation + ")",
     "ZONE: " + s.zone,
     "",
     "Optimal Growth Range: " + (s.OGR_Low*100).toFixed(0) + "–" + (s.OGR_High*100).toFixed(0) + "%",
@@ -234,6 +260,8 @@ exports.handler = async (event) => {
     "",
     "KEY METRICS",
     "  NRR: " + (s.nrr*100).toFixed(0) + "% | GRR: " + (s.grr*100).toFixed(0) + "% | Gross Margin: " + (s.gm*100).toFixed(0) + "% | FCF: " + (s.fcf*100).toFixed(0) + "%",
+    "",
+    "VIEW YOUR BENCHMARK POSITION: " + atlasUrl,
     "",
     "RECOMMENDATIONS",
     (s.recommendations || []).map((r, i) => (i+1) + ". " + r).join("\n"),
