@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GrowFitt Portfolio Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Open+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ─────────────────────────────────────────────────────── */
+:root{
+  --green:#1a6632;--green-mid:#2ea85a;--green-light:#2ea85a;
+  --blue:#185fa5;--orange:#b35c00;--red:#c0392b;
+  --surface:#f0f2f4;--surface2:#e8eaed;--white:#ffffff;
+  --text:#111827;--text-muted:#4b5563;--text-dim:#9ca3af;
+  --border:rgba(0,0,0,0.08);
+  --serif:'DM Serif Display',Georgia,serif;
+  --sans:'Open Sans',system-ui,sans-serif;
+  --mono:'DM Mono',monospace;
+  --radius:12px;--radius-sm:8px;
+  --shadow:0 2px 12px rgba(0,0,0,0.07);
+  --shadow-lg:0 8px 32px rgba(0,0,0,0.10);
+}
+
+/* ── RESET ─────────────────────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--sans);background:var(--surface);color:var(--text);min-height:100vh;font-size:14px;}
+
+/* ── NAV ─────────────────────────────────────────────────────── */
+.nav{height:52px;background:#fff;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:20px;position:sticky;top:0;z-index:100;}
+.nav-logo{font-family:var(--serif);font-size:19px;color:var(--text);text-decoration:none;display:flex;align-items:center;gap:8px;}
+.nav-logo span{color:var(--green);}
+.nav-badge{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.5px;padding:2px 8px;background:rgba(26,102,50,0.1);border:1px solid rgba(26,102,50,0.25);border-radius:4px;color:var(--green);}
+.nav-sep{width:1px;height:20px;background:var(--border);margin:0 4px;}
+.nav-firm{font-size:12px;color:var(--text-muted);font-weight:500;}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:16px;}
+.nav-links{display:flex;gap:20px;}
+.nav-links a{font-size:13px;color:var(--text-muted);text-decoration:none;}
+.nav-links a:hover{color:var(--text);}
+.nav-links a.active{color:var(--green);font-weight:600;}
+.nav-cta{padding:6px 16px;background:var(--green);color:#fff;border-radius:6px;font-size:12.5px;font-weight:600;text-decoration:none;}
+.nav-period{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);background:var(--surface);border:1px solid var(--border);padding:5px 12px;border-radius:6px;cursor:pointer;}
+
+/* ── LAYOUT ─────────────────────────────────────────────────────── */
+.page{max-width:1280px;margin:0 auto;padding:24px 24px 60px;}
+
+/* ── PAGE HEADER ─────────────────────────────────────────────────── */
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;gap:16px;flex-wrap:wrap;}
+.page-title{font-family:var(--serif);font-size:28px;letter-spacing:-0.5px;color:var(--text);line-height:1.1;}
+.page-title em{color:var(--green);font-style:italic;}
+.page-subtitle{font-size:13px;color:var(--text-muted);margin-top:5px;font-weight:300;}
+.header-actions{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+.btn{padding:8px 16px;border-radius:var(--radius-sm);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--sans);border:none;transition:all 0.15s;}
+.btn-primary{background:var(--green);color:#fff;}
+.btn-primary:hover{background:#155528;}
+.btn-outline{background:#fff;color:var(--text);border:1px solid var(--border);}
+.btn-outline:hover{border-color:#aaa;}
+
+/* ── PERIOD TABS ─────────────────────────────────────────────────── */
+.period-tabs{display:flex;gap:2px;background:var(--surface2);border-radius:8px;padding:3px;margin-bottom:20px;}
+.period-tab{padding:5px 14px;border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;color:var(--text-muted);transition:all 0.15s;border:none;background:transparent;font-family:var(--sans);}
+.period-tab.active{background:#fff;color:var(--text);box-shadow:0 1px 4px rgba(0,0,0,0.1);}
+
+/* ── SUMMARY STRIP ─────────────────────────────────────────────────── */
+.summary-strip{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px;}
+.summary-card{background:#fff;border-radius:var(--radius);padding:16px 18px;border:1px solid var(--border);box-shadow:var(--shadow);}
+.summary-card .s-label{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.7px;color:var(--text-dim);margin-bottom:8px;}
+.summary-card .s-val{font-family:var(--serif);font-size:26px;letter-spacing:-0.5px;color:var(--text);}
+.summary-card .s-sub{font-size:11px;color:var(--text-muted);margin-top:3px;}
+.summary-card .s-delta{font-size:11px;font-weight:600;margin-top:3px;}
+.delta-up{color:var(--green-mid);}
+.delta-down{color:var(--red);}
+.delta-flat{color:var(--text-dim);}
+
+/* ── GRID LAYOUT ─────────────────────────────────────────────────── */
+.main-grid{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px;}
+.full-width{grid-column:1/-1;}
+.card{background:#fff;border-radius:var(--radius);border:1px solid var(--border);box-shadow:var(--shadow);overflow:hidden;}
+.card-header{padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.card-title{font-size:13px;font-weight:700;color:var(--text);letter-spacing:0.1px;}
+.card-sub{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.card-body{padding:16px 20px;}
+
+/* ── ZONE PILL ─────────────────────────────────────────────────── */
+.zone{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:10.5px;font-weight:700;letter-spacing:0.2px;}
+.zone.fit{background:#e7f4ea;color:#1a6632;}
+.zone.over{background:#fdf0ef;color:#c0392b;}
+.zone.under{background:#fef6ec;color:#b35c00;}
+
+/* ── GFS BADGE ─────────────────────────────────────────────────── */
+.gfs-badge{display:inline-block;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;font-family:var(--mono);}
+.gfs-elite{background:#e8f4e9;color:#1a6632;}
+.gfs-strong{background:#f0f7e6;color:#639922;}
+.gfs-average{background:#fef9ec;color:#ca8a04;}
+.gfs-fragile{background:#fef6ec;color:#e07b00;}
+.gfs-broken{background:#fdf0ef;color:#c0392b;}
+
+/* ── PORTFOLIO TABLE ─────────────────────────────────────────────── */
+.ptable{width:100%;border-collapse:collapse;}
+.ptable th{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:var(--text-dim);padding:10px 12px;text-align:left;border-bottom:1px solid var(--border);background:#fafafa;}
+.ptable td{padding:11px 12px;border-bottom:1px solid rgba(0,0,0,0.04);vertical-align:middle;}
+.ptable tr:last-child td{border-bottom:none;}
+.ptable tr:hover td{background:rgba(0,0,0,0.015);cursor:pointer;}
+.ptable tr.selected td{background:rgba(26,102,50,0.04);}
+.co-name{font-weight:600;font-size:13px;color:var(--text);}
+.co-meta{font-size:10.5px;color:var(--text-dim);margin-top:1px;}
+.gfs-num{font-family:var(--mono);font-size:14px;font-weight:700;}
+.trend-spark{display:flex;align-items:flex-end;gap:2px;height:24px;}
+.trend-bar{width:6px;border-radius:2px;background:var(--border);transition:background 0.2s;}
+.trend-arrow{font-size:14px;}
+.trend-up{color:var(--green-mid);}
+.trend-down{color:var(--red);}
+.trend-flat{color:var(--text-dim);}
+.cat-tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600;background:var(--surface2);color:var(--text-muted);}
+
+/* ── MINI SPARKLINE ─────────────────────────────────────────────── */
+.sparkline{width:72px;height:28px;}
+
+/* ── RISK HEATMAP ─────────────────────────────────────────────────── */
+.heatmap-grid{display:grid;grid-template-columns:1fr;gap:8px;padding:16px;}
+.heatmap-row{display:flex;align-items:center;gap:10px;}
+.heatmap-label{font-size:11px;color:var(--text-muted);width:64px;text-align:right;flex-shrink:0;}
+.heatmap-bar{flex:1;display:flex;gap:4px;align-items:center;}
+.heatmap-chip{height:28px;border-radius:6px;display:flex;align-items:center;padding:0 8px;font-size:10.5px;font-weight:600;white-space:nowrap;cursor:pointer;transition:opacity 0.15s;position:relative;}
+.heatmap-chip:hover{opacity:0.8;}
+.heatmap-chip.broken{background:#fdf0ef;color:#c0392b;border:1px solid rgba(192,57,43,0.2);}
+.heatmap-chip.fragile{background:#fef6ec;color:#e07b00;border:1px solid rgba(224,123,0,0.2);}
+.heatmap-chip.average{background:#fef9ec;color:#ca8a04;border:1px solid rgba(202,138,4,0.2);}
+.heatmap-chip.strong{background:#f0f7e6;color:#639922;border:1px solid rgba(99,153,34,0.2);}
+.heatmap-chip.elite{background:#e8f4e9;color:#1a6632;border:1px solid rgba(26,102,50,0.2);}
+
+/* ── TREND CHART ─────────────────────────────────────────────────── */
+.trend-chart-wrap{position:relative;width:100%;height:180px;padding:0 8px;}
+.trend-legend{display:flex;flex-wrap:wrap;gap:8px 16px;padding:0 8px 12px;}
+.trend-leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-muted);cursor:pointer;}
+.trend-leg-dot{width:8px;height:8px;border-radius:50%;}
+
+/* ── CATEGORY COMPARE ─────────────────────────────────────────────── */
+.cat-compare-grid{display:grid;gap:8px;}
+.cat-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.04);}
+.cat-row:last-child{border-bottom:none;}
+.cat-row-label{font-size:12px;font-weight:600;color:var(--text);width:130px;flex-shrink:0;}
+.cat-row-bar-wrap{flex:1;display:flex;gap:3px;align-items:center;}
+.cat-bar{height:10px;border-radius:4px;}
+.cat-row-val{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--text);width:32px;text-align:right;}
+.cat-row-n{font-size:10px;color:var(--text-dim);width:48px;}
+
+/* ── DRILL-DOWN PANEL ─────────────────────────────────────────────── */
+.drill-panel{position:fixed;right:-420px;top:0;bottom:0;width:420px;background:#fff;border-left:1px solid var(--border);box-shadow:-8px 0 32px rgba(0,0,0,0.12);z-index:200;overflow-y:auto;transition:right 0.3s cubic-bezier(0.4,0,0.2,1);}
+.drill-panel.open{right:0;}
+.drill-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;position:sticky;top:0;background:#fff;z-index:1;}
+.drill-close{width:32px;height:32px;border-radius:50%;background:var(--surface);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:16px;color:var(--text-muted);flex-shrink:0;}
+.drill-body{padding:20px 24px;}
+.drill-section{margin-bottom:20px;}
+.drill-section-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--text-dim);margin-bottom:10px;}
+.comp-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.comp-label{font-size:12px;color:var(--text-muted);width:150px;flex-shrink:0;}
+.comp-bar-wrap{flex:1;height:8px;background:var(--surface2);border-radius:4px;overflow:hidden;}
+.comp-bar{height:8px;border-radius:4px;}
+.comp-val{font-family:var(--mono);font-size:12px;font-weight:700;color:var(--text);width:28px;text-align:right;}
+.comp-flag{font-size:10px;font-weight:600;padding:1px 6px;border-radius:3px;background:#fdf0ef;color:#c0392b;}
+.metric-grid-2{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.m-tile{background:var(--surface);border-radius:8px;padding:12px;}
+.m-tile .m-label{font-size:10px;color:var(--text-dim);margin-bottom:3px;}
+.m-tile .m-val{font-size:18px;font-weight:700;color:var(--text);}
+.m-tile .m-sub{font-size:10px;color:var(--text-muted);margin-top:2px;}
+.rec-item{padding:10px 0;border-bottom:1px solid rgba(0,0,0,0.04);font-size:12.5px;color:var(--text-muted);line-height:1.6;display:flex;gap:8px;}
+.rec-item:last-child{border-bottom:none;}
+.rec-arrow{color:var(--green-mid);flex-shrink:0;font-size:14px;margin-top:1px;}
+.drill-trend-wrap{height:120px;width:100%;}
+
+/* ── STAGE COMPARE ─────────────────────────────────────────────────── */
+.stage-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;padding:16px;}
+.stage-card{background:var(--surface);border-radius:8px;padding:14px;}
+.stage-card .stage-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.7px;color:var(--text-dim);margin-bottom:8px;}
+.stage-card .stage-avg{font-family:var(--serif);font-size:24px;letter-spacing:-0.5px;color:var(--text);}
+.stage-card .stage-sub{font-size:11px;color:var(--text-muted);margin-top:2px;}
+.stage-cos{display:flex;flex-direction:column;gap:4px;margin-top:8px;}
+.stage-co-row{display:flex;align-items:center;justify-content:space-between;font-size:11px;}
+.stage-co-name{color:var(--text-muted);}
+.stage-co-gfs{font-family:var(--mono);font-weight:700;}
+
+/* ── OVERLAY ─────────────────────────────────────────────────────── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.18);z-index:150;opacity:0;pointer-events:none;transition:opacity 0.3s;}
+.overlay.show{opacity:1;pointer-events:all;}
+
+/* ── RESPONSIVE ─────────────────────────────────────────────────── */
+@media(max-width:900px){
+  .summary-strip{grid-template-columns:repeat(3,1fr);}
+  .main-grid{grid-template-columns:1fr;}
+  .stage-grid{grid-template-columns:1fr;}
+}
+@media(max-width:600px){
+  .summary-strip{grid-template-columns:1fr 1fr;}
+  .page{padding:16px 14px 48px;}
+  .drill-panel{width:100%;}
+}
+
+@media print {
+  /* Reset body/page */
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  html, body { background: #fff !important; margin: 0; padding: 0; font-size: 11px; }
+
+  /* Hide nav entirely — print header replaces it */
+  .nav { display: none !important; }
+  .drill-panel, .overlay { display: none !important; }
+  .header-actions { display: none !important; }
+
+  /* Print header — shown only in print */
+  .print-header { display: flex !important; }
+
+  /* Page layout */
+  .page { padding: 8px 16px 16px; max-width: 100%; margin: 0; }
+
+  /* Summary strip — keep on one line, don't break */
+  .summary-strip {
+    grid-template-columns: repeat(5,1fr);
+    page-break-inside: avoid;
+    break-inside: avoid;
+    margin-bottom: 12px;
+  }
+  .summary-card { padding: 10px 12px; box-shadow: none; }
+
+  /* Cards */
+  .card { box-shadow: none !important; border: 1px solid #ddd !important; }
+  .card-header { padding: 10px 14px; }
+  .card-body { padding: 10px 14px; }
+
+  /* Table */
+  .ptable td, .ptable th { padding: 7px 10px; }
+  .ptable tr:hover td { background: none !important; }
+
+  /* Grids stay side-by-side */
+  .main-grid { grid-template-columns: 2fr 1fr; gap: 12px; margin-bottom: 12px; }
+
+  /* Page breaks — force content sections onto new pages cleanly */
+  .summary-strip   { page-break-after: avoid; break-after: avoid; }
+  .page-header     { page-break-after: avoid; break-after: avoid; margin-bottom: 12px; }
+  .main-grid       { page-break-inside: avoid; break-inside: avoid; }
+  .card.full-width { page-break-inside: avoid; break-inside: avoid; }
+  .stage-grid      { grid-template-columns: repeat(3,1fr); }
+
+  /* Canvas scaling */
+  canvas { max-width: 100% !important; height: auto !important; }
+
+  /* Heatmap chips — ensure colours print */
+  .heatmap-chip { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .zone, .cat-tag, .gfs-num { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+.print-header { display: none; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="print-header" style="padding:12px 24px 8px;border-bottom:2px solid #1a6632;margin-bottom:16px;display:none;align-items:center;justify-content:space-between;">
+  <div style="font-family:var(--serif);font-size:22px;color:#1a6632;">GrowFitt <span style="color:#111827;">Portfolio Intelligence</span></div>
+  <div style="font-size:11px;color:#6b7280;" id="printMeta">RedTAP Ventures · Exported <span id="printDate"></span></div>
+</div>
+<nav class="nav">
+  <a href="/" class="nav-logo">Grow<span>Fitt</span></a>
+  <div class="nav-badge">PORTFOLIO</div>
+  <div class="nav-sep"></div>
+  <span class="nav-firm">RedTAP Ventures · 12 portfolio companies</span>
+  <div class="nav-right">
+    <div class="nav-links">
+      <a href="#" class="active">Dashboard</a>
+      <a href="#">Reports</a>
+      <a href="#">Alerts</a>
+    </div>
+    <button class="nav-cta" disabled title="Coming soon — Portfolio Intelligence is in private beta" style="opacity:0.45;cursor:not-allowed;pointer-events:none;">+ Add company</button>
+  </div>
+</nav>
+
+<!-- OVERLAY -->
+<div class="overlay" id="overlay" onclick="closeDrill()"></div>
+
+<!-- DRILL-DOWN PANEL -->
+<div class="drill-panel" id="drillPanel">
+  <div class="drill-header">
+    <div>
+      <div id="drillName" style="font-family:var(--serif);font-size:20px;letter-spacing:-0.3px;"></div>
+      <div id="drillMeta" style="font-size:11px;color:var(--text-muted);margin-top:3px;"></div>
+    </div>
+    <button class="drill-close" onclick="closeDrill()">✕</button>
+  </div>
+  <div class="drill-body" id="drillBody"></div>
+</div>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div>
+      <div class="page-title">Portfolio <em>Intelligence</em></div>
+      <div class="page-subtitle">Growth Fitness across your portfolio · Q1 2026 · 12 companies assessed</div>
+    </div>
+    <div class="header-actions">
+      <div style="display:flex;gap:2px;background:var(--surface2);border-radius:8px;padding:3px;">
+        <button class="period-tab active" onclick="setPeriod(this,3)">Q1 2026</button>
+        <button class="period-tab" onclick="setPeriod(this,2)">Q4 2025</button>
+        <button class="period-tab" onclick="setPeriod(this,1)">Q3 2025</button>
+        <button class="period-tab" onclick="setPeriod(this,0)">Q2 2025</button>
+      </div>
+      <button class="btn btn-outline" onclick="exportPDF()">↓ Export PDF</button>
+    </div>
+  </div>
+
+  <!-- SUMMARY STRIP — rendered by renderSummary() -->
+  <div class="summary-strip" id="summaryStrip"></div>
+
+  <!-- MAIN GRID: TABLE + RISK MAP -->
+  <div class="main-grid">
+
+    <!-- PORTFOLIO TABLE -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">All Portfolio Companies</div>
+          <div class="card-sub">Click any row to see full GFS breakdown</div>
+        </div>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-outline" style="padding:5px 10px;font-size:11px;" onclick="sortTable('gfs')">Sort: GFS ↕</button>
+          <button class="btn btn-outline" style="padding:5px 10px;font-size:11px;" onclick="sortTable('name')">Name ↕</button>
+        </div>
+      </div>
+      <div style="overflow-x:auto;">
+      <table class="ptable" id="portfolioTable">
+        <thead>
+          <tr>
+            <th>Company</th>
+            <th>Category</th>
+            <th>Stage</th>
+            <th>GFS</th>
+            <th>Zone</th>
+            <th>Trend</th>
+            <th>Q-o-Q</th>
+          </tr>
+        </thead>
+        <tbody id="portfolioTbody"></tbody>
+      </table>
+      </div>
+    </div>
+
+    <!-- RISK HEATMAP -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Risk Heatmap</div>
+          <div class="card-sub">Companies by GFS tier</div>
+        </div>
+      </div>
+      <div id="heatmapContainer"></div>
+    </div>
+
+  </div>
+
+  <!-- TREND + CATEGORY -->
+  <div class="main-grid" style="margin-bottom:16px;">
+
+    <!-- QoQ TREND CHART -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Quarter-on-Quarter GFS Trends</div>
+          <div class="card-sub">Last 4 quarters · click legend to toggle</div>
+        </div>
+      </div>
+      <div class="card-body">
+        <div class="trend-legend" id="trendLegend"></div>
+        <div class="trend-chart-wrap">
+          <canvas id="trendCanvas" style="width:100%;height:180px;"></canvas>
+        </div>
+        <div id="trendQLabels" style="display:flex;justify-content:space-between;padding:6px 8px 0;font-size:10px;color:var(--text-dim);">
+          <span>Q2 2025</span><span>Q3 2025</span><span>Q4 2025</span><span>Q1 2026</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- CATEGORY COMPARISON -->
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">Category Comparison</div>
+          <div class="card-sub">Avg GFS by product category</div>
+        </div>
+      </div>
+      <div class="card-body" style="padding-top:12px;">
+        <div id="catCompare"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- STAGE COMPARE — FULL WIDTH -->
+  <div class="card full-width">
+    <div class="card-header">
+      <div class="card-title">Stage Comparison</div>
+      <div class="card-sub">GFS distribution across funding/revenue stages</div>
+    </div>
+    <div class="stage-grid" id="stageGrid"></div>
+  </div>
+
+</div><!-- /page -->
+
+<script>
+// ── PORTFOLIO DATA ───────────────────────────────────────────────
+// Each company has snapshots per quarter: [Q2-2025, Q3-2025, Q4-2025, Q1-2026]
+const COMPANIES_BASE = [
+  { id:1,  name:'Fieldwork AI',   domain:'fieldwork.ai',   cat:'Infra / Dev / AI',  stage:'Growth',  arr:'$12M',
+    snaps:[
+      { gfs:3.81, zone:'Fit',   interp:'Strong',  gqs:3.9, rs:3.7, es:3.8, growth:55, nrr:118, grr:90, gm:76, fcf:3  },
+      { gfs:4.10, zone:'Fit',   interp:'Strong',  gqs:4.2, rs:4.0, es:4.1, growth:61, nrr:122, grr:91, gm:77, fcf:5  },
+      { gfs:4.28, zone:'Fit',   interp:'Strong',  gqs:4.4, rs:4.2, es:4.3, growth:65, nrr:125, grr:91, gm:78, fcf:6  },
+      { gfs:4.52, zone:'Fit',   interp:'Elite',   gqs:4.6, rs:4.4, es:4.5, growth:68, nrr:128, grr:92, gm:78, fcf:8  },
+    ], recs:['Sustain the inbound flywheel — 65% inbound is elite. Protect it as you scale SDR headcount.','NRR at 128% is compounding. Identify top expansion cohorts and double down on the playbook.','Burn multiple at 1.1× is exceptional. Consider whether now is the right time to press the growth accelerator.'] },
+  { id:2,  name:'Samsara',        domain:'samsara.com',    cat:'Vertical SaaS',     stage:'Scale',   arr:'$1.1B',
+    snaps:[
+      { gfs:2.95, zone:'Over',  interp:'Fragile', gqs:2.8, rs:3.0, es:2.5, growth:24, nrr:106, grr:88, gm:67, fcf:2  },
+      { gfs:3.12, zone:'Over',  interp:'Average', gqs:2.9, rs:3.2, es:2.6, growth:26, nrr:108, grr:89, gm:68, fcf:3  },
+      { gfs:3.28, zone:'Over',  interp:'Average', gqs:3.0, rs:3.4, es:2.7, growth:28, nrr:109, grr:90, gm:69, fcf:4  },
+      { gfs:3.41, zone:'Over',  interp:'Average', gqs:3.1, rs:3.5, es:2.8, growth:30, nrr:110, grr:90, gm:70, fcf:5  },
+    ], recs:['Growth is outpacing system fitness. Prioritise efficiency before accelerating acquisition spend.','CAC payback at 18mo is above optimal. Review channel mix and pricing architecture.','Inbound pull is weak. Invest in content and community to structurally reduce CAC.'] },
+  { id:3,  name:'Workplaze',      domain:'workplaze.com',  cat:'Horizontal SaaS',   stage:'Growth',  arr:'$18M',
+    snaps:[
+      { gfs:2.71, zone:'Under', interp:'Fragile', gqs:2.9, rs:3.0, es:2.3, growth:22, nrr:104, grr:84, gm:67, fcf:14 },
+      { gfs:2.84, zone:'Under', interp:'Fragile', gqs:3.0, rs:3.1, es:2.4, growth:25, nrr:106, grr:85, gm:68, fcf:16 },
+      { gfs:2.96, zone:'Under', interp:'Fragile', gqs:3.1, rs:3.2, es:2.5, growth:28, nrr:108, grr:86, gm:69, fcf:17 },
+      { gfs:3.03, zone:'Under', interp:'Average', gqs:3.2, rs:3.4, es:2.6, growth:30, nrr:110, grr:87, gm:70, fcf:19 },
+    ], recs:['Headroom exists to grow faster — system can absorb more. Identify the pipeline constraint.','Expansion revenue is the highest leverage lever. Strengthen upsell motion.','Inbound pull is weak relative to category peers.'] },
+  { id:4,  name:'ClearPath HCM',  domain:'clearpathHCM.io',cat:'Horizontal SaaS',   stage:'Early',   arr:'$3.2M',
+    snaps:[
+      { gfs:3.21, zone:'Fit',   interp:'Average', gqs:3.3, rs:3.3, es:3.1, growth:68, nrr:108, grr:86, gm:69, fcf:-14 },
+      { gfs:3.44, zone:'Fit',   interp:'Average', gqs:3.5, rs:3.5, es:3.3, growth:74, nrr:110, grr:87, gm:70, fcf:-12 },
+      { gfs:3.61, zone:'Fit',   interp:'Average', gqs:3.7, rs:3.7, es:3.4, growth:78, nrr:112, grr:88, gm:71, fcf:-10 },
+      { gfs:3.78, zone:'Fit',   interp:'Average', gqs:3.8, rs:3.9, es:3.5, growth:82, nrr:114, grr:89, gm:72, fcf:-8  },
+    ], recs:['FCF negative but burn multiple is manageable at 1.8×. Focus on NRR compounding.','Growth rate of 82% is strong for stage. Ensure sales efficiency does not erode as you scale.','Deal quality trajectory is positive — protect ICP discipline as pipeline grows.'] },
+  { id:5,  name:'Vaultline',      domain:'vaultline.co',   cat:'Security',          stage:'Growth',  arr:'$22M',
+    snaps:[
+      { gfs:3.58, zone:'Fit',   interp:'Average', gqs:3.6, rs:3.4, es:3.7, growth:38, nrr:112, grr:91, gm:72, fcf:7  },
+      { gfs:3.71, zone:'Fit',   interp:'Average', gqs:3.7, rs:3.5, es:3.9, growth:41, nrr:114, grr:91, gm:73, fcf:9  },
+      { gfs:3.82, zone:'Fit',   interp:'Strong',  gqs:3.8, rs:3.7, es:4.0, growth:43, nrr:116, grr:92, gm:74, fcf:10 },
+      { gfs:3.95, zone:'Fit',   interp:'Strong',  gqs:4.0, rs:3.8, es:4.1, growth:45, nrr:118, grr:93, gm:75, fcf:12 },
+    ], recs:['Strong across all three dimensions. Focus on platform expansion — module adoption is the compounding driver in Security.','AI revenue attribution is an open lever — consider monetising AI capabilities explicitly.','GRR at 93% is solid but top-decile security companies run 95%+.'] },
+  { id:6,  name:'TraceHQ',        domain:'tracehq.com',    cat:'Infra / Dev / AI',  stage:'Early',   arr:'$1.8M',
+    snaps:[
+      { gfs:2.90, zone:'Fit',   interp:'Fragile', gqs:3.0, rs:2.8, es:2.9, growth:71, nrr:102, grr:84, gm:72, fcf:-32 },
+      { gfs:3.15, zone:'Fit',   interp:'Average', gqs:3.2, rs:3.0, es:3.1, growth:80, nrr:104, grr:85, gm:74, fcf:-28 },
+      { gfs:3.35, zone:'Fit',   interp:'Average', gqs:3.4, rs:3.2, es:3.3, growth:86, nrr:106, grr:86, gm:75, fcf:-25 },
+      { gfs:3.52, zone:'Fit',   interp:'Average', gqs:3.6, rs:3.4, es:3.5, growth:91, nrr:108, grr:87, gm:76, fcf:-22 },
+    ], recs:['Usage growth is the primary indicator to track — infrastructure gravity compounds into switching costs.','FCF negative at -22% is expected for stage but monitor burn multiple closely.','NRR at 108% is good. Push toward 120%+ through seat expansion.'] },
+  { id:7,  name:'MediSync',       domain:'medisync.health',cat:'Vertical SaaS',     stage:'Growth',  arr:'$8.5M',
+    snaps:[
+      { gfs:3.12, zone:'Fit',   interp:'Average', gqs:3.2, rs:3.3, es:2.9, growth:42, nrr:102, grr:88, gm:65, fcf:-18 },
+      { gfs:2.98, zone:'Over',  interp:'Fragile', gqs:3.0, rs:3.1, es:2.7, growth:35, nrr:99,  grr:86, gm:63, fcf:-22 },
+      { gfs:2.84, zone:'Over',  interp:'Fragile', gqs:2.9, rs:3.0, es:2.6, growth:31, nrr:96,  grr:84, gm:62, fcf:-26 },
+      { gfs:2.74, zone:'Over',  interp:'Fragile', gqs:2.8, rs:2.9, es:2.5, growth:28, nrr:94,  grr:83, gm:61, fcf:-31 },
+    ], recs:['GFS declining QoQ — urgent intervention needed. Review all three components.','NRR below 100% means existing revenue is shrinking. Churn diagnosis is priority one.','Gross margin at 61% is below Vertical SaaS norms. Review COGS structure.'] },
+  { id:8,  name:'DataPulse',      domain:'datapulse.io',   cat:'Infra / Dev / AI',  stage:'Scale',   arr:'$110M',
+    snaps:[
+      { gfs:3.88, zone:'Fit',   interp:'Strong',  gqs:3.9, rs:3.8, es:4.0, growth:32, nrr:116, grr:89, gm:79, fcf:13 },
+      { gfs:3.98, zone:'Fit',   interp:'Strong',  gqs:4.0, rs:3.9, es:4.1, growth:34, nrr:118, grr:90, gm:80, fcf:15 },
+      { gfs:4.08, zone:'Fit',   interp:'Strong',  gqs:4.1, rs:4.0, es:4.2, growth:36, nrr:120, grr:90, gm:80, fcf:16 },
+      { gfs:4.18, zone:'Fit',   interp:'Strong',  gqs:4.2, rs:4.1, es:4.3, growth:38, nrr:122, grr:91, gm:81, fcf:18 },
+    ], recs:['Rule of 40 at 56% places you in the top decile of public infrastructure companies.','NRR at 122% is compounding. Identify which cohorts are expanding fastest and replicate.','Inbound pull at 58% is strong. Protect content and community investment as you scale.'] },
+  { id:9,  name:'FlowDesk',       domain:'flowdesk.app',   cat:'Horizontal SaaS',   stage:'Early',   arr:'$2.1M',
+    snaps:[
+      { gfs:2.71, zone:'Under', interp:'Fragile', gqs:2.8, rs:2.7, es:2.6, growth:52, nrr:104, grr:88, gm:66, fcf:-32 },
+      { gfs:2.61, zone:'Under', interp:'Fragile', gqs:2.7, rs:2.6, es:2.5, growth:47, nrr:101, grr:87, gm:65, fcf:-37 },
+      { gfs:2.50, zone:'Under', interp:'Fragile', gqs:2.6, rs:2.5, es:2.4, growth:44, nrr:99,  grr:86, gm:64, fcf:-41 },
+      { gfs:2.42, zone:'Under', interp:'Fragile', gqs:2.5, rs:2.4, es:2.3, growth:41, nrr:98,  grr:85, gm:63, fcf:-45 },
+    ], recs:['GFS declining — system fitness is deteriorating. Pause acquisition spend until retention is fixed.','NRR below 100% is unsustainable. Exit interviews and cohort analysis should be immediate.','Burn multiple is elevated. Prioritise path to break-even over growth rate.'] },
+  { id:10, name:'Kartana',        domain:'kartana.com',    cat:'Vertical SaaS',     stage:'Growth',  arr:'$14M',
+    snaps:[
+      { gfs:3.01, zone:'Fit',   interp:'Average', gqs:3.0, rs:3.0, es:3.0, growth:44, nrr:103, grr:86, gm:66, fcf:-2  },
+      { gfs:3.12, zone:'Fit',   interp:'Average', gqs:3.1, rs:3.1, es:3.1, growth:47, nrr:105, grr:87, gm:67, fcf:1   },
+      { gfs:3.22, zone:'Fit',   interp:'Average', gqs:3.2, rs:3.3, es:3.1, growth:49, nrr:106, grr:87, gm:67, fcf:2   },
+      { gfs:3.31, zone:'Fit',   interp:'Average', gqs:3.3, rs:3.4, es:3.2, growth:52, nrr:107, grr:88, gm:68, fcf:3   },
+    ], recs:['Growing well relative to stage benchmark. Focus on NRR — top-quartile Vertical SaaS runs 115%+.','Deal quality is stable. Introduce structured expansion motions at 12-month mark.','Gross margin headroom exists — investigate COGS reduction at your ARR scale.'] },
+  { id:11, name:'Synapse CX',     domain:'synapsecx.io',   cat:'Horizontal SaaS',   stage:'Scale',   arr:'$78M',
+    snaps:[
+      { gfs:3.48, zone:'Under', interp:'Average', gqs:3.3, rs:3.5, es:3.4, growth:18, nrr:108, grr:88, gm:72, fcf:10 },
+      { gfs:3.52, zone:'Under', interp:'Average', gqs:3.4, rs:3.5, es:3.5, growth:19, nrr:109, grr:89, gm:73, fcf:11 },
+      { gfs:3.58, zone:'Under', interp:'Average', gqs:3.5, rs:3.6, es:3.5, growth:21, nrr:111, grr:90, gm:73, fcf:13 },
+      { gfs:3.62, zone:'Under', interp:'Average', gqs:3.5, rs:3.7, es:3.6, growth:22, nrr:112, grr:90, gm:74, fcf:14 },
+    ], recs:['Growing below category benchmark for Scale stage. Identify whether constraint is market, pipeline, or conversion.','NRR at 112% is strong — the retention engine is healthy. Acquisition is the bottleneck.','Consider geographic expansion or adjacency play to unlock next growth tier.'] },
+  { id:12, name:'RetailOS',       domain:'retailos.co',    cat:'Vertical SaaS',     stage:'Early',   arr:'$1.1M',
+    snaps:[
+      { gfs:2.85, zone:'Over',  interp:'Fragile', gqs:2.9, rs:2.7, es:2.9, growth:31, nrr:91,  grr:82, gm:57, fcf:-48 },
+      { gfs:2.58, zone:'Over',  interp:'Fragile', gqs:2.6, rs:2.4, es:2.7, growth:25, nrr:89,  grr:80, gm:56, fcf:-54 },
+      { gfs:2.38, zone:'Over',  interp:'Fragile', gqs:2.4, rs:2.2, es:2.6, growth:21, nrr:87,  grr:79, gm:55, fcf:-61 },
+      { gfs:2.18, zone:'Over',  interp:'Broken',  gqs:2.1, rs:2.0, es:2.4, growth:18, nrr:86,  grr:78, gm:54, fcf:-68 },
+    ], recs:['System in critical condition. GFS declining 4 consecutive quarters — board review required.','NRR at 86% and GRR at 78% signal structural churn. Existential risk if unaddressed.','Growth of 18% far below Early stage benchmark of 80%+. Root cause analysis is urgent.'] },
+];
+
+const QUARTERS = ['Q2 2025','Q3 2025','Q4 2025','Q1 2026'];
+let currentQIdx = 3; // default: Q1 2026
+
+function getCompanies(qIdx) {
+  return COMPANIES_BASE.map(co => {
+    const s = co.snaps[qIdx];
+    const prev = qIdx > 0 ? co.snaps[qIdx - 1].gfs : null;
+    return Object.assign({}, co, s, { history: co.snaps.slice(0, qIdx + 1).map(sn => sn.gfs), prevGfs: prev });
+  });
+}
+const COLORS = {
+  'Infra / Dev / AI':  '#185fa5',
+  'Security':          '#1a6632',
+  'Horizontal SaaS':   '#7c3aed',
+  'Vertical SaaS':     '#b35c00',
+};
+
+const STAGE_ORDER = ['Early','Growth','Scale'];
+
+// ── UTILITIES ────────────────────────────────────────────────────
+function tierClass(gfs) {
+  if (gfs >= 4.5) return 'elite';
+  if (gfs >= 3.8) return 'strong';
+  if (gfs >= 3.0) return 'average';
+  if (gfs >= 2.5) return 'fragile';
+  return 'broken';
+}
+function tierColor(gfs) {
+  if (gfs >= 4.5) return '#1a6632';
+  if (gfs >= 3.8) return '#639922';
+  if (gfs >= 3.0) return '#ca8a04';
+  if (gfs >= 2.5) return '#e07b00';
+  return '#c0392b';
+}
+function zoneClass(z) { return z.toLowerCase(); }
+
+// ── PORTFOLIO TABLE ───────────────────────────────────────────────
+let sortDir = { gfs: -1, name: 1 };
+let currentSort = 'gfs';
+
+function sortTable(key) {
+  sortDir[key] = -sortDir[key];
+  currentSort = key;
+  renderTable();
+}
+
+function renderTable() {
+  const COMPANIES = getCompanies(currentQIdx);
+  const sorted = [...COMPANIES].sort((a, b) => {
+    if (currentSort === 'gfs') return sortDir.gfs * (b.gfs - a.gfs);
+    return sortDir.name * a.name.localeCompare(b.name);
+  });
+
+  const tbody = document.getElementById('portfolioTbody');
+  tbody.innerHTML = sorted.map(co => {
+    const delta = co.prevGfs != null ? co.gfs - co.prevGfs : 0;
+    const arrow = delta > 0.05 ? '↑' : delta < -0.05 ? '↓' : '→';
+    const arrowClass = delta > 0.05 ? 'trend-up' : delta < -0.05 ? 'trend-down' : 'trend-flat';
+    const tc = tierClass(co.gfs);
+    const deltaStr = (delta >= 0 ? '+' : '') + delta.toFixed(2);
+    const deltaClass = delta > 0 ? 'delta-up' : delta < 0 ? 'delta-down' : 'delta-flat';
+    return `<tr onclick="openDrill(${co.id})">
+      <td>
+        <div class="co-name">${co.name}</div>
+        <div class="co-meta">${co.domain} · ${co.arr} ARR</div>
+      </td>
+      <td><span class="cat-tag">${co.cat}</span></td>
+      <td style="font-size:12px;color:var(--text-muted);">${co.stage}</td>
+      <td>
+        <span class="gfs-num" style="color:${tierColor(co.gfs)}">${co.gfs.toFixed(2)}</span>
+        <span style="font-size:10px;color:var(--text-dim);margin-left:2px;">/5</span>
+      </td>
+      <td><span class="zone ${zoneClass(co.zone)}">${co.zone}</span></td>
+      <td><span class="trend-arrow ${arrowClass}" style="font-size:16px;">${arrow}</span></td>
+      <td><span class="${deltaClass}" style="font-family:var(--mono);font-size:12px;font-weight:700;">${deltaStr}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+// ── RISK HEATMAP ─────────────────────────────────────────────────
+function renderHeatmap() {
+  const COMPANIES = getCompanies(currentQIdx);
+  const tiers = [
+    { key:'elite',   label:'Elite',   min:4.5, max:5.0 },
+    { key:'strong',  label:'Strong',  min:3.8, max:4.5 },
+    { key:'average', label:'Average', min:3.0, max:3.8 },
+    { key:'fragile', label:'Fragile', min:2.5, max:3.0 },
+    { key:'broken',  label:'Broken',  min:0,   max:2.5 },
+  ];
+  const container = document.getElementById('heatmapContainer');
+  let html = '<div class="heatmap-grid">';
+  tiers.forEach(t => {
+    const cos = COMPANIES.filter(c => c.gfs >= t.min && c.gfs < t.max);
+    html += `<div class="heatmap-row">
+      <div class="heatmap-label">${t.label}</div>
+      <div class="heatmap-bar">
+        ${cos.length === 0
+          ? '<span style="font-size:10px;color:var(--text-dim);padding-left:4px;">—</span>'
+          : cos.map(c => `<div class="heatmap-chip ${t.key}" onclick="openDrill(${c.id})" title="${c.name} · ${c.gfs.toFixed(2)}">${c.name}</div>`).join('')}
+      </div>
+    </div>`;
+  });
+  html += '</div>';
+  container.innerHTML = html;
+}
+
+// ── TREND CHART ───────────────────────────────────────────────────
+let hiddenLines = new Set();
+const LINE_COLORS = ['#185fa5','#1a6632','#b35c00','#7c3aed','#c0392b','#e07b00',
+                     '#ca8a04','#639922','#0891b2','#db2777','#65a30d','#9333ea'];
+
+function renderTrendLegend() {
+  const legend = document.getElementById('trendLegend');
+  legend.innerHTML = COMPANIES_BASE.slice(0,8).map((co, i) =>
+    `<div class="trend-leg-item" onclick="toggleLine(${i},this)">
+      <div class="trend-leg-dot" style="background:${LINE_COLORS[i]}"></div>
+      <span>${co.name}</span>
+    </div>`
+  ).join('');
+}
+
+function toggleLine(idx, el) {
+  if (hiddenLines.has(idx)) { hiddenLines.delete(idx); el.style.opacity='1'; }
+  else { hiddenLines.add(idx); el.style.opacity='0.35'; }
+  drawTrendChart();
+}
+
+function drawTrendChart() {
+  const canvas = document.getElementById('trendCanvas');
+  if (!canvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.offsetWidth, H = canvas.offsetHeight || 180;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+
+  const pad = { top: 10, right: 20, bottom: 10, left: 28 };
+  const chartW = W - pad.left - pad.right;
+  const chartH = H - pad.top - pad.bottom;
+  const minY = 1.5, maxY = 5.0;
+
+  // Grid lines
+  [2, 2.5, 3, 3.5, 4, 4.5, 5].forEach(v => {
+    const y = pad.top + chartH * (1 - (v - minY) / (maxY - minY));
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y);
+    ctx.strokeStyle = v === 3 ? 'rgba(26,102,50,0.2)' : 'rgba(0,0,0,0.05)';
+    ctx.lineWidth = v === 3 ? 1.5 : 1; ctx.setLineDash(v === 3 ? [4,3] : []);
+    ctx.stroke(); ctx.setLineDash([]);
+    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.font = '9px Open Sans';
+    ctx.fillText(v.toFixed(1), 0, y + 3);
+  });
+
+  // Lines — use getCompanies to get history up to selected quarter
+  getCompanies(currentQIdx).slice(0, 8).forEach((co, i) => {
+    if (hiddenLines.has(i)) return;
+    const pts = co.history.map((v, qi) => ({
+      x: pad.left + (qi / 3) * chartW,
+      y: pad.top + chartH * (1 - (v - minY) / (maxY - minY))
+    }));
+    ctx.beginPath();
+    pts.forEach((p, j) => j === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+    ctx.strokeStyle = LINE_COLORS[i]; ctx.lineWidth = 2;
+    ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+    ctx.stroke();
+    // Dots
+    pts.forEach(p => {
+      ctx.beginPath(); ctx.arc(p.x, p.y, 3, 0, Math.PI*2);
+      ctx.fillStyle = LINE_COLORS[i]; ctx.fill();
+    });
+    // End label
+    const last = pts[pts.length - 1];
+    ctx.fillStyle = LINE_COLORS[i]; ctx.font = '9px DM Mono';
+    ctx.fillText(co.gfs.toFixed(1), last.x + 4, last.y + 3);
+  });
+}
+
+// ── CATEGORY COMPARISON ───────────────────────────────────────────
+function renderCatCompare() {
+  const COMPANIES = getCompanies(currentQIdx);
+  const cats = [...new Set(COMPANIES.map(c => c.cat))];
+  const data = cats.map(cat => {
+    const cos = COMPANIES.filter(c => c.cat === cat);
+    const avg = cos.reduce((a, c) => a + c.gfs, 0) / cos.length;
+    return { cat, avg, n: cos.length, color: COLORS[cat] };
+  }).sort((a, b) => b.avg - a.avg);
+
+  const maxAvg = Math.max(...data.map(d => d.avg));
+  const container = document.getElementById('catCompare');
+  container.innerHTML = data.map(d => `
+    <div class="cat-row">
+      <div class="cat-row-label">${d.cat}</div>
+      <div class="cat-row-bar-wrap">
+        <div class="cat-bar" style="width:${(d.avg/maxAvg*100).toFixed(0)}%;background:${d.color};opacity:0.7;height:10px;border-radius:4px;"></div>
+      </div>
+      <div class="cat-row-val" style="color:${d.color}">${d.avg.toFixed(2)}</div>
+      <div class="cat-row-n">${d.n} co.</div>
+    </div>`).join('');
+}
+
+// ── STAGE COMPARISON ─────────────────────────────────────────────
+function renderStageCompare() {
+  const COMPANIES = getCompanies(currentQIdx);
+  const grid = document.getElementById('stageGrid');
+  grid.innerHTML = STAGE_ORDER.map(stage => {
+    const cos = COMPANIES.filter(c => c.stage === stage);
+    if (!cos.length) return '';
+    const avg = cos.reduce((a, c) => a + c.gfs, 0) / cos.length;
+    const sorted = [...cos].sort((a,b) => b.gfs - a.gfs);
+    return `<div class="stage-card">
+      <div class="stage-label">${stage} Stage · ${cos.length} companies</div>
+      <div class="stage-avg" style="color:${tierColor(avg)}">${avg.toFixed(2)}</div>
+      <div class="stage-sub">Avg GFS · ${avg >= 3.8 ? 'Strong portfolio' : avg >= 3.0 ? 'Average portfolio' : 'Needs attention'}</div>
+      <div class="stage-cos">
+        ${sorted.map(c => `<div class="stage-co-row">
+          <span class="stage-co-name">${c.name}</span>
+          <span class="stage-co-gfs" style="color:${tierColor(c.gfs)}">${c.gfs.toFixed(2)}</span>
+        </div>`).join('')}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ── DRILL-DOWN ────────────────────────────────────────────────────
+function openDrill(id) {
+  const co = getCompanies(currentQIdx).find(c => c.id === id);
+  if (!co) return;
+  document.getElementById('drillName').textContent = co.name;
+  document.getElementById('drillMeta').textContent = `${co.cat} · ${co.stage} stage · ${co.arr} ARR · ${co.domain}`;
+
+  const tc = tierClass(co.gfs);
+  const delta = co.prevGfs != null ? co.gfs - co.prevGfs : 0;
+  const deltaStr = (delta >= 0 ? '+' : '') + delta.toFixed(2);
+  const deltaClass = delta > 0.05 ? 'trend-up' : delta < -0.05 ? 'trend-down' : 'trend-flat';
+
+  document.getElementById('drillBody').innerHTML = `
+    <!-- Score -->
+    <div class="drill-section">
+      <div style="display:flex;align-items:center;gap:16px;margin-bottom:12px;">
+        <div>
+          <span style="font-family:var(--serif);font-size:42px;letter-spacing:-1px;color:${tierColor(co.gfs)}">${co.gfs.toFixed(2)}</span>
+          <span style="font-size:16px;color:var(--text-muted)">/5.00</span>
+        </div>
+        <div>
+          <div style="display:inline-block;padding:5px 14px;border-radius:20px;background:${tierColor(co.gfs)}18;color:${tierColor(co.gfs)};font-size:14px;font-weight:700;">${co.interp}</div>
+          <div style="margin-top:4px;">
+            <span class="zone ${zoneClass(co.zone)}">${co.zone} zone</span>
+            <span class="${deltaClass}" style="font-family:var(--mono);font-size:12px;font-weight:700;margin-left:8px;">${deltaStr} QoQ</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Key metrics -->
+    <div class="drill-section">
+      <div class="drill-section-title">Key Metrics</div>
+      <div class="metric-grid-2">
+        <div class="m-tile"><div class="m-label">Growth rate</div><div class="m-val">${co.growth}%</div><div class="m-sub">LTM revenue</div></div>
+        <div class="m-tile"><div class="m-label">NRR</div><div class="m-val" style="color:${co.nrr>=110?'var(--green)':co.nrr>=100?'var(--orange)':'var(--red)'}">${co.nrr}%</div><div class="m-sub">Net revenue retention</div></div>
+        <div class="m-tile"><div class="m-label">GRR</div><div class="m-val">${co.grr}%</div><div class="m-sub">Gross revenue retention</div></div>
+        <div class="m-tile"><div class="m-label">Gross margin</div><div class="m-val">${co.gm}%</div><div class="m-sub">As % of revenue</div></div>
+        <div class="m-tile"><div class="m-label">FCF margin</div><div class="m-val" style="color:${co.fcf>=0?'var(--green)':'var(--red)'}">${co.fcf}%</div><div class="m-sub">${co.fcf>=0?'Cash generative':'Burning cash'}</div></div>
+        <div class="m-tile"><div class="m-label">ARR</div><div class="m-val">${co.arr}</div><div class="m-sub">Annual recurring revenue</div></div>
+      </div>
+    </div>
+
+    <!-- Component scores -->
+    <div class="drill-section">
+      <div class="drill-section-title">Component Scores</div>
+      ${[['Growth Quality (GQS)', co.gqs],['Retention Score (RS)', co.rs],['Efficiency Score (ES)', co.es]].map(([label, val]) => `
+        <div class="comp-row">
+          <div class="comp-label">${label}</div>
+          <div class="comp-bar-wrap"><div class="comp-bar" style="width:${(val/5*100).toFixed(0)}%;background:${val<3?'#c0392b':val<3.8?'#ca8a04':'#1a6632'};"></div></div>
+          <div class="comp-val" style="color:${val<3?'var(--red)':val<3.8?'var(--orange)':'var(--green)'}">${val.toFixed(1)}</div>
+          ${val < 3 ? '<span class="comp-flag">Below threshold</span>' : ''}
+        </div>`).join('')}
+    </div>
+
+    <!-- QoQ trend mini chart -->
+    <div class="drill-section">
+      <div class="drill-section-title">Quarter-on-Quarter GFS</div>
+      <canvas id="drillTrendCanvas" style="width:100%;height:100px;" width="340" height="100"></canvas>
+      <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-dim);margin-top:4px;">
+        ${QUARTERS.map(q => `<span>${q}</span>`).join('')}
+      </div>
+    </div>
+
+    <!-- Recommendations -->
+    <div class="drill-section">
+      <div class="drill-section-title">Recommendations</div>
+      ${co.recs.map(r => `<div class="rec-item"><span class="rec-arrow">→</span><span>${r}</span></div>`).join('')}
+    </div>
+  `;
+
+  document.getElementById('drillPanel').classList.add('open');
+  document.getElementById('overlay').classList.add('show');
+
+  // Draw mini trend
+  setTimeout(() => drawDrillTrend(co), 50);
+}
+
+function drawDrillTrend(co) {
+  const canvas = document.getElementById('drillTrendCanvas');
+  if (!canvas) return;
+  const dpr = window.devicePixelRatio || 1;
+  const W = canvas.offsetWidth || 340, H = 100;
+  canvas.width = W * dpr; canvas.height = H * dpr;
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  ctx.clearRect(0, 0, W, H);
+
+  const pad = { top: 14, right: 16, bottom: 10, left: 30 };
+  const chartW = W - pad.left - pad.right;
+  const chartH = H - pad.top - pad.bottom;
+  const vals = co.history;
+  const minY = Math.min(...vals) - 0.2, maxY = Math.max(...vals) + 0.2;
+
+  // Grid + Y labels
+  [Math.ceil(minY*2)/2, 3, Math.floor(maxY*2)/2].forEach(v => {
+    const y = pad.top + chartH * (1 - (v - minY) / (maxY - minY));
+    ctx.beginPath(); ctx.moveTo(pad.left, y); ctx.lineTo(W - pad.right, y);
+    ctx.strokeStyle = 'rgba(0,0,0,0.07)'; ctx.lineWidth = 1; ctx.stroke();
+    ctx.fillStyle = 'rgba(0,0,0,0.3)'; ctx.font = '9px Open Sans';
+    ctx.fillText(v.toFixed(1), 0, y + 3);
+  });
+
+  const pts = vals.map((v, i) => ({
+    x: pad.left + (i / (vals.length - 1)) * chartW,
+    y: pad.top + chartH * (1 - (v - minY) / (maxY - minY))
+  }));
+
+  const color = tierColor(co.gfs);
+  // Fill
+  ctx.beginPath();
+  ctx.moveTo(pts[0].x, H - pad.bottom);
+  pts.forEach(p => ctx.lineTo(p.x, p.y));
+  ctx.lineTo(pts[pts.length-1].x, H - pad.bottom);
+  ctx.closePath();
+  const grad = ctx.createLinearGradient(0, 0, 0, H);
+  grad.addColorStop(0, color + '30'); grad.addColorStop(1, color + '00');
+  ctx.fillStyle = grad; ctx.fill();
+
+  // Line
+  ctx.beginPath();
+  pts.forEach((p, i) => i === 0 ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y));
+  ctx.strokeStyle = color; ctx.lineWidth = 2.5;
+  ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.stroke();
+
+  // Dots + value labels
+  pts.forEach((p, i) => {
+    ctx.beginPath(); ctx.arc(p.x, p.y, 4, 0, Math.PI*2);
+    ctx.fillStyle = color; ctx.fill();
+    ctx.fillStyle = color; ctx.font = 'bold 9px DM Mono';
+    ctx.textAlign = 'center';
+    ctx.fillText(vals[i].toFixed(2), p.x, p.y - 7);
+  });
+}
+
+function closeDrill() {
+  document.getElementById('drillPanel').classList.remove('open');
+  document.getElementById('overlay').classList.remove('show');
+}
+
+// ── PERIOD TABS ───────────────────────────────────────────────────
+function setPeriod(el, qIdx) {
+  document.querySelectorAll('.period-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentQIdx = qIdx;
+  // Update subtitle
+  document.querySelector('.page-subtitle').textContent =
+    'Growth Fitness across your portfolio · ' + QUARTERS[qIdx] + ' · 12 companies assessed';
+  // Update trend chart quarter labels
+  const labels = document.getElementById('trendQLabels');
+  if (labels) {
+    const visQs = QUARTERS.slice(0, qIdx + 1);
+    labels.innerHTML = visQs.map(q => '<span>' + q + '</span>').join('');
+  }
+  renderAll();
+}
+
+// ── MAIN INIT ─────────────────────────────────────────────────────
+function renderSummary() {
+  const COMPANIES = getCompanies(currentQIdx);
+  const prev = currentQIdx > 0 ? getCompanies(currentQIdx - 1) : null;
+  const avg = COMPANIES.reduce((a,c) => a + c.gfs, 0) / COMPANIES.length;
+  const prevAvg = prev ? prev.reduce((a,c) => a + c.gfs, 0) / prev.length : null;
+  const fit = COMPANIES.filter(c => c.zone === 'Fit').length;
+  const prevFit = prev ? prev.filter(c => c.zone === 'Fit').length : null;
+  const atRisk = COMPANIES.filter(c => c.interp === 'Fragile' || c.interp === 'Broken').length;
+  const best = COMPANIES.reduce((a,b) => a.gfs > b.gfs ? a : b);
+  const worst = COMPANIES.reduce((a,b) => a.gfs < b.gfs ? a : b);
+  const avgDelta = prevAvg != null ? avg - prevAvg : 0;
+  const fitDelta = prevFit != null ? fit - prevFit : 0;
+  const strip = document.getElementById('summaryStrip');
+  if (!strip) return;
+  strip.innerHTML = `
+    <div class="summary-card">
+      <div class="s-label">Portfolio Avg GFS</div>
+      <div class="s-val">${avg.toFixed(2)}</div>
+      <div class="s-sub">Avg across 12 companies</div>
+      <div class="s-delta ${avgDelta >= 0 ? 'delta-up' : 'delta-down'}">${avgDelta >= 0 ? '↑ +' : '↓ '}${Math.abs(avgDelta).toFixed(2)} vs last quarter</div>
+    </div>
+    <div class="summary-card">
+      <div class="s-label">In Fit Zone</div>
+      <div class="s-val">${fit}</div>
+      <div class="s-sub">of 12 companies</div>
+      <div class="s-delta ${fitDelta >= 0 ? 'delta-up' : 'delta-down'}">${fitDelta >= 0 ? '↑ +' : '↓ '}${Math.abs(fitDelta)} vs last quarter</div>
+    </div>
+    <div class="summary-card">
+      <div class="s-label">At Risk</div>
+      <div class="s-val" style="color:var(--red)">${atRisk}</div>
+      <div class="s-sub">Fragile or Broken</div>
+      <div class="s-delta ${atRisk <= 3 ? 'delta-flat' : 'delta-down'}">${atRisk <= 3 ? '→ Monitor' : '↓ Needs attention'}</div>
+    </div>
+    <div class="summary-card">
+      <div class="s-label">Highest GFS</div>
+      <div class="s-val" style="color:var(--green)">${best.gfs.toFixed(2)}</div>
+      <div class="s-sub">${best.name} · ${best.interp}</div>
+      <div class="s-delta delta-up">↑ Strong trajectory</div>
+    </div>
+    <div class="summary-card">
+      <div class="s-label">Lowest GFS</div>
+      <div class="s-val" style="color:var(--red)">${worst.gfs.toFixed(2)}</div>
+      <div class="s-sub">${worst.name} · ${worst.interp}</div>
+      <div class="s-delta delta-down">↓ Urgent review</div>
+    </div>`;
+}
+
+function renderAll() {
+  renderSummary();
+  renderTable();
+  renderHeatmap();
+  renderTrendLegend();
+  renderCatCompare();
+  renderStageCompare();
+  requestAnimationFrame(() => { drawTrendChart(); });
+}
+
+window.addEventListener('resize', () => {
+  drawTrendChart();
+  const drillCanvas = document.getElementById('drillTrendCanvas');
+  if (drillCanvas) {
+    const co = getCompanies(currentQIdx).find(c => c.name === document.getElementById('drillName').textContent);
+    if (co) drawDrillTrend(co);
+  }
+});
+
+// ── EXPORT PDF ────────────────────────────────────────────────────
+function exportPDF() {
+  // Set print date
+  const dateEl = document.getElementById('printDate');
+  if (dateEl) dateEl.textContent = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+  // Close drill panel if open
+  closeDrill();
+  // Give browser a frame to settle then print
+  requestAnimationFrame(() => {
+    setTimeout(() => {
+      window.print();
+    }, 100);
+  });
+}
+
+// Set initial print date on load
+const initDateEl = document.getElementById('printDate');
+if (initDateEl) initDateEl.textContent = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
+
+renderAll();
+</script>
+</body>
+</html>
