@@ -1107,22 +1107,21 @@ function drawBubbleChart() {
     ctx.fillStyle = col; ctx.fill();
     ctx.strokeStyle = 'rgba(255,255,255,0.4)'; ctx.lineWidth = 1.5; ctx.stroke();
 
-    // Labels — solid white, no shadow
+    // Labels — white, regular weight, smaller
     ctx.textAlign = 'center';
     ctx.shadowBlur = 0; ctx.shadowColor = 'transparent';
     const label = r < 28 ? co.name.split(' ')[0] : co.name;
     if (r >= 20) {
       ctx.fillStyle = '#ffffff';
-      ctx.font = `bold ${Math.min(12, Math.max(9, r * 0.28))}px Open Sans`;
+      ctx.font = `${Math.min(10, Math.max(8, r * 0.22))}px Open Sans`;
       ctx.fillText(label, cx, cy - 2);
-      ctx.font = `bold ${Math.min(11, Math.max(8, r * 0.25))}px DM Mono`;
-      ctx.fillText(co.gfs.toFixed(2), cx, cy + Math.min(11, r * 0.30));
+      ctx.font = `${Math.min(9, Math.max(7, r * 0.20))}px DM Mono`;
+      ctx.fillText(co.gfs.toFixed(2), cx, cy + Math.min(10, r * 0.28));
     } else {
-      // Too small — label outside above, in tier colour
-      ctx.fillStyle = col; ctx.font = 'bold 9px Open Sans';
+      ctx.fillStyle = col; ctx.font = '8px Open Sans';
       ctx.fillText(co.name, cx, cy - r - 5);
-      ctx.font = 'bold 9px DM Mono';
-      ctx.fillText(co.gfs.toFixed(2), cx, cy - r - 15);
+      ctx.font = '8px DM Mono';
+      ctx.fillText(co.gfs.toFixed(2), cx, cy - r - 14);
     }
   });
 }
