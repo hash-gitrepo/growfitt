@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SPS Leaderboard — GrowFitt</title>
+<link rel="icon" type="image/png" href="/GrowFittFavIcon_Small.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --green:#1a6632;
+  --green-mid:#2d8a4e;
+  --green-light:#3aaf66;
+  --green-pale:#e7f4ea;
+  --cream:#f5f2eb;
+  --dark:#0e1410;
+  --dark2:#141a16;
+  --dark3:#1c2420;
+  --text:#f0ede6;
+  --text-muted:#8a9e8e;
+  --text-dim:#4a5e4e;
+  --border:rgba(255,255,255,0.07);
+  --border-green:rgba(26,102,50,0.4);
+  --serif:'DM Serif Display',Georgia,serif;
+  --sans:'DM Sans',system-ui,sans-serif;
+}
+html{scroll-behavior:smooth;}
+body{font-family:var(--sans);background:var(--dark);color:var(--text);overflow-x:hidden;line-height:1.6;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 48px;height:72px;display:flex;align-items:center;gap:16px;background:rgba(14,20,16,0.85);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);}
+.nav-logo{display:flex;align-items:center;text-decoration:none;}
+.nav-logo img{height:52px;width:auto;display:block;}
+.nav-links{display:flex;align-items:center;gap:32px;margin-left:auto;}
+.nav-links a{font-size:13.5px;color:var(--text-muted);text-decoration:none;transition:color 0.2s;letter-spacing:0.2px;}
+.nav-links a:hover,.nav-links a.active{color:var(--text);}
+.nav-cta{padding:9px 22px;background:var(--green);color:#fff;border-radius:6px;font-size:13.5px;font-weight:500;text-decoration:none;transition:all 0.2s;white-space:nowrap;}
+.nav-cta:hover{background:var(--green-mid);transform:translateY(-1px);}
+
+/* HERO */
+.page-hero{padding:140px 48px 80px;position:relative;overflow:hidden;border-bottom:1px solid var(--border);}
+.hero-bg{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 50% 30%,rgba(26,102,50,0.10) 0%,transparent 70%);pointer-events:none;}
+.hero-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.025) 1px,transparent 1px);background-size:60px 60px;pointer-events:none;mask-image:radial-gradient(ellipse 80% 70% at 50% 50%,black,transparent);}
+.hero-eyebrow{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border:1px solid var(--border-green);border-radius:20px;font-size:12px;color:var(--green-light);letter-spacing:1px;text-transform:uppercase;margin-bottom:20px;opacity:0;animation:fadeUp 0.6s ease forwards 0.1s;}
+.hero-eyebrow span{width:6px;height:6px;border-radius:50%;background:var(--green-light);display:inline-block;animation:pulse 2s ease infinite;}
+.hero-headline{font-family:var(--serif);font-size:clamp(36px,4.5vw,58px);line-height:1.05;letter-spacing:-1.5px;color:var(--text);margin-bottom:16px;opacity:0;animation:fadeUp 0.7s ease forwards 0.25s;}
+.hero-headline em{color:var(--green-light);font-style:italic;}
+.hero-sub{font-size:clamp(14px,1.4vw,16px);color:var(--text-muted);max-width:560px;line-height:1.7;font-weight:300;opacity:0;animation:fadeUp 0.7s ease forwards 0.4s;}
+.hero-stat-row{display:grid;grid-template-columns:1fr 1px 1fr 1px 1fr 1px 1fr;align-items:center;gap:0;margin-top:48px;padding-top:32px;border-top:1px solid var(--border);opacity:0;animation:fadeUp 0.7s ease forwards 0.55s;max-width:700px;}
+.hero-stat{padding:0 32px;}
+.hero-stat:first-child{padding-left:0;}
+.hero-stat-num{font-family:var(--serif);font-size:28px;color:var(--text);letter-spacing:-1px;line-height:1;}
+.hero-stat-label{font-size:11px;color:var(--text-dim);margin-top:4px;text-transform:uppercase;letter-spacing:0.8px;}
+.hero-stat-divider{width:1px;height:36px;background:var(--border);}
+
+/* SECTION UTILITIES */
+.section-label{font-size:11px;text-transform:uppercase;letter-spacing:2px;color:var(--green-light);margin-bottom:16px;font-weight:500;}
+.section-title{font-family:var(--serif);font-size:clamp(28px,3.5vw,44px);line-height:1.1;letter-spacing:-1px;color:var(--text);margin-bottom:16px;}
+.section-title em{color:var(--green-light);font-style:italic;}
+.section-body{font-size:16px;color:var(--text-muted);line-height:1.75;font-weight:300;}
+
+/* INSIGHTS STRIP */
+.insights-section{padding:80px 48px;background:var(--dark2);border-bottom:1px solid var(--border);}
+.insights-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:48px;}
+.insight-card{background:var(--dark);border:1px solid var(--border);padding:32px 28px;position:relative;overflow:hidden;transition:border-color 0.25s;}
+.insight-card:first-child{border-radius:12px 0 0 12px;}
+.insight-card:last-child{border-radius:0 12px 12px 0;}
+.insight-card:hover{border-color:var(--border-green);}
+.insight-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--green),transparent);opacity:0;transition:opacity 0.3s;}
+.insight-card:hover::before{opacity:1;}
+.insight-num{font-family:var(--serif);font-size:48px;color:rgba(58,175,102,0.12);line-height:1;margin-bottom:16px;letter-spacing:-2px;}
+.insight-title{font-size:14px;font-weight:500;color:var(--text);margin-bottom:8px;letter-spacing:-0.2px;}
+.insight-body{font-size:13px;color:var(--text-muted);line-height:1.65;}
+.insight-body strong{color:var(--green-light);font-weight:500;}
+
+/* CHARTS ROW */
+.charts-section{padding:80px 48px;background:var(--dark);border-bottom:1px solid var(--border);}
+.charts-grid{display:grid;grid-template-columns:1fr 1fr;gap:24px;margin-top:48px;}
+.chart-card{background:var(--dark2);border:1px solid var(--border);border-radius:12px;padding:32px;}
+.chart-card-label{font-size:11px;text-transform:uppercase;letter-spacing:1.5px;color:var(--green-light);margin-bottom:8px;font-weight:500;}
+.chart-card-title{font-size:16px;font-weight:500;color:var(--text);margin-bottom:24px;}
+.chart-legend{display:flex;flex-wrap:wrap;gap:16px;margin-bottom:16px;}
+.chart-legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text-muted);}
+.chart-legend-dot{width:9px;height:9px;border-radius:2px;flex-shrink:0;}
+
+/* DIM BARS */
+.dim-bar-row{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+.dim-bar-label{font-size:12px;color:var(--text-muted);width:44px;flex-shrink:0;}
+.dim-bar-track{flex:1;height:6px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden;}
+.dim-bar-fill{height:100%;border-radius:3px;}
+.dim-bar-val{font-size:12px;font-weight:500;color:var(--text);width:28px;text-align:right;flex-shrink:0;}
+.dim-bar-note{font-size:11px;color:var(--text-dim);width:90px;flex-shrink:0;}
+
+/* DONUT + BMS BARS */
+.bms-rows{display:flex;flex-direction:column;gap:12px;}
+.bms-row{display:flex;align-items:center;gap:12px;}
+.bms-label{font-size:12px;color:var(--text-muted);width:120px;flex-shrink:0;}
+.bms-track{flex:1;height:5px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden;}
+.bms-fill{height:100%;border-radius:3px;}
+.bms-count{font-size:12px;color:var(--text-dim);width:24px;text-align:right;flex-shrink:0;}
+
+/* MCS BARS */
+.mcs-rows{display:flex;flex-direction:column;gap:14px;}
+.mcs-row{display:flex;align-items:center;gap:12px;}
+.mcs-label{font-size:12px;color:var(--text-muted);width:160px;flex-shrink:0;line-height:1.4;}
+.mcs-track{flex:1;height:5px;background:rgba(255,255,255,0.05);border-radius:3px;overflow:hidden;}
+.mcs-fill{height:100%;border-radius:3px;}
+.mcs-count{font-size:12px;color:var(--text-dim);width:24px;text-align:right;flex-shrink:0;}
+
+/* LEADERBOARD TABLE SECTION */
+.leaderboard-section{padding:80px 48px 100px;background:var(--dark);}
+.lb-controls{display:flex;align-items:center;gap:12px;margin-top:40px;margin-bottom:24px;flex-wrap:wrap;}
+.lb-search{flex:1;min-width:200px;background:var(--dark2);border:1px solid var(--border);border-radius:8px;padding:10px 16px;color:var(--text);font-family:var(--sans);font-size:13.5px;outline:none;transition:border-color 0.2s;}
+.lb-search::placeholder{color:var(--text-dim);}
+.lb-search:focus{border-color:var(--border-green);}
+.lb-select{background:var(--dark2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;color:var(--text-muted);font-family:var(--sans);font-size:13px;outline:none;cursor:pointer;transition:border-color 0.2s;}
+.lb-select:focus{border-color:var(--border-green);}
+.lb-select option{background:var(--dark2);}
+.lb-count{font-size:12px;color:var(--text-dim);margin-left:auto;white-space:nowrap;}
+
+.lb-table-wrap{overflow-x:auto;border:1px solid var(--border);border-radius:12px;}
+table{width:100%;border-collapse:collapse;font-size:13.5px;}
+thead th{font-size:11px;font-weight:500;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.8px;padding:14px 16px;text-align:left;border-bottom:1px solid var(--border);white-space:nowrap;cursor:pointer;user-select:none;background:var(--dark2);transition:color 0.2s;}
+thead th:hover{color:var(--text-muted);}
+thead th.sorted{color:var(--green-light);}
+th.num,td.num{text-align:right;}
+tbody tr{border-bottom:1px solid var(--border);transition:background 0.15s;}
+tbody tr:hover{background:rgba(26,102,50,0.04);}
+tbody tr:last-child{border-bottom:none;}
+td{padding:14px 16px;vertical-align:middle;}
+
+.rank-cell{font-family:var(--serif);font-size:18px;color:var(--text-dim);letter-spacing:-0.5px;width:44px;}
+.rank-top3{color:var(--green-light);}
+.co-name{font-size:14px;font-weight:500;color:var(--text);display:block;margin-bottom:2px;}
+.co-url{font-size:11.5px;color:var(--text-dim);text-decoration:none;transition:color 0.2s;}
+.co-url:hover{color:var(--green-light);}
+.tier-pill{display:inline-block;font-size:11px;font-weight:500;padding:3px 10px;border-radius:20px;letter-spacing:0.3px;white-space:nowrap;}
+.tier-Advanced{background:rgba(26,102,50,0.18);color:var(--green-light);border:1px solid var(--border-green);}
+.tier-Developed{background:rgba(255,255,255,0.04);color:var(--text-muted);border:1px solid var(--border);}
+.stage-tag{font-size:11px;color:var(--text-dim);background:rgba(255,255,255,0.04);border:1px solid var(--border);padding:3px 9px;border-radius:4px;white-space:nowrap;}
+.sps-num{font-family:var(--serif);font-size:20px;color:var(--text);letter-spacing:-0.5px;}
+.sps-bar-wrap{width:80px;height:3px;background:rgba(255,255,255,0.06);border-radius:2px;margin-top:5px;}
+.sps-bar{height:3px;border-radius:2px;background:var(--green);}
+.dim-pills{display:flex;gap:4px;flex-wrap:wrap;}
+.dim-pill{font-size:10.5px;color:var(--text-dim);background:rgba(255,255,255,0.03);border:1px solid var(--border);padding:2px 7px;border-radius:3px;}
+.empty-row td{text-align:center;padding:48px;color:var(--text-dim);font-size:14px;}
+
+/* PAGINATOR */
+.paginator{display:flex;align-items:center;gap:12px;margin-top:24px;}
+.paginator-btn{padding:8px 18px;background:var(--dark2);border:1px solid var(--border);border-radius:6px;color:var(--text-muted);font-family:var(--sans);font-size:13px;cursor:pointer;transition:all 0.2s;}
+.paginator-btn:hover:not(:disabled){border-color:var(--border-green);color:var(--text);}
+.paginator-btn:disabled{opacity:0.3;cursor:not-allowed;}
+.paginator-info{flex:1;text-align:center;font-size:12px;color:var(--text-dim);}
+
+/* CONFIDENCE NOTE */
+.confidence-note{margin-top:48px;padding:24px 28px;background:var(--dark2);border:1px solid var(--border);border-radius:10px;display:flex;gap:16px;align-items:flex-start;}
+.confidence-note svg{width:16px;height:16px;stroke:var(--text-dim);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0;margin-top:2px;}
+.confidence-note p{font-size:12.5px;color:var(--text-dim);line-height:1.65;}
+.confidence-note strong{color:var(--text-muted);font-weight:500;}
+
+/* CTA */
+.cta-section{padding:100px 48px;text-align:center;position:relative;overflow:hidden;}
+.cta-bg{position:absolute;inset:0;background:radial-gradient(ellipse 60% 60% at 50% 50%,rgba(26,102,50,0.10),transparent);pointer-events:none;}
+.cta-tagline{font-family:var(--serif);font-size:clamp(32px,4vw,52px);line-height:1.05;letter-spacing:-1.5px;color:var(--text);max-width:640px;margin:0 auto 16px;}
+.cta-tagline em{color:var(--green-light);font-style:italic;}
+.cta-sub{font-size:16px;color:var(--text-muted);max-width:480px;margin:0 auto 40px;font-weight:300;}
+.cta-btn{display:inline-flex;align-items:center;gap:12px;padding:18px 36px;background:var(--green);color:#fff;border-radius:8px;font-size:15px;font-weight:500;text-decoration:none;transition:all 0.25s;letter-spacing:0.1px;}
+.cta-btn:hover{background:var(--green-mid);transform:translateY(-2px);box-shadow:0 12px 40px rgba(26,102,50,0.4);}
+.cta-btn svg{width:16px;height:16px;}
+.cta-note{margin-top:16px;font-size:12px;color:var(--text-dim);}
+
+/* FOOTER */
+footer{padding:48px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px;}
+.footer-tagline{font-size:12px;color:var(--text-dim);margin-top:4px;letter-spacing:0.5px;text-transform:uppercase;}
+.footer-links{display:flex;gap:24px;}
+.footer-links a{font-size:13px;color:var(--text-dim);text-decoration:none;transition:color 0.2s;}
+.footer-links a:hover{color:var(--text-muted);}
+.footer-copy{font-size:12px;color:var(--text-dim);}
+
+/* ANIMATIONS */
+@keyframes fadeUp{from{opacity:0;transform:translateY(24px);}to{opacity:1;transform:translateY(0);}}
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity 0.7s ease,transform 0.7s ease;}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* RESPONSIVE */
+@media(max-width:900px){
+  nav{padding:0 24px;}
+  .nav-links{display:none;}
+  .page-hero{padding:100px 24px 60px;}
+  .hero-stat-row{grid-template-columns:1fr;gap:20px;}
+  .hero-stat{padding:0;}
+  .hero-stat-divider{display:none;}
+  .insights-section,.charts-section,.leaderboard-section,.cta-section{padding:60px 24px;}
+  .insights-grid{grid-template-columns:1fr;}
+  .insight-card:first-child,.insight-card:last-child{border-radius:0;}
+  .insights-grid{border-radius:12px;overflow:hidden;}
+  .charts-grid{grid-template-columns:1fr;}
+  .dim-pill{display:none;}
+  footer{padding:32px 24px;flex-direction:column;align-items:flex-start;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/" class="nav-logo">
+    <img src="/GrowFitt_Logo.png" alt="GrowFitt" />
+  </a>
+  <div class="nav-links">
+    <a href="/#how">How it works</a>
+    <a href="/#scoring">The model</a>
+    <a href="/#products">Products</a>
+    <a href="/leaderboard.html" class="active">SPS Leaderboard</a>
+    <a href="/contact.html">Contact</a>
+  </div>
+  <a href="/GrowthFitness.html" class="nav-cta">Get your Growth Fitness Score</a>
+</nav>
+
+<!-- HERO -->
+<section class="page-hero">
+  <div class="hero-bg"></div>
+  <div class="hero-grid"></div>
+  <div class="hero-eyebrow"><span></span>Strategic Position Score · June 2026</div>
+  <h1 class="hero-headline">
+    India's B2B AI cohort —<br>
+    ranked by <em>structural position</em>
+  </h1>
+  <p class="hero-sub">59 Indian B2B AI companies assessed on the GrowFitt Strategic Position Score framework — measuring market creation, competitive moats, right to win, TAM dynamics, and business model durability.</p>
+  <div class="hero-stat-row">
+    <div class="hero-stat">
+      <div class="hero-stat-num">59</div>
+      <div class="hero-stat-label">Companies assessed</div>
+    </div>
+    <div class="hero-stat-divider"></div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">2.77</div>
+      <div class="hero-stat-label">Cohort avg. SPS</div>
+    </div>
+    <div class="hero-stat-divider"></div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">14</div>
+      <div class="hero-stat-label">Advanced tier</div>
+    </div>
+    <div class="hero-stat-divider"></div>
+    <div class="hero-stat">
+      <div class="hero-stat-num">3.65</div>
+      <div class="hero-stat-label">Top score (MaxIQ)</div>
+    </div>
+  </div>
+</section>
+
+<!-- INSIGHTS -->
+<section class="insights-section">
+  <p class="section-label reveal">What the data shows</p>
+  <h2 class="section-title reveal">Six signals from<br><em>59 assessments</em></h2>
+  <div class="insights-grid reveal">
+    <div class="insight-card">
+      <div class="insight-num">01</div>
+      <div class="insight-title">Moats are strong — pricing is not</div>
+      <div class="insight-body">Average SMS (structural moat) of <strong>3.87</strong> versus BMS (business model) of only <strong>1.92</strong>. Companies have built real product depth but are leaving revenue expansion on the table with seat-based pricing.</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-num">02</div>
+      <div class="insight-title">Almost no market creators</div>
+      <div class="insight-body">Only <strong>4 of 59 companies</strong> are defining a genuinely new market. 61% are displacing incumbents — competing for existing budget rather than expanding the pie, which compresses win rates and pricing power.</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-num">03</div>
+      <div class="insight-title">The cohort is pre-PMF confirmation</div>
+      <div class="insight-body"><strong>88% are Early stage</strong> — pre-$5M ARR. SPS functions as a leading indicator here: structural position now predicts who will break out once go-to-market intensity increases.</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-num">04</div>
+      <div class="insight-title">Scores cluster tightly</div>
+      <div class="insight-body">The full cohort spans just <strong>1.37 SPS points</strong> (2.28–3.65). No Elite tier company yet. The Indian B2B AI market is in a formative phase — structural separation hasn't happened.</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-num">05</div>
+      <div class="insight-title">Workflow lock-in dominates moats</div>
+      <div class="insight-body">The most common moat combination — data network effects + workflow lock-in — appears in <strong>33% of companies</strong>. It's effective but also the most common: not yet a differentiator at the cohort level.</div>
+    </div>
+    <div class="insight-card">
+      <div class="insight-num">06</div>
+      <div class="insight-title">BMS is the highest-leverage lever</div>
+      <div class="insight-body">Shifting from seat-based to outcome or consumption-based pricing is a direct <strong>+0.4 SPS uplift</strong>. It's the single most actionable change a portfolio company can make to improve structural position score.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CHARTS -->
+<section class="charts-section">
+  <p class="section-label reveal">Score breakdown</p>
+  <h2 class="section-title reveal">Where the cohort <em>stands</em></h2>
+  <div class="charts-grid reveal">
+
+    <div class="chart-card">
+      <div class="chart-card-label">Dimension averages</div>
+      <div class="chart-card-title">How the cohort scores across all 5 SPS dimensions</div>
+      <div class="dim-bar-row">
+        <div class="dim-bar-label">SMS</div>
+        <div class="dim-bar-track"><div class="dim-bar-fill" style="width:77.4%;background:#3aaf66;"></div></div>
+        <div class="dim-bar-val">3.87</div>
+        <div class="dim-bar-note" style="font-size:11px;color:var(--text-dim);">Structural moat</div>
+      </div>
+      <div class="dim-bar-row">
+        <div class="dim-bar-label">TEP</div>
+        <div class="dim-bar-track"><div class="dim-bar-fill" style="width:53.4%;background:#2d8a4e;"></div></div>
+        <div class="dim-bar-val">2.67</div>
+        <div class="dim-bar-note" style="font-size:11px;color:var(--text-dim);">TAM expansion</div>
+      </div>
+      <div class="dim-bar-row">
+        <div class="dim-bar-label">MCS</div>
+        <div class="dim-bar-track"><div class="dim-bar-fill" style="width:49.2%;background:#1a6632;"></div></div>
+        <div class="dim-bar-val">2.46</div>
+        <div class="dim-bar-note" style="font-size:11px;color:var(--text-dim);">Market creation</div>
+      </div>
+      <div class="dim-bar-row">
+        <div class="dim-bar-label">R2W</div>
+        <div class="dim-bar-track"><div class="dim-bar-fill" style="width:47.6%;background:#1a6632;"></div></div>
+        <div class="dim-bar-val">2.38</div>
+        <div class="dim-bar-note" style="font-size:11px;color:var(--text-dim);">Right to win</div>
+      </div>
+      <div class="dim-bar-row">
+        <div class="dim-bar-label">BMS</div>
+        <div class="dim-bar-track"><div class="dim-bar-fill" style="width:38.4%;background:rgba(255,100,100,0.6);"></div></div>
+        <div class="dim-bar-val" style="color:rgba(255,130,130,0.8);">1.92</div>
+        <div class="dim-bar-note" style="font-size:11px;color:rgba(255,130,130,0.5);">⚠ Weak point</div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-card-label">Business model distribution</div>
+      <div class="chart-card-title">How companies price today — and where the risk sits</div>
+      <div class="bms-rows">
+        <div class="bms-row">
+          <div class="bms-label">Hybrid pricing</div>
+          <div class="bms-track"><div class="bms-fill" style="width:39%;background:#3aaf66;"></div></div>
+          <div class="bms-count">23</div>
+        </div>
+        <div class="bms-row">
+          <div class="bms-label">Seat-based</div>
+          <div class="bms-track"><div class="bms-fill" style="width:34%;background:rgba(255,100,100,0.5);"></div></div>
+          <div class="bms-count" style="color:rgba(255,130,130,0.7);">20</div>
+        </div>
+        <div class="bms-row">
+          <div class="bms-label">Consumption-based</div>
+          <div class="bms-track"><div class="bms-fill" style="width:22%;background:#2d8a4e;"></div></div>
+          <div class="bms-count">13</div>
+        </div>
+        <div class="bms-row">
+          <div class="bms-label">Outcome-based</div>
+          <div class="bms-track"><div class="bms-fill" style="width:4%;background:#1a6632;"></div></div>
+          <div class="bms-count">2</div>
+        </div>
+        <div class="bms-row">
+          <div class="bms-label">No fixed model</div>
+          <div class="bms-track"><div class="bms-fill" style="width:2%;background:rgba(255,255,255,0.15);"></div></div>
+          <div class="bms-count">1</div>
+        </div>
+      </div>
+      <div style="margin-top:24px;padding-top:18px;border-top:1px solid var(--border);">
+        <div style="font-size:12px;color:var(--text-dim);line-height:1.6;">34% are on seat-based pricing — the lowest-durability model. With AI agents replacing human seats, this is a structural revenue risk over 4–8 quarters.</div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-card-label">Market motion (MCS)</div>
+      <div class="chart-card-title">How companies position their primary growth motion</div>
+      <div class="mcs-rows">
+        <div class="mcs-row">
+          <div class="mcs-label">Displacing an incumbent</div>
+          <div class="mcs-track"><div class="mcs-fill" style="width:61%;background:#1a6632;"></div></div>
+          <div class="mcs-count">36</div>
+        </div>
+        <div class="mcs-row">
+          <div class="mcs-label">Expanding the category</div>
+          <div class="mcs-track"><div class="mcs-fill" style="width:32%;background:#2d8a4e;"></div></div>
+          <div class="mcs-count">19</div>
+        </div>
+        <div class="mcs-row">
+          <div class="mcs-label">Defining a new market</div>
+          <div class="mcs-track"><div class="mcs-fill" style="width:7%;background:#3aaf66;"></div></div>
+          <div class="mcs-count">4</div>
+        </div>
+      </div>
+      <div style="margin-top:24px;padding-top:18px;border-top:1px solid var(--border);">
+        <div style="font-size:12px;color:var(--text-dim);line-height:1.6;">Displacement strategies face the longest sales cycles and lowest pricing power. Companies that expand or create markets tend to command 2–3× higher NRR.</div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-card-label">SPS tier distribution</div>
+      <div class="chart-card-title">Where the cohort sits across the 5-point scale</div>
+      <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:24px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:rgba(26,102,50,0.10);border:1px solid var(--border-green);border-radius:8px;">
+          <div>
+            <div style="font-size:13px;font-weight:500;color:var(--green-light);">Advanced</div>
+            <div style="font-size:11px;color:var(--text-dim);margin-top:2px;">SPS 3.0 – 3.9</div>
+          </div>
+          <div style="font-family:var(--serif);font-size:32px;color:var(--green-light);letter-spacing:-1px;">14</div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px;background:var(--dark);border:1px solid var(--border);border-radius:8px;">
+          <div>
+            <div style="font-size:13px;font-weight:500;color:var(--text-muted);">Developed</div>
+            <div style="font-size:11px;color:var(--text-dim);margin-top:2px;">SPS 2.0 – 2.9</div>
+          </div>
+          <div style="font-family:var(--serif);font-size:32px;color:var(--text-muted);letter-spacing:-1px;">45</div>
+        </div>
+      </div>
+      <div style="font-size:12px;color:var(--text-dim);line-height:1.6;">No company has crossed into Elite (4.0+) territory yet. The cohort is homogeneous — structural winners haven't separated from the pack.</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- LEADERBOARD TABLE -->
+<section class="leaderboard-section">
+  <p class="section-label reveal">Full rankings</p>
+  <h2 class="section-title reveal">All 59 companies — <em>ranked</em></h2>
+  <p class="section-body reveal" style="max-width:560px;">Click any column header to sort. Filter by tier or stage. All scores generated via Claude API with real-time web research — confidence indicated per company.</p>
+
+  <div class="lb-controls">
+    <input type="text" id="searchInput" class="lb-search" placeholder="Search by company name or product…" />
+    <select id="tierFilter" class="lb-select">
+      <option value="">All tiers</option>
+      <option value="Advanced">Advanced</option>
+      <option value="Developed">Developed</option>
+    </select>
+    <select id="stageFilter" class="lb-select">
+      <option value="">All stages</option>
+      <option value="Early">Early</option>
+      <option value="Growth">Growth</option>
+    </select>
+    <div class="lb-count" id="lbCount"></div>
+  </div>
+
+  <div class="lb-table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:44px">#</th>
+          <th data-col="name">Company</th>
+          <th data-col="tier">Tier</th>
+          <th data-col="stage">Stage</th>
+          <th data-col="sps" class="num sorted">SPS ▾</th>
+          <th data-col="sms" class="num">SMS</th>
+          <th data-col="mcs" class="num">MCS</th>
+          <th data-col="r2w" class="num">R2W</th>
+          <th data-col="tep" class="num">TEP</th>
+          <th data-col="bms" class="num">BMS</th>
+        </tr>
+      </thead>
+      <tbody id="tableBody"></tbody>
+    </table>
+  </div>
+
+  <div class="paginator">
+    <button class="paginator-btn" id="prevBtn">← Previous</button>
+    <div class="paginator-info" id="pageInfo"></div>
+    <button class="paginator-btn" id="nextBtn">Next →</button>
+  </div>
+
+  <div class="confidence-note">
+    <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <p><strong>Methodology note.</strong> All assessments were generated autonomously using the GrowFitt Claude API pipeline with live web research. Scores reflect publicly available information as of June 2026. 55 of 59 companies carry Medium confidence ratings — meaning key financial metrics (ARR, pricing) were inferred rather than confirmed. Scores should be treated as directional signals, not audit-grade conclusions. <strong>High-confidence assessments require a verified data submission from the company.</strong></p>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-bg"></div>
+  <p class="section-label reveal">Is your company on the list?</p>
+  <h2 class="cta-tagline reveal">Get a <em>verified</em> SPS assessment<br>for your company</h2>
+  <p class="cta-sub reveal">The automated score is a starting point. A verified assessment — backed by your actual metrics — carries weight with investors and board members.</p>
+  <a href="/GrowthFitness.html" class="cta-btn reveal">
+    Start your assessment
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+  </a>
+  <p class="cta-note reveal">Free · 5 minutes · Verified report delivered to your work email</p>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <img src="/GrowFitt_Logo.png" alt="GrowFitt" style="height:64px;width:auto;margin-bottom:10px;display:block;">
+    <div class="footer-tagline">A quantified control system for growth and revenue teams</div>
+  </div>
+  <div class="footer-links">
+    <a href="/#how">How it works</a>
+    <a href="/#scoring">The model</a>
+    <a href="/leaderboard.html">SPS Leaderboard</a>
+    <a href="/contact.html">Contact</a>
+  </div>
+  <div class="footer-copy">© 2026 GrowFitt.AI · All rights reserved</div>
+</footer>
+
+<script>
+const DATA = [
+  {name:"MaxIQ",url:"https://www.getmaxiq.com",stage:"Early",sps:3.65,tier:"Advanced",mcs:4.0,sms:4.5,r2w:3.0,tep:2.50,bms:3.0,product:"AI-native Revenue Journey Platform for B2B SaaS"},
+  {name:"Beacon.li",url:"https://www.beacon.li",stage:"Early",sps:3.35,tier:"Advanced",mcs:3.0,sms:4.5,r2w:3.0,tep:2.50,bms:2.0,product:"AI implementation orchestration platform"},
+  {name:"Asterisk",url:"https://asterisk.so",stage:"Early",sps:3.35,tier:"Advanced",mcs:4.0,sms:3.5,r2w:3.0,tep:3.00,bms:3.0,product:"AI security engineering agent for code vulnerabilities"},
+  {name:"GobbleCube",url:"https://gobblecube.ai",stage:"Growth",sps:3.23,tier:"Advanced",mcs:3.0,sms:4.5,r2w:2.5,tep:3.00,bms:2.0,product:"Agentic growth platform for e-commerce brands"},
+  {name:"Singulr AI",url:"https://singulr.ai",stage:"Early",sps:3.125,tier:"Advanced",mcs:3.0,sms:4.5,r2w:3.0,tep:2.50,bms:2.0,product:"Enterprise AI governance and security platform"},
+  {name:"Adya.ai",url:"https://adya.ai",stage:"Early",sps:3.10,tier:"Advanced",mcs:3.0,sms:4.0,r2w:3.0,tep:3.00,bms:2.0,product:"Agentic AI operating platform (Vanij)"},
+  {name:"Dashverse",url:"https://dashverse.ai",stage:"Early",sps:3.10,tier:"Advanced",mcs:4.0,sms:4.0,r2w:2.0,tep:3.00,bms:2.0,product:"AI-native entertainment content ecosystem"},
+  {name:"August AI",url:"https://www.meetaugust.ai",stage:"Early",sps:3.10,tier:"Advanced",mcs:3.0,sms:4.0,r2w:2.0,tep:3.00,bms:3.0,product:"24/7 AI personal health companion"},
+  {name:"Crackle Technologies",url:"https://crackle.tech",stage:"Early",sps:3.10,tier:"Advanced",mcs:2.0,sms:4.0,r2w:3.0,tep:3.00,bms:4.0,product:"AI SDK for app/gaming ad monetization"},
+  {name:"GreyLabs AI",url:"https://greylabs.ai",stage:"Growth",sps:3.10,tier:"Advanced",mcs:3.0,sms:4.5,r2w:2.0,tep:2.25,bms:3.0,product:"Agentic Voice AI platform for BFSI contact centers"},
+  {name:"Nitro Commerce",url:"https://nitrocommerce.ai",stage:"Growth",sps:3.05,tier:"Advanced",mcs:3.0,sms:4.5,r2w:2.0,tep:3.00,bms:2.0,product:"AI growth operating layer for D2C brands"},
+  {name:"NYAI",url:"https://nyai.ai",stage:"Early",sps:3.03,tier:"Advanced",mcs:4.0,sms:3.5,r2w:3.0,tep:2.25,bms:1.0,product:"Compliance-native Legal AI platform for India"},
+  {name:"Multibagg AI",url:"https://www.multibagg.ai",stage:"Early",sps:3.03,tier:"Advanced",mcs:3.0,sms:4.5,r2w:2.0,tep:2.25,bms:1.0,product:"AI-native equity research for Indian retail investors"},
+  {name:"Contrails AI",url:"https://www.contrails.ai",stage:"Early",sps:3.01,tier:"Advanced",mcs:3.0,sms:4.0,r2w:3.0,tep:2.25,bms:3.0,product:"Multimodal Trust & Safety / deepfake detection"},
+  {name:"Grexa AI",url:"https://grexa.ai",stage:"Early",sps:2.98,tier:"Developed",mcs:3.0,sms:4.5,r2w:2.0,tep:3.00,bms:1.0,product:"Autonomous AI marketing for Indian SMBs"},
+  {name:"Atomicwork",url:"https://www.atomicwork.com",stage:"Early",sps:2.975,tier:"Developed",mcs:2.0,sms:4.5,r2w:2.0,tep:3.00,bms:4.0,product:"AI-native agentic ITSM/ESM platform"},
+  {name:"Enkrypt AI",url:"https://www.enkryptai.com",stage:"Early",sps:2.975,tier:"Developed",mcs:3.0,sms:4.0,r2w:2.5,tep:2.50,bms:2.0,product:"Enterprise AI security and compliance platform"},
+  {name:"Wokelo AI",url:"https://www.wokelo.ai",stage:"Growth",sps:2.925,tier:"Developed",mcs:3.0,sms:3.5,r2w:2.5,tep:3.00,bms:2.0,product:"Agentic AI for PE/VC due diligence"},
+  {name:"Verifast AI",url:"https://verifast.ai",stage:"Early",sps:2.90,tier:"Developed",mcs:2.0,sms:4.5,r2w:2.0,tep:3.00,bms:3.0,product:"Gen AI sales agent for D2C e-commerce"},
+  {name:"Alchemyst AI",url:"https://getalchemystai.com",stage:"Early",sps:2.88,tier:"Developed",mcs:3.0,sms:3.5,r2w:2.0,tep:2.50,bms:3.0,product:"Verifiable AI context engine for LLM applications"},
+  {name:"jhana.ai",url:"https://jhana.ai",stage:"Early",sps:2.875,tier:"Developed",mcs:3.0,sms:4.0,r2w:3.0,tep:2.25,bms:1.0,product:"AI paralegal platform on Indian legal archive"},
+  {name:"Fuzen.io",url:"https://www.fuzen.io",stage:"Early",sps:2.875,tier:"Developed",mcs:2.0,sms:3.5,r2w:3.0,tep:3.00,bms:3.0,product:"AI no-code platform for full-stack business apps"},
+  {name:"Quash",url:"https://quashbugs.com",stage:"Early",sps:2.85,tier:"Developed",mcs:2.0,sms:4.0,r2w:3.0,tep:3.00,bms:2.0,product:"AI no-code mobile app testing platform"},
+  {name:"Resilience AI",url:"https://resilience360.ai",stage:"Early",sps:2.85,tier:"Developed",mcs:3.0,sms:4.0,r2w:2.0,tep:2.50,bms:2.0,product:"Physical climate risk intelligence platform"},
+  {name:"CodeRabbit",url:"https://www.coderabbit.ai",stage:"Growth",sps:2.85,tier:"Developed",mcs:2.0,sms:4.5,r2w:2.5,tep:3.00,bms:1.0,product:"AI-powered code review for pull requests"},
+  {name:"Redacto",url:"https://www.redacto.ai",stage:"Early",sps:2.775,tier:"Developed",mcs:3.0,sms:3.5,r2w:2.0,tep:3.00,bms:2.0,product:"AI data privacy and DPDP compliance platform"},
+  {name:"Vodex.ai",url:"https://www.vodex.ai",stage:"Growth",sps:2.75,tier:"Developed",mcs:2.0,sms:4.0,r2w:2.5,tep:2.50,bms:3.0,product:"Gen AI voice agent for debt collection"},
+  {name:"PredCo",url:"https://www.predco.ai",stage:"Early",sps:2.75,tier:"Developed",mcs:2.0,sms:3.5,r2w:3.0,tep:3.00,bms:2.0,product:"Industrial AI platform for predictive maintenance"},
+  {name:"Passprt",url:"https://www.passprt.com",stage:"Early",sps:2.75,tier:"Developed",mcs:2.0,sms:4.0,r2w:2.0,tep:3.00,bms:3.0,product:"AI-native personal travel advisor and booking"},
+  {name:"Maino.ai",url:"https://maino.ai",stage:"Early",sps:2.73,tier:"Developed",mcs:2.0,sms:4.5,r2w:2.0,tep:3.00,bms:2.0,product:"Autonomous AI marketing and paid media optimization"},
+  {name:"Superjoin",url:"https://www.superjoin.ai",stage:"Early",sps:2.725,tier:"Developed",mcs:3.0,sms:3.5,r2w:2.0,tep:3.00,bms:1.0,product:"AI spreadsheet automation and finance modeling"},
+  {name:"Ayna",url:"https://www.getayna.com",stage:"Early",sps:2.70,tier:"Developed",mcs:2.0,sms:3.5,r2w:3.0,tep:2.25,bms:2.0,product:"AI fashion photoshoot and catalog automation"},
+  {name:"Kombai",url:"https://kombai.com",stage:"Early",sps:2.70,tier:"Developed",mcs:2.0,sms:3.5,r2w:2.5,tep:2.50,bms:3.0,product:"AI coding agent specialized for frontend"},
+  {name:"OnFinance AI",url:"https://onfinance.ai",stage:"Early",sps:2.68,tier:"Developed",mcs:3.0,sms:3.5,r2w:2.0,tep:2.50,bms:1.0,product:"BFSI compliance automation via NeoGPT LLM"},
+  {name:"SiftHub",url:"https://www.sifthub.io",stage:"Early",sps:2.68,tier:"Developed",mcs:2.0,sms:4.5,r2w:2.0,tep:2.50,bms:2.0,product:"AI RFP automation and deal orchestration"},
+  {name:"QuickAds.ai",url:"https://www.quickads.ai",stage:"Early",sps:2.675,tier:"Developed",mcs:2.0,sms:4.5,r2w:3.0,tep:2.50,bms:1.0,product:"AI ad creative generation from 30M+ ad library"},
+  {name:"Arrowhead",url:"https://arrowhead.ai",stage:"Early",sps:2.675,tier:"Developed",mcs:2.0,sms:3.5,r2w:2.0,tep:2.50,bms:3.0,product:"BFSI voice AI for sales, collections and renewals"},
+  {name:"Hypergro.ai",url:"https://www.hypergro.ai",stage:"Growth",sps:2.65,tier:"Developed",mcs:2.0,sms:4.0,r2w:2.5,tep:2.50,bms:2.0,product:"AI video ad creation and campaign management"},
+  {name:"FireAI",url:"https://fireai.in",stage:"Early",sps:2.65,tier:"Developed",mcs:2.0,sms:4.5,r2w:2.0,tep:3.00,bms:1.0,product:"Agentic AI business intelligence for Indian SMEs"},
+  {name:"MarianaAI",url:"https://marianaai.com",stage:"Early",sps:2.65,tier:"Developed",mcs:2.0,sms:4.5,r2w:3.0,tep:2.25,bms:1.0,product:"AI clinical documentation for US healthcare"},
+  {name:"Inspeq AI",url:"https://inspeq.ai",stage:"Early",sps:2.58,tier:"Developed",mcs:3.0,sms:4.0,r2w:2.0,tep:2.25,bms:1.0,product:"Responsible AI Operations platform for LLM governance"},
+  {name:"EaseMyAI",url:"https://easemyai.com",stage:"Early",sps:2.575,tier:"Developed",mcs:2.0,sms:3.5,r2w:2.0,tep:3.00,bms:2.0,product:"No-code computer vision on edge for industrial IoT"},
+  {name:"Unscript.ai",url:"https://www.unscript.ai",stage:"Early",sps:2.575,tier:"Developed",mcs:2.0,sms:3.5,r2w:3.0,tep:3.00,bms:0.0,product:"AI personalized video and avatar creation"},
+  {name:"Onetab.ai",url:"https://www.onetab.ai",stage:"Early",sps:2.525,tier:"Developed",mcs:2.0,sms:3.5,r2w:3.0,tep:2.25,bms:1.0,product:"Unified AI agent platform for software dev lifecycle"},
+  {name:"Binocs",url:"https://binocs.co",stage:"Early",sps:2.50,tier:"Developed",mcs:2.0,sms:3.5,r2w:3.0,tep:2.50,bms:1.0,product:"Agentic AI due diligence for PE/VC advisory"},
+  {name:"Nurix AI",url:"https://www.nurix.ai",stage:"Early",sps:2.48,tier:"Developed",mcs:2.0,sms:3.5,r2w:2.0,tep:3.00,bms:2.0,product:"Enterprise conversational AI for sales and support"},
+  {name:"Clueso",url:"https://clueso.io",stage:"Early",sps:2.475,tier:"Developed",mcs:2.0,sms:3.5,r2w:2.0,tep:2.50,bms:2.0,product:"AI screen recording to product documentation"},
+  {name:"OrbitShift",url:"https://orbitshift.ai",stage:"Early",sps:2.475,tier:"Developed",mcs:2.0,sms:3.5,r2w:2.0,tep:2.50,bms:2.0,product:"AI sales OS for enterprise IT/tech services"},
+  {name:"Pintel.AI",url:"https://pintel.ai",stage:"Early",sps:2.475,tier:"Developed",mcs:2.0,sms:3.5,r2w:2.0,tep:3.00,bms:1.0,product:"AI sales development and prospect enrichment"},
+  {name:"Alltius",url:"https://www.alltius.ai",stage:"Early",sps:2.45,tier:"Developed",mcs:2.0,sms:3.5,r2w:2.0,tep:2.50,bms:2.0,product:"Agentic AI for BFSI sales and customer support"},
+  {name:"OptIQ.AI",url:"https://optiq.ai",stage:"Early",sps:2.45,tier:"Developed",mcs:2.0,sms:3.0,r2w:3.0,tep:2.25,bms:2.0,product:"AI data security posture management (DSPM)"},
+  {name:"Wizr AI",url:"https://wizr.ai",stage:"Early",sps:2.45,tier:"Developed",mcs:2.0,sms:3.5,r2w:2.0,tep:2.50,bms:2.0,product:"Enterprise AI platform for agent deployment"},
+  {name:"Highperformr.ai",url:"https://www.highperformr.ai",stage:"Early",sps:2.45,tier:"Developed",mcs:2.0,sms:4.0,r2w:2.0,tep:2.50,bms:1.0,product:"AI GTM platform with 700M+ contact database"},
+  {name:"Frammer AI",url:"https://www.frammer.com",stage:"Early",sps:2.38,tier:"Developed",mcs:2.0,sms:3.5,r2w:2.0,tep:2.50,bms:1.0,product:"AI video-to-short-form clip conversion for media"},
+  {name:"Babblebots.ai",url:"https://babblebots.ai",stage:"Early",sps:2.35,tier:"Developed",mcs:2.0,sms:3.5,r2w:2.0,tep:2.50,bms:1.0,product:"AI voice/video interview bots for recruitment"},
+  {name:"Phot.AI",url:"https://www.phot.ai",stage:"Early",sps:2.35,tier:"Developed",mcs:2.0,sms:4.0,r2w:2.0,tep:2.50,bms:1.0,product:"GenAI creative automation for e-commerce images"},
+  {name:"AstroSure.ai",url:"https://astrosure.ai",stage:"Early",sps:2.35,tier:"Developed",mcs:2.0,sms:4.0,r2w:2.0,tep:2.50,bms:1.0,product:"AI Vedic astrology companion app (freemium)"},
+  {name:"quso.ai",url:"https://quso.ai",stage:"Early",sps:2.28,tier:"Developed",mcs:2.0,sms:2.0,r2w:2.0,tep:2.50,bms:3.0,product:"AI video repurposing and social media management"},
+  {name:"Keploy",url:"https://keploy.io",stage:"Early",sps:2.28,tier:"Developed",mcs:2.0,sms:3.5,r2w:2.0,tep:3.00,bms:1.0,product:"Open-source AI API testing platform using eBPF"}
+];
+
+const PAGE = 15;
+let filtered = [...DATA];
+let sortCol = 'sps';
+let sortDir = -1;
+let page = 0;
+
+function getVal(r, col) {
+  const map = {name:r.name.toLowerCase(),tier:r.tier,stage:r.stage,sps:r.sps,sms:r.sms,mcs:r.mcs,r2w:r.r2w,tep:r.tep,bms:r.bms};
+  return map[col] ?? r.sps;
+}
+
+function applyFilters() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const tier = document.getElementById('tierFilter').value;
+  const stage = document.getElementById('stageFilter').value;
+  filtered = DATA.filter(r => {
+    return (!q || r.name.toLowerCase().includes(q) || r.product.toLowerCase().includes(q))
+        && (!tier || r.tier === tier)
+        && (!stage || r.stage === stage);
+  });
+  page = 0;
+  filtered.sort((a,b) => {
+    const av = getVal(a,sortCol), bv = getVal(b,sortCol);
+    return av > bv ? sortDir : av < bv ? -sortDir : 0;
+  });
+  renderTable();
+}
+
+function renderTable() {
+  const start = page * PAGE;
+  const slice = filtered.slice(start, start + PAGE);
+  const tb = document.getElementById('tableBody');
+  if (!slice.length) {
+    tb.innerHTML = '<tr class="empty-row"><td colspan="10">No companies match your filters.</td></tr>';
+  } else {
+    tb.innerHTML = slice.map((r, i) => {
+      const rank = start + i + 1;
+      const bar = Math.max(0, Math.min(100, ((r.sps - 2) / 1.65 * 100))).toFixed(1);
+      const dimColor = (v) => v >= 4 ? 'var(--green-light)' : v >= 3 ? 'var(--text-muted)' : 'var(--text-dim)';
+      return `<tr>
+        <td class="rank-cell ${rank<=3?'rank-top3':''}">${rank}</td>
+        <td>
+          <span class="co-name">${r.name}</span>
+          <a class="co-url" href="${r.url}" target="_blank">${r.url.replace('https://','')}</a>
+        </td>
+        <td><span class="tier-pill tier-${r.tier}">${r.tier}</span></td>
+        <td><span class="stage-tag">${r.stage}</span></td>
+        <td class="num">
+          <div class="sps-num">${r.sps.toFixed(2)}</div>
+          <div class="sps-bar-wrap"><div class="sps-bar" style="width:${bar}%"></div></div>
+        </td>
+        <td class="num" style="color:${dimColor(r.sms)}">${r.sms.toFixed(1)}</td>
+        <td class="num" style="color:${dimColor(r.mcs)}">${r.mcs.toFixed(1)}</td>
+        <td class="num" style="color:${dimColor(r.r2w)}">${r.r2w.toFixed(1)}</td>
+        <td class="num" style="color:${dimColor(r.tep)}">${r.tep.toFixed(2)}</td>
+        <td class="num" style="color:${dimColor(r.bms)}">${r.bms.toFixed(1)}</td>
+      </tr>`;
+    }).join('');
+  }
+  const total = filtered.length;
+  const pages = Math.ceil(total / PAGE);
+  document.getElementById('pageInfo').textContent = `Page ${page+1} of ${Math.max(1,pages)} · ${total} companies`;
+  document.getElementById('lbCount').textContent = total + ' companies shown';
+  document.getElementById('prevBtn').disabled = page === 0;
+  document.getElementById('nextBtn').disabled = page >= pages - 1;
+}
+
+document.getElementById('searchInput').addEventListener('input', applyFilters);
+document.getElementById('tierFilter').addEventListener('change', applyFilters);
+document.getElementById('stageFilter').addEventListener('change', applyFilters);
+document.getElementById('prevBtn').addEventListener('click', ()=>{ page--; renderTable(); });
+document.getElementById('nextBtn').addEventListener('click', ()=>{ page++; renderTable(); });
+
+document.querySelectorAll('thead th[data-col]').forEach(th => {
+  th.addEventListener('click', () => {
+    const col = th.dataset.col;
+    sortDir = sortCol === col ? sortDir * -1 : (['sps','sms','mcs','r2w','tep','bms'].includes(col) ? -1 : 1);
+    sortCol = col;
+    document.querySelectorAll('thead th').forEach(h => h.classList.remove('sorted'));
+    th.classList.add('sorted');
+    filtered.sort((a,b) => {
+      const av = getVal(a,col), bv = getVal(b,col);
+      return av > bv ? sortDir : av < bv ? -sortDir : 0;
+    });
+    renderTable();
+  });
+});
+
+// Scroll reveal
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }});
+}, {threshold:0.1,rootMargin:'0px 0px -60px 0px'});
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Stagger insight cards
+document.querySelectorAll('.insights-grid > *').forEach((c,i) => c.style.transitionDelay = (i*0.07)+'s');
+
+applyFilters();
+</script>
+</body>
+</html>
